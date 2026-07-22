@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cotización - Sistema Moderno</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #dbeafe;
+            --success: #059669;
+            --success-light: #d1fae5;
+            --warning: #d97706;
+            --warning-light: #fef3c7;
+            --danger: #dc2626;
+            --danger-light: #fee2e2;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 72px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius-sm: 6px;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-800);
+            line-height: 1.5;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Moderno */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            z-index: 50;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-header .logo-icon {
+            font-size: 32px;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .sidebar-header .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            white-space: nowrap;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .logo-text {
+            opacity: 0;
+            width: 0;
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            right: -12px;
+            top: 32px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 51;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--gray-50);
+            box-shadow: var(--shadow);
+        }
+
+        .sidebar-toggle .material-icons {
+            font-size: 16px;
+            color: var(--gray-600);
+            transition: var(--transition);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--gray-600);
+            font-weight: 500;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--gray-50);
+            color: var(--gray-900);
+        }
+
+        .nav-item.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .nav-item .material-icons {
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .nav-item .nav-text {
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .nav-text {
+            opacity: 0;
+            width: 0;
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--gray-200);
+            font-size: 0.75rem;
+            color: var(--gray-400);
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .sidebar-footer {
+            display: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 24px;
+            transition: var(--transition);
+            min-height: 100vh;
+        }
+
+        .main-content.expanded {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        .page-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-header h1 .material-icons {
+            font-size: 36px;
+            color: var(--primary);
+        }
+
+        .page-header p {
+            color: var(--gray-500);
+            margin-top: 8px;
+            font-size: 0.95rem;
+        }
+
+        /* Cards Modernas */
+        .card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .card-header .material-icons {
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .card-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        /* Alertas Modernas */
+        .alert {
+            padding: 16px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .alert-info {
+            background: var(--primary-light);
+            color: #1e40af;
+            border-left: 4px solid var(--primary);
+        }
+
+        .alert-warning {
+            background: var(--warning-light);
+            color: #92400e;
+            border-left: 4px solid var(--warning);
+        }
+
+        .alert-danger {
+            background: var(--danger-light);
+            color: #991b1b;
+            border-left: 4px solid var(--danger);
+        }
+
+        .alert .material-icons {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--gray-700);
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background: white;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-input:hover {
+            border-color: var(--gray-400);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .input-group .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        /* Checkbox personalizado */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+            margin-bottom: 16px;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .discount-input {
+            width: 100px;
+            padding: 8px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            margin-left: 12px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #047857;
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .btn-lg {
+            padding: 14px 28px;
+            font-size: 1rem;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* Search Box */
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box .material-icons {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 12px 12px 44px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+
+        .search-results.show {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-100);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-result-item:hover {
+            background: var(--primary-light);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .table thead {
+            background: var(--gray-50);
+        }
+
+        .table th {
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-600);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--gray-200);
+            white-space: nowrap;
+        }
+
+        .table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .table tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table input[type="number"] {
+            width: 70px;
+            padding: 6px 8px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .table select {
+            padding: 6px 8px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            background: white;
+            width: 100%;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: var(--success-light);
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: var(--warning-light);
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background: var(--danger-light);
+            color: #991b1b;
+        }
+
+        .badge-info {
+            background: var(--primary-light);
+            color: #1e40af;
+        }
+
+        .text-highlight {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .text-muted {
+            color: var(--gray-400);
+            font-style: italic;
+        }
+
+        .warning-icon {
+            color: var(--warning);
+            cursor: help;
+        }
+
+        /* Total Card */
+        .total-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            margin: 24px 0;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .total-card .total-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .total-card .total-amount {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        /* Section Visibility */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .proveedor-list {
+            margin-top: 16px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .proveedor-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+        }
+
+        .proveedor-item .proveedor-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .proveedor-item .proveedor-name {
+            font-weight: 500;
+        }
+
+        .proveedor-item .product-count {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .provider-settings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            padding: 16px;
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: var(--sidebar-collapsed);
+            }
+            
+            .sidebar .logo-text,
+            .sidebar .nav-text,
+            .sidebar-footer {
+                display: none;
+            }
+            
+            .sidebar .nav-item {
+                justify-content: center;
+                padding: 12px;
+            }
+            
+            .main-content {
+                margin-left: var(--sidebar-collapsed);
+            }
+            
+            .sidebar-toggle {
+                display: none;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .table {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="material-icons logo-icon">inventory_2</span>
+            <span class="logo-text">Cotizador Pro</span>
+        </div>
+        <div class="sidebar-toggle" id="sidebarToggle">
+            <span class="material-icons">chevron_left</span>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-item active" data-section="proveedores">
+                <span class="material-icons">business</span>
+                <span class="nav-text">Proveedores</span>
+            </div>
+            <div class="nav-item" data-section="lista">
+                <span class="material-icons">list_alt</span>
+                <span class="nav-text">Lista Maestra</span>
+            </div>
+            <div class="nav-item" data-section="comparativo">
+                <span class="material-icons">compare_arrows</span>
+                <span class="nav-text">Comparativo</span>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            © 2024 Cotizador Pro v2.0
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <div class="page-container">
+            <!-- Proveedores Section -->
+            <section class="section active" id="section-proveedores">
+                <div class="page-header">
+                    <h1>
+                        <span class="material-icons">business</span>
+                        Gestión de Proveedores
+                    </h1>
+                    <p>Agrega y administra los proveedores con sus listas de precios</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="material-icons">add_business</span>
+                        <h2>Agregar Nuevo Proveedor</h2>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <span class="material-icons">info</span>
+                        <div>
+                            <strong>Formato requerido del Excel:</strong><br>
+                            Columnas: <b>Código | Descripción | Existencia | Precio con IVA</b><br>
+                            <small>La primera fila debe contener los encabezados</small>
+                        </div>
+                    </div>
+
+                    <!-- Configuración del proveedor -->
+                    <div class="provider-settings">
+                        <div class="form-group">
+                            <label class="form-label">Stock Mínimo Requerido</label>
+                            <input type="number" id="stockMinimo" class="form-input" value="0" min="0" placeholder="Ej: 50">
+                            <small style="color: var(--gray-500);">Si el proveedor tiene menos existencias, no se considerará</small>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <div class="checkbox-wrapper">
+                                    <input type="checkbox" id="aplicarDescuento">
+                                    <label for="aplicarDescuento" style="margin: 0; cursor: pointer;">Aplicar Descuento</label>
+                                </div>
+                                <input type="number" id="porcentajeDescuento" class="discount-input" value="0" min="0" max="100" step="0.01" disabled placeholder="%">
+                                <span>%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="form-group">
+                            <label class="form-label" for="nombreProveedor">Nombre del Proveedor</label>
+                            <input type="text" id="nombreProveedor" class="form-input" placeholder="Ej: Farmacias del Ahorro">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="archivoProveedor">Archivo Excel</label>
+                            <input type="file" id="archivoProveedor" class="form-input" accept=".xlsx,.xls">
+                        </div>
+                    </div>
+                    
+                    <button id="btnAgregarProveedor" class="btn btn-primary btn-lg btn-block">
+                        <span class="material-icons">add</span>
+                        Agregar Proveedor
+                    </button>
+
+                    <div id="listaProveedores" class="proveedor-list" style="margin-top: 24px;"></div>
+                </div>
+            </section>
+
+            <!-- Lista Maestra Section -->
+            <section class="section" id="section-lista">
+                <div class="page-header">
+                    <h1>
+                        <span class="material-icons">list_alt</span>
+                        Lista Maestra
+                    </h1>
+                    <p>Define los productos que necesitas cotizar</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="material-icons">upload_file</span>
+                        <h2>Cargar Lista de Productos</h2>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <span class="material-icons">tips_and_updates</span>
+                        <div>
+                            <strong>Formato requerido del Excel:</strong><br>
+                            Columnas: <b>Código | Descripción | Piezas Requeridas</b><br>
+                            <small>La primera fila debe contener los encabezados. Las piezas son la cantidad necesaria por producto.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="archivoMaestro">Seleccionar Archivo Excel</label>
+                        <input type="file" id="archivoMaestro" class="form-input" accept=".xlsx,.xls">
+                    </div>
+                    
+                    <button id="btnCargarMaestro" class="btn btn-primary btn-lg btn-block">
+                        <span class="material-icons">cloud_upload</span>
+                        Cargar Lista Maestra
+                    </button>
+
+                    <div id="estadoMaestro" style="margin-top: 16px;"></div>
+                </div>
+            </section>
+
+            <!-- Comparativo Section -->
+            <section class="section" id="section-comparativo">
+                <div class="page-header">
+                    <h1>
+                        <span class="material-icons">compare_arrows</span>
+                        Comparativo de Precios
+                    </h1>
+                    <p>Compara precios entre proveedores y genera pedidos</p>
+                </div>
+
+                <!-- Búsqueda de productos -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="material-icons">search</span>
+                        <h2>Buscar Producto</h2>
+                    </div>
+                    <div class="search-box">
+                        <span class="material-icons">search</span>
+                        <input type="text" id="searchProducto" placeholder="Buscar por código o descripción...">
+                        <div class="search-results" id="searchResults"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="material-icons">filter_list</span>
+                        <h2>Filtrar por Proveedor</h2>
+                    </div>
+                    
+                    <div class="form-group">
+                        <select id="filtroProveedor" class="form-input">
+                            <option value="todos">Todos los proveedores</option>
+                        </select>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table" id="tablaComparativa">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Descripción</th>
+                                    <th>Piezas</th>
+                                    <th>Existencia</th>
+                                    <th>Precio Unit.</th>
+                                    <th>Subtotal</th>
+                                    <th>Proveedor</th>
+                                    <th>2da Opción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpoTabla"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="total-card">
+                        <div class="total-label">Total General del Pedido</div>
+                        <div class="total-amount" id="totalGeneral">$0.00</div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button id="btnGenerarFiltrado" class="btn btn-primary">
+                            <span class="material-icons">picture_as_pdf</span>
+                            Generar PDF (Proveedor Seleccionado)
+                        </button>
+                        <button id="btnGenerarTodos" class="btn btn-success">
+                            <span class="material-icons">download</span>
+                            Generar Todos los PDFs
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // Estado de la aplicación
+        let proveedores = [];
+        let productosMaestro = [];
+
+        // Sidebar Toggle
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        let sidebarOpen = true;
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebarOpen = !sidebarOpen;
+            if (sidebarOpen) {
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('expanded');
+                sidebarToggle.querySelector('.material-icons').textContent = 'chevron_left';
+            } else {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('expanded');
+                sidebarToggle.querySelector('.material-icons').textContent = 'chevron_right';
+            }
+        });
+
+        // Navegación
+        const navItems = document.querySelectorAll('.nav-item');
+        const sections = document.querySelectorAll('.section');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const sectionId = item.dataset.section;
+                
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                sections.forEach(section => section.classList.remove('active'));
+                document.getElementById(`section-${sectionId}`).classList.add('active');
+            });
+        });
+
+        // Checkbox de descuento
+        document.getElementById('aplicarDescuento').addEventListener('change', function() {
+            document.getElementById('porcentajeDescuento').disabled = !this.checked;
+        });
+
+        // Agregar Proveedor
+        document.getElementById('btnAgregarProveedor').addEventListener('click', () => {
+            const nombre = document.getElementById('nombreProveedor').value.trim();
+            const fileInput = document.getElementById('archivoProveedor');
+            const stockMinimo = parseInt(document.getElementById('stockMinimo').value) || 0;
+            const aplicarDescuento = document.getElementById('aplicarDescuento').checked;
+            const porcentajeDescuento = aplicarDescuento ? parseFloat(document.getElementById('porcentajeDescuento').value) || 0 : 0;
+            
+            if (!nombre) {
+                showToast('Por favor, ingrese el nombre del proveedor', 'warning');
+                return;
+            }
+            
+            if (!fileInput.files[0]) {
+                showToast('Por favor, seleccione un archivo Excel', 'warning');
+                return;
+            }
+
+            if (proveedores.some(p => p.nombre.toLowerCase() === nombre.toLowerCase())) {
+                showToast('Ya existe un proveedor con este nombre', 'warning');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+                    if (json.length < 2) {
+                        showToast('El archivo Excel está vacío o no tiene datos', 'warning');
+                        return;
+                    }
+
+                    let productos = json.slice(1).map(row => ({
+                        codigo: String(row[0] || '').trim(),
+                        descripcion: String(row[1] || '').trim(),
+                        existencia: parseFloat(row[2]) || 0,
+                        precio: parseFloat(row[3]) || 0
+                    })).filter(p => p.codigo && p.precio > 0);
+
+                    // Aplicar descuento si está activado
+                    if (aplicarDescuento && porcentajeDescuento > 0) {
+                        productos = productos.map(p => ({
+                            ...p,
+                            precio: p.precio * (1 - porcentajeDescuento / 100)
+                        }));
+                    }
+
+                    if (productos.length === 0) {
+                        showToast('No se encontraron productos válidos en el archivo', 'warning');
+                        return;
+                    }
+
+                    proveedores.push({ 
+                        nombre, 
+                        productos,
+                        stockMinimo,
+                        descuento: aplicarDescuento ? porcentajeDescuento : 0
+                    });
+                    
+                    actualizarListaProveedores();
+                    actualizarFiltroProveedores();
+                    
+                    document.getElementById('nombreProveedor').value = '';
+                    document.getElementById('archivoProveedor').value = '';
+                    document.getElementById('stockMinimo').value = '0';
+                    document.getElementById('aplicarDescuento').checked = false;
+                    document.getElementById('porcentajeDescuento').value = '0';
+                    document.getElementById('porcentajeDescuento').disabled = true;
+                    
+                    showToast(`Proveedor "${nombre}" cargado exitosamente con ${productos.length} productos`, 'success');
+                } catch (error) {
+                    showToast('Error al procesar el archivo Excel. Verifique el formato.', 'danger');
+                    console.error(error);
+                }
+            };
+            reader.readAsArrayBuffer(fileInput.files[0]);
+        });
+
+        function showToast(message, type = 'info') {
+            // Crear toast notification en lugar de alert
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 16px 24px;
+                background: ${type === 'success' ? '#059669' : type === 'warning' ? '#d97706' : type === 'danger' ? '#dc2626' : '#2563eb'};
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                z-index: 9999;
+                font-weight: 500;
+                max-width: 400px;
+                animation: slideIn 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Agregar estilos de animación para los toasts
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        function actualizarListaProveedores() {
+            const div = document.getElementById('listaProveedores');
+            if (proveedores.length === 0) {
+                div.innerHTML = '<p style="color: var(--gray-400); text-align: center; padding: 20px;">No hay proveedores cargados</p>';
+                return;
+            }
+
+            div.innerHTML = proveedores.map((p, index) => `
+                <div class="proveedor-item">
+                    <div class="proveedor-info">
+                        <span class="material-icons" style="color: var(--primary);">store</span>
+                        <div>
+                            <div class="proveedor-name">${p.nombre}</div>
+                            <div class="product-count">
+                                ${p.productos.length} productos | 
+                                Stock mín: ${p.stockMinimo} | 
+                                Desc: ${p.descuento}%
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="eliminarProveedor(${index})">
+                        <span class="material-icons">delete</span>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function eliminarProveedor(index) {
+            proveedores.splice(index, 1);
+            actualizarListaProveedores();
+            actualizarFiltroProveedores();
+            generarTablaComparativa();
+        }
+
+        function actualizarFiltroProveedores() {
+            const select = document.getElementById('filtroProveedor');
+            select.innerHTML = '<option value="todos">Todos los proveedores</option>';
+            proveedores.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.nombre;
+                opt.textContent = p.nombre;
+                select.appendChild(opt);
+            });
+            
+            select.onchange = () => generarTablaComparativa();
+        }
+
+        // Cargar Lista Maestra
+        document.getElementById('btnCargarMaestro').addEventListener('click', () => {
+            const file = document.getElementById('archivoMaestro').files[0];
+            if (!file) {
+                showToast('Por favor, seleccione un archivo Excel', 'warning');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+                    if (json.length < 2) {
+                        showToast('El archivo Excel está vacío o no tiene datos', 'warning');
+                        return;
+                    }
+
+                    productosMaestro = json.slice(1).map(row => ({
+                        codigo: String(row[0] || '').trim(),
+                        descripcion: String(row[1] || '').trim(),
+                        piezas: parseFloat(row[2]) || 1
+                    })).filter(p => p.codigo);
+
+                    if (productosMaestro.length === 0) {
+                        showToast('No se encontraron productos válidos en el archivo', 'warning');
+                        return;
+                    }
+
+                    document.getElementById('estadoMaestro').innerHTML = `
+                        <div class="alert alert-info">
+                            <span class="material-icons">check_circle</span>
+                            <div>
+                                <strong>✅ Lista maestra cargada exitosamente</strong><br>
+                                ${productosMaestro.length} productos encontrados
+                            </div>
+                        </div>
+                    `;
+                    
+                    generarTablaComparativa();
+                    
+                    document.querySelector('.nav-item[data-section="comparativo"]').click();
+                } catch (error) {
+                    showToast('Error al procesar el archivo Excel. Verifique el formato.', 'danger');
+                    console.error(error);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // Generar Tabla Comparativa
+        function generarTablaComparativa() {
+            const tbody = document.getElementById('cuerpoTabla');
+            const filtroProveedor = document.getElementById('filtroProveedor').value;
+            
+            if (proveedores.length === 0 || productosMaestro.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--gray-400);">Cargue proveedores y lista maestra para ver el comparativo</td></tr>';
+                actualizarTotalGeneral();
+                return;
+            }
+
+            tbody.innerHTML = '';
+
+            productosMaestro.forEach(prod => {
+                let mejorOpcion = null;
+                let mejorPrecio = Infinity;
+                let segundaOpcion = null;
+                let segundoMejorPrecio = Infinity;
+
+                // Encontrar las mejores opciones
+                const opcionesValidas = [];
+                
+                proveedores.forEach(prov => {
+                    if (filtroProveedor !== 'todos' && prov.nombre !== filtroProveedor) return;
+                    
+                    const encontrado = prov.productos.find(p => p.codigo === prod.codigo);
+                    if (encontrado) {
+                        // Verificar stock mínimo
+                        if (encontrado.existencia >= prov.stockMinimo) {
+                            opcionesValidas.push({
+                                proveedor: prov.nombre,
+                                ...encontrado,
+                                piezas: prod.piezas
+                            });
+                        }
+                    }
+                });
+
+                // Ordenar por precio
+                opcionesValidas.sort((a, b) => a.precio - b.precio);
+                
+                if (opcionesValidas.length > 0) {
+                    mejorOpcion = opcionesValidas[0];
+                    if (opcionesValidas.length > 1) {
+                        segundaOpcion = opcionesValidas[1];
+                    }
+                }
+
+                // Verificar si hay proveedores pero no cumplen stock mínimo
+                const proveedoresConProducto = proveedores.filter(prov => {
+                    if (filtroProveedor !== 'todos' && prov.nombre !== filtroProveedor) return false;
+                    return prov.productos.some(p => p.codigo === prod.codigo);
+                });
+
+                const row = document.createElement('tr');
+                
+                if (!mejorOpcion && proveedoresConProducto.length > 0) {
+                    // Hay producto pero no cumple stock mínimo
+                    const primerProv = proveedoresConProducto[0];
+                    const producto = primerProv.productos.find(p => p.codigo === prod.codigo);
+                    
+                    row.innerHTML = `
+                        <td><strong>${prod.codigo}</strong></td>
+                        <td>${prod.descripcion}</td>
+                        <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1" style="width:70px;"></td>
+                        <td>
+                            <span class="badge badge-danger" title="Stock por debajo del mínimo requerido (${primerProv.stockMinimo})">
+                                ${producto.existencia} ⚠️
+                            </span>
+                        </td>
+                        <td>$${producto.precio.toFixed(2)}</td>
+                        <td class="text-highlight">$${(producto.precio * prod.piezas).toFixed(2)}</td>
+                        <td>
+                            <select class="proveedor-select" data-codigo="${prod.codigo}">
+                                ${proveedoresConProducto.map(p => `
+                                    <option value="${p.nombre}" ${p.nombre === primerProv.nombre ? 'selected' : ''}>
+                                        ${p.nombre}
+                                    </option>
+                                `).join('')}
+                            </select>
+                            <div class="alert alert-danger" style="padding:4px 8px; margin-top:4px; font-size:0.75rem;">
+                                <span class="material-icons" style="font-size:14px;">warning</span>
+                                Stock bajo
+                            </div>
+                        </td>
+                        <td class="text-muted">Stock insuficiente</td>
+                    `;
+                } else if (!mejorOpcion) {
+                    // No se encuentra en ningún proveedor
+                    row.innerHTML = `
+                        <td><strong>${prod.codigo}</strong></td>
+                        <td>${prod.descripcion}</td>
+                        <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1" style="width:70px;"></td>
+                        <td><span class="badge badge-warning">Sin stock</span></td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>
+                            <select class="proveedor-select" data-codigo="${prod.codigo}">
+                                <option value="">Seleccionar</option>
+                                ${proveedores.map(p => `<option value="${p.nombre}">${p.nombre}</option>`).join('')}
+                            </select>
+                        </td>
+                        <td class="text-muted">No disponible</td>
+                    `;
+                } else {
+                    const subtotal = mejorOpcion.precio * prod.piezas;
+                    row.innerHTML = `
+                        <td><strong>${prod.codigo}</strong></td>
+                        <td>${prod.descripcion}</td>
+                        <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1" style="width:70px;"></td>
+                        <td>
+                            <span class="badge ${mejorOpcion.existencia > 0 ? 'badge-success' : 'badge-warning'}">
+                                ${mejorOpcion.existencia}
+                            </span>
+                        </td>
+                        <td>$${mejorOpcion.precio.toFixed(2)}</td>
+                        <td class="text-highlight">$${subtotal.toFixed(2)}</td>
+                        <td>
+                            <select class="proveedor-select" data-codigo="${prod.codigo}">
+                                ${proveedores.filter(p => filtroProveedor === 'todos' || p.nombre === filtroProveedor).map(p => `
+                                    <option value="${p.nombre}" ${p.nombre === mejorOpcion.proveedor ? 'selected' : ''}>
+                                        ${p.nombre}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </td>
+                        <td>
+                            ${segundaOpcion ? 
+                                `<span class="badge badge-info">${segundaOpcion.proveedor} - $${segundaOpcion.precio.toFixed(2)}</span>` : 
+                                '<span class="text-muted">No disponible</span>'}
+                        </td>
+                    `;
+                }
+                
+                tbody.appendChild(row);
+            });
+
+            // Agregar eventos
+            document.querySelectorAll('.proveedor-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    actualizarFilaProveedor(this);
+                });
+            });
+
+            document.querySelectorAll('.piezas-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    actualizarPiezas(this);
+                });
+            });
+
+            actualizarTotalGeneral();
+        }
+
+        function actualizarFilaProveedor(selectElement) {
+            const row = selectElement.closest('tr');
+            const codigo = selectElement.dataset.codigo;
+            const proveedorSeleccionado = selectElement.value;
+            
+            if (!proveedorSeleccionado) return;
+            
+            const proveedor = proveedores.find(p => p.nombre === proveedorSeleccionado);
+            if (!proveedor) return;
+            
+            const producto = proveedor.productos.find(p => p.codigo === codigo);
+            if (!producto) return;
+            
+            // Verificar stock mínimo
+            if (producto.existencia < proveedor.stockMinimo) {
+                showToast(`Advertencia: Stock bajo para ${codigo} en ${proveedor.nombre}`, 'warning');
+            }
+            
+            const piezas = parseInt(row.querySelector('.piezas-input')?.value) || 1;
+            const subtotal = producto.precio * piezas;
+            
+            row.cells[3].innerHTML = `
+                <span class="badge ${producto.existencia > 0 ? 'badge-success' : 'badge-warning'}">
+                    ${producto.existencia}
+                </span>
+                ${producto.existencia < proveedor.stockMinimo ? 
+                    '<span class="material-icons warning-icon" style="font-size:16px; margin-left:4px;" title="Stock bajo">warning</span>' : ''}
+            `;
+            row.cells[4].textContent = `$${producto.precio.toFixed(2)}`;
+            row.cells[5].innerHTML = `<span class="text-highlight">$${subtotal.toFixed(2)}</span>`;
+            
+            actualizarTotalGeneral();
+        }
+
+        function actualizarPiezas(inputElement) {
+            const row = inputElement.closest('tr');
+            const precioText = row.cells[4].textContent;
+            
+            if (precioText === '-') return;
+            
+            const precio = parseFloat(precioText.replace('$', '')) || 0;
+            const piezas = parseInt(inputElement.value) || 0;
+            const subtotal = precio * piezas;
+            
+            row.cells[5].innerHTML = `<span class="text-highlight">$${subtotal.toFixed(2)}</span>`;
+            
+            actualizarTotalGeneral();
+        }
+
+        function actualizarTotalGeneral() {
+            let total = 0;
+            document.querySelectorAll('#cuerpoTabla tr').forEach(row => {
+                const subtotalCell = row.cells[5];
+                if (subtotalCell && subtotalCell.textContent !== '-') {
+                    const subtotal = parseFloat(subtotalCell.textContent.replace('$', '')) || 0;
+                    total += subtotal;
+                }
+            });
+            
+            document.getElementById('totalGeneral').textContent = 
+                `$${total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+        // Búsqueda de productos
+        const searchInput = document.getElementById('searchProducto');
+        const searchResults = document.getElementById('searchResults');
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim().toLowerCase();
+            
+            if (query.length < 2) {
+                searchResults.classList.remove('show');
+                return;
+            }
+
+            // Buscar en todos los proveedores
+            const resultados = [];
+            const seen = new Set();
+
+            proveedores.forEach(prov => {
+                prov.productos.forEach(prod => {
+                    const key = prod.codigo.toLowerCase();
+                    if (!seen.has(key) && 
+                        (prod.codigo.toLowerCase().includes(query) || 
+                         prod.descripcion.toLowerCase().includes(query))) {
+                        seen.add(key);
+                        
+                        // Verificar si está en la lista maestra
+                        const enListaMaestra = productosMaestro.some(p => p.codigo === prod.codigo);
+                        
+                        resultados.push({
+                            ...prod,
+                            proveedor: prov.nombre,
+                            enListaMaestra
+                        });
+                    }
+                });
+            });
+
+            // Limitar a 10 resultados
+            const resultadosLimitados = resultados.slice(0, 10);
+
+            if (resultadosLimitados.length === 0) {
+                searchResults.innerHTML = '<div style="padding:16px; text-align:center; color:var(--gray-400);">No se encontraron productos</div>';
+            } else {
+                searchResults.innerHTML = resultadosLimitados.map(r => `
+                    <div class="search-result-item">
+                        <div>
+                            <strong>${r.codigo}</strong> - ${r.descripcion}<br>
+                            <small style="color: var(--gray-500);">
+                                ${r.proveedor} | $${r.precio.toFixed(2)} | Existencia: ${r.existencia}
+                            </small>
+                            ${r.enListaMaestra ? 
+                                '<br><span class="badge badge-success" style="margin-top:4px;">✅ En pedido actual</span>' : ''}
+                        </div>
+                        ${!r.enListaMaestra ? 
+                            `<button class="btn btn-primary btn-sm" onclick="agregarAlPedido('${r.codigo}', '${r.descripcion.replace(/'/g, "\\'")}', event)">
+                                <span class="material-icons">add_shopping_cart</span>
+                                Agregar
+                            </button>` : ''}
+                    </div>
+                `).join('');
+            }
+            
+            searchResults.classList.add('show');
+        });
+
+        // Cerrar resultados al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.classList.remove('show');
+            }
+        });
+
+        function agregarAlPedido(codigo, descripcion, event) {
+            event.stopPropagation();
+            
+            // Verificar si ya existe en la lista maestra
+            if (productosMaestro.some(p => p.codigo === codigo)) {
+                showToast('Este producto ya está en el pedido', 'warning');
+                return;
+            }
+            
+            // Agregar a la lista maestra
+            productosMaestro.push({
+                codigo: codigo,
+                descripcion: descripcion,
+                piezas: 1
+            });
+            
+            showToast(`Producto ${codigo} agregado al pedido`, 'success');
+            generarTablaComparativa();
+            searchResults.classList.remove('show');
+            searchInput.value = '';
+        }
+
+        // Funciones PDF
+        function generarPDFPorProveedor(nombreProveedor) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFillColor(37, 99, 235);
+            doc.rect(0, 0, 210, 40, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(20);
+            doc.text('PEDIDO DE COMPRA', 105, 20, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.text(`Proveedor: ${nombreProveedor}`, 105, 30, { align: 'center' });
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 14, 50);
+
+            const filas = Array.from(document.querySelectorAll('#cuerpoTabla tr'))
+                .filter(row => {
+                    const select = row.querySelector('.proveedor-select');
+                    return select && select.value === nombreProveedor;
+                });
+
+            if (filas.length === 0) {
+                doc.text('No hay productos para este proveedor', 14, 60);
+                doc.save(`Pedido_${nombreProveedor.replace(/\s+/g, '_')}.pdf`);
+                return;
+            }
+
+            const datos = filas.map(row => [
+                row.cells[0].textContent,
+                row.cells[1].textContent,
+                row.querySelector('.piezas-input')?.value || row.cells[2].textContent,
+                row.cells[4].textContent,
+                row.cells[5].textContent
+            ]);
+
+            const totalProveedor = filas.reduce((sum, row) => {
+                const subtotal = parseFloat(row.cells[5].textContent.replace('$', '')) || 0;
+                return sum + subtotal;
+            }, 0);
+
+            doc.autoTable({
+                head: [['Código', 'Descripción', 'Piezas', 'Precio Unit.', 'Subtotal']],
+                body: datos,
+                startY: 60,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [37, 99, 235],
+                    textColor: 255,
+                    fontStyle: 'bold'
+                },
+                foot: [['', '', '', 'TOTAL:', `$${totalProveedor.toFixed(2)}`]],
+                footStyles: {
+                    fillColor: [243, 244, 246],
+                    textColor: 0,
+                    fontStyle: 'bold'
+                }
+            });
+
+            doc.save(`Pedido_${nombreProveedor.replace(/\s+/g, '_')}.pdf`);
+        }
+
+        document.getElementById('btnGenerarFiltrado').addEventListener('click', () => {
+            const prov = document.getElementById('filtroProveedor').value;
+            if (prov === 'todos') {
+                showToast('Seleccione un proveedor específico en el filtro', 'warning');
+                return;
+            }
+            generarPDFPorProveedor(prov);
+        });
+
+        document.getElementById('btnGenerarTodos').addEventListener('click', () => {
+            if (proveedores.length === 0) {
+                showToast('No hay proveedores cargados', 'warning');
+                return;
+            }
+            
+            proveedores.forEach(p => generarPDFPorProveedor(p.nombre));
+            
+            setTimeout(() => {
+                showToast(`Se generaron ${proveedores.length} archivos PDF correctamente`, 'success');
+            }, 500);
+        });
+
+        // Inicialización
+        actualizarListaProveedores();
+        actualizarFiltroProveedores();
+        generarTablaComparativa();
+    </script>
+</body>
+</html>
