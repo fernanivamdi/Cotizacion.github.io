@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cotización - Sistema Moderno</title>
+    <title>PEDIDOS</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -60,7 +60,7 @@
             overflow-x: hidden;
         }
 
-        /* Sidebar Moderno */
+        /* Sidebar */
         .sidebar {
             position: fixed;
             left: 0;
@@ -134,7 +134,6 @@
         .sidebar-toggle .material-icons {
             font-size: 16px;
             color: var(--gray-600);
-            transition: var(--transition);
         }
 
         .sidebar-nav {
@@ -156,7 +155,6 @@
             font-weight: 500;
             font-size: 0.95rem;
             white-space: nowrap;
-            text-decoration: none;
             position: relative;
         }
 
@@ -259,7 +257,7 @@
             font-size: 0.95rem;
         }
 
-        /* Cards Modernas */
+        /* Cards */
         .card {
             background: white;
             border-radius: var(--radius-lg);
@@ -294,7 +292,7 @@
             color: var(--gray-900);
         }
 
-        /* Alertas Modernas */
+        /* Alertas */
         .alert {
             padding: 16px;
             border-radius: var(--radius);
@@ -384,7 +382,8 @@
             background: var(--gray-50);
             border-radius: var(--radius);
             border: 1px solid var(--gray-200);
-            margin-bottom: 16px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
         }
 
         .checkbox-wrapper {
@@ -400,8 +399,13 @@
             accent-color: var(--primary);
         }
 
-        .discount-input {
-            width: 100px;
+        .checkbox-wrapper label {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .config-input {
+            width: 90px;
             padding: 8px 12px;
             border: 1px solid var(--gray-300);
             border-radius: var(--radius-sm);
@@ -544,10 +548,6 @@
             background: var(--primary-light);
         }
 
-        .search-result-item:last-child {
-            border-bottom: none;
-        }
-
         /* Table */
         .table-container {
             overflow-x: auto;
@@ -563,6 +563,9 @@
 
         .table thead {
             background: var(--gray-50);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .table th {
@@ -575,6 +578,7 @@
             letter-spacing: 0.5px;
             border-bottom: 2px solid var(--gray-200);
             white-space: nowrap;
+            background: var(--gray-50);
         }
 
         .table td {
@@ -587,8 +591,13 @@
             background: var(--gray-50);
         }
 
-        .table tbody tr:last-child td {
-            border-bottom: none;
+        .table tbody tr.new-row {
+            animation: highlightRow 2s ease;
+        }
+
+        @keyframes highlightRow {
+            0% { background-color: var(--primary-light); }
+            100% { background-color: transparent; }
         }
 
         .table input[type="number"] {
@@ -617,25 +626,10 @@
             font-weight: 600;
         }
 
-        .badge-success {
-            background: var(--success-light);
-            color: #065f46;
-        }
-
-        .badge-warning {
-            background: var(--warning-light);
-            color: #92400e;
-        }
-
-        .badge-danger {
-            background: var(--danger-light);
-            color: #991b1b;
-        }
-
-        .badge-info {
-            background: var(--primary-light);
-            color: #1e40af;
-        }
+        .badge-success { background: var(--success-light); color: #065f46; }
+        .badge-warning { background: var(--warning-light); color: #92400e; }
+        .badge-danger { background: var(--danger-light); color: #991b1b; }
+        .badge-info { background: var(--primary-light); color: #1e40af; }
 
         .text-highlight {
             color: var(--danger);
@@ -702,6 +696,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex: 1;
         }
 
         .proveedor-item .proveedor-name {
@@ -721,12 +716,50 @@
 
         .provider-settings {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
             padding: 16px;
             background: var(--gray-50);
             border-radius: var(--radius);
             margin-bottom: 16px;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+            max-width: 400px;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast-success { background: #059669; color: white; }
+        .toast-warning { background: #d97706; color: white; }
+        .toast-danger { background: #dc2626; color: white; }
+        .toast-info { background: #2563eb; color: white; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
         }
 
         @media (max-width: 768px) {
@@ -764,6 +797,10 @@
             .table {
                 font-size: 0.75rem;
             }
+
+            .provider-settings {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -772,7 +809,7 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <span class="material-icons logo-icon">inventory_2</span>
-            <span class="logo-text">Cotizador Pro</span>
+            <span class="logo-text">PEDIDOS</span>
         </div>
         <div class="sidebar-toggle" id="sidebarToggle">
             <span class="material-icons">chevron_left</span>
@@ -794,7 +831,7 @@
         </nav>
         
         <div class="sidebar-footer">
-            © 2024 Cotizador Pro v2.0
+            © 2026 Plataforma Pedidos v2.0
         </div>
     </aside>
 
@@ -828,27 +865,28 @@
 
                     <!-- Configuración del proveedor -->
                     <div class="provider-settings">
-                        <div class="form-group">
-                            <label class="form-label">Stock Mínimo Requerido</label>
-                            <input type="number" id="stockMinimo" class="form-input" value="0" min="0" placeholder="Ej: 50">
-                            <small style="color: var(--gray-500);">Si el proveedor tiene menos existencias, no se considerará</small>
-                        </div>
-                        <div class="form-group">
-                            <div class="checkbox-group">
-                                <div class="checkbox-wrapper">
-                                    <input type="checkbox" id="aplicarDescuento">
-                                    <label for="aplicarDescuento" style="margin: 0; cursor: pointer;">Aplicar Descuento</label>
-                                </div>
-                                <input type="number" id="porcentajeDescuento" class="discount-input" value="0" min="0" max="100" step="0.01" disabled placeholder="%">
-                                <span>%</span>
+                        <div class="checkbox-group">
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="activarStockMinimo">
+                                <label for="activarStockMinimo">Activar Stock Mínimo Requerido</label>
                             </div>
+                            <input type="number" id="stockMinimo" class="config-input" value="20" min="0" disabled placeholder="20">
+                            <span style="font-size:0.85rem; color:var(--gray-500);">unidades</span>
+                        </div>
+                        <div class="checkbox-group">
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="aplicarDescuento">
+                                <label for="aplicarDescuento">Aplicar Descuento</label>
+                            </div>
+                            <input type="number" id="porcentajeDescuento" class="config-input" value="0" min="0" max="100" step="0.01" disabled placeholder="0">
+                            <span style="font-size:0.85rem; color:var(--gray-500);">%</span>
                         </div>
                     </div>
 
                     <div class="input-group">
                         <div class="form-group">
                             <label class="form-label" for="nombreProveedor">Nombre del Proveedor</label>
-                            <input type="text" id="nombreProveedor" class="form-input" placeholder="Ej: Farmacias del Ahorro">
+                            <input type="text" id="nombreProveedor" class="form-input" placeholder="Ej: Farmacos Nacionales">
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="archivoProveedor">Archivo Excel</label>
@@ -977,12 +1015,79 @@
         </div>
     </main>
 
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <script>
-        // Estado de la aplicación
+        // ==================== ESTADO GLOBAL ====================
+        const STORAGE_KEY = 'cotizador_pro_data';
         let proveedores = [];
         let productosMaestro = [];
 
-        // Sidebar Toggle
+        // ==================== PERSISTENCIA DE DATOS ====================
+        function guardarDatos() {
+            const data = {
+                proveedores: proveedores.map(p => ({
+                    ...p,
+                    productos: p.productos.map(prod => ({...prod}))
+                })),
+                productosMaestro: [...productosMaestro]
+            };
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {
+                console.warn('No se pudieron guardar los datos:', e);
+            }
+        }
+
+        function cargarDatos() {
+            try {
+                const data = localStorage.getItem(STORAGE_KEY);
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    proveedores = parsed.proveedores || [];
+                    productosMaestro = parsed.productosMaestro || [];
+                    return true;
+                }
+            } catch (e) {
+                console.warn('No se pudieron cargar los datos:', e);
+            }
+            return false;
+        }
+
+        // Guardar antes de cerrar
+        window.addEventListener('beforeunload', guardarDatos);
+        
+        // Guardar periódicamente
+        setInterval(guardarDatos, 5000);
+
+        // ==================== TOAST NOTIFICATIONS ====================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const icons = {
+                success: 'check_circle',
+                warning: 'warning',
+                danger: 'error',
+                info: 'info'
+            };
+            
+            toast.innerHTML = `
+                <span class="material-icons" style="font-size:20px;">${icons[type]}</span>
+                ${message}
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ==================== SIDEBAR ====================
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('mainContent');
         const sidebarToggle = document.getElementById('sidebarToggle');
@@ -990,18 +1095,13 @@
 
         sidebarToggle.addEventListener('click', () => {
             sidebarOpen = !sidebarOpen;
-            if (sidebarOpen) {
-                sidebar.classList.remove('collapsed');
-                mainContent.classList.remove('expanded');
-                sidebarToggle.querySelector('.material-icons').textContent = 'chevron_left';
-            } else {
-                sidebar.classList.add('collapsed');
-                mainContent.classList.add('expanded');
-                sidebarToggle.querySelector('.material-icons').textContent = 'chevron_right';
-            }
+            sidebar.classList.toggle('collapsed', !sidebarOpen);
+            mainContent.classList.toggle('expanded', !sidebarOpen);
+            sidebarToggle.querySelector('.material-icons').textContent = 
+                sidebarOpen ? 'chevron_left' : 'chevron_right';
         });
 
-        // Navegación
+        // ==================== NAVEGACIÓN ====================
         const navItems = document.querySelectorAll('.nav-item');
         const sections = document.querySelectorAll('.section');
 
@@ -1014,21 +1114,36 @@
                 
                 sections.forEach(section => section.classList.remove('active'));
                 document.getElementById(`section-${sectionId}`).classList.add('active');
+                
+                if (sectionId === 'comparativo') {
+                    generarTablaComparativa();
+                }
             });
         });
 
-        // Checkbox de descuento
-        document.getElementById('aplicarDescuento').addEventListener('change', function() {
-            document.getElementById('porcentajeDescuento').disabled = !this.checked;
+        // ==================== CHECKBOX DE CONFIGURACIÓN ====================
+        document.getElementById('activarStockMinimo').addEventListener('change', function() {
+            document.getElementById('stockMinimo').disabled = !this.checked;
+            if (!this.checked) {
+                document.getElementById('stockMinimo').value = '20';
+            }
         });
 
-        // Agregar Proveedor
+        document.getElementById('aplicarDescuento').addEventListener('change', function() {
+            document.getElementById('porcentajeDescuento').disabled = !this.checked;
+            if (!this.checked) {
+                document.getElementById('porcentajeDescuento').value = '0';
+            }
+        });
+
+        // ==================== AGREGAR PROVEEDOR ====================
         document.getElementById('btnAgregarProveedor').addEventListener('click', () => {
             const nombre = document.getElementById('nombreProveedor').value.trim();
             const fileInput = document.getElementById('archivoProveedor');
-            const stockMinimo = parseInt(document.getElementById('stockMinimo').value) || 0;
+            const activarStock = document.getElementById('activarStockMinimo').checked;
+            const stockMinimo = activarStock ? (parseInt(document.getElementById('stockMinimo').value) || 20) : 0;
             const aplicarDescuento = document.getElementById('aplicarDescuento').checked;
-            const porcentajeDescuento = aplicarDescuento ? parseFloat(document.getElementById('porcentajeDescuento').value) || 0 : 0;
+            const porcentajeDescuento = aplicarDescuento ? (parseFloat(document.getElementById('porcentajeDescuento').value) || 0) : 0;
             
             if (!nombre) {
                 showToast('Por favor, ingrese el nombre del proveedor', 'warning');
@@ -1065,10 +1180,10 @@
                         precio: parseFloat(row[3]) || 0
                     })).filter(p => p.codigo && p.precio > 0);
 
-                    // Aplicar descuento si está activado
                     if (aplicarDescuento && porcentajeDescuento > 0) {
                         productos = productos.map(p => ({
                             ...p,
+                            precioOriginal: p.precio,
                             precio: p.precio * (1 - porcentajeDescuento / 100)
                         }));
                     }
@@ -1082,20 +1197,24 @@
                         nombre, 
                         productos,
                         stockMinimo,
-                        descuento: aplicarDescuento ? porcentajeDescuento : 0
+                        descuento: aplicarDescuento ? porcentajeDescuento : 0,
+                        activarStock: activarStock
                     });
                     
                     actualizarListaProveedores();
                     actualizarFiltroProveedores();
+                    guardarDatos();
                     
                     document.getElementById('nombreProveedor').value = '';
                     document.getElementById('archivoProveedor').value = '';
-                    document.getElementById('stockMinimo').value = '0';
+                    document.getElementById('activarStockMinimo').checked = false;
+                    document.getElementById('stockMinimo').value = '20';
+                    document.getElementById('stockMinimo').disabled = true;
                     document.getElementById('aplicarDescuento').checked = false;
                     document.getElementById('porcentajeDescuento').value = '0';
                     document.getElementById('porcentajeDescuento').disabled = true;
                     
-                    showToast(`Proveedor "${nombre}" cargado exitosamente con ${productos.length} productos`, 'success');
+                    showToast(`Proveedor "${nombre}" cargado exitosamente (${productos.length} productos)`, 'success');
                 } catch (error) {
                     showToast('Error al procesar el archivo Excel. Verifique el formato.', 'danger');
                     console.error(error);
@@ -1103,46 +1222,6 @@
             };
             reader.readAsArrayBuffer(fileInput.files[0]);
         });
-
-        function showToast(message, type = 'info') {
-            // Crear toast notification en lugar de alert
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 16px 24px;
-                background: ${type === 'success' ? '#059669' : type === 'warning' ? '#d97706' : type === 'danger' ? '#dc2626' : '#2563eb'};
-                color: white;
-                border-radius: 8px;
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-                z-index: 9999;
-                font-weight: 500;
-                max-width: 400px;
-                animation: slideIn 0.3s ease;
-            `;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // Agregar estilos de animación para los toasts
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
 
         function actualizarListaProveedores() {
             const div = document.getElementById('listaProveedores');
@@ -1159,7 +1238,7 @@
                             <div class="proveedor-name">${p.nombre}</div>
                             <div class="product-count">
                                 ${p.productos.length} productos | 
-                                Stock mín: ${p.stockMinimo} | 
+                                Stock mín: ${p.activarStock ? p.stockMinimo : 'No'} | 
                                 Desc: ${p.descuento}%
                             </div>
                         </div>
@@ -1176,6 +1255,7 @@
             actualizarListaProveedores();
             actualizarFiltroProveedores();
             generarTablaComparativa();
+            guardarDatos();
         }
 
         function actualizarFiltroProveedores() {
@@ -1191,7 +1271,7 @@
             select.onchange = () => generarTablaComparativa();
         }
 
-        // Cargar Lista Maestra
+        // ==================== LISTA MAESTRA ====================
         document.getElementById('btnCargarMaestro').addEventListener('click', () => {
             const file = document.getElementById('archivoMaestro').files[0];
             if (!file) {
@@ -1233,6 +1313,7 @@
                         </div>
                     `;
                     
+                    guardarDatos();
                     generarTablaComparativa();
                     
                     document.querySelector('.nav-item[data-section="comparativo"]').click();
@@ -1244,7 +1325,7 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // Generar Tabla Comparativa
+        // ==================== TABLA COMPARATIVA ====================
         function generarTablaComparativa() {
             const tbody = document.getElementById('cuerpoTabla');
             const filtroProveedor = document.getElementById('filtroProveedor').value;
@@ -1257,98 +1338,95 @@
 
             tbody.innerHTML = '';
 
-            productosMaestro.forEach(prod => {
-                let mejorOpcion = null;
-                let mejorPrecio = Infinity;
-                let segundaOpcion = null;
-                let segundoMejorPrecio = Infinity;
-
-                // Encontrar las mejores opciones
+            productosMaestro.forEach((prod, index) => {
+                // Encontrar opciones válidas (que cumplan stock mínimo)
                 const opcionesValidas = [];
+                const opcionesTodas = [];
                 
                 proveedores.forEach(prov => {
                     if (filtroProveedor !== 'todos' && prov.nombre !== filtroProveedor) return;
                     
                     const encontrado = prov.productos.find(p => p.codigo === prod.codigo);
                     if (encontrado) {
-                        // Verificar stock mínimo
-                        if (encontrado.existencia >= prov.stockMinimo) {
-                            opcionesValidas.push({
-                                proveedor: prov.nombre,
-                                ...encontrado,
-                                piezas: prod.piezas
-                            });
+                        const opcion = {
+                            proveedor: prov.nombre,
+                            ...encontrado,
+                            piezas: prod.piezas,
+                            stockMinimo: prov.stockMinimo,
+                            activarStock: prov.activarStock
+                        };
+                        
+                        opcionesTodas.push(opcion);
+                        
+                        // Solo incluir en válidas si cumple o no tiene stock mínimo activado
+                        if (!prov.activarStock || encontrado.existencia >= prov.stockMinimo) {
+                            opcionesValidas.push(opcion);
                         }
                     }
                 });
 
                 // Ordenar por precio
                 opcionesValidas.sort((a, b) => a.precio - b.precio);
+                opcionesTodas.sort((a, b) => a.precio - b.precio);
                 
-                if (opcionesValidas.length > 0) {
-                    mejorOpcion = opcionesValidas[0];
-                    if (opcionesValidas.length > 1) {
-                        segundaOpcion = opcionesValidas[1];
-                    }
+                let mejorOpcion = opcionesValidas.length > 0 ? opcionesValidas[0] : null;
+                let segundaOpcion = opcionesValidas.length > 1 ? opcionesValidas[1] : null;
+                
+                // Si estamos filtrando por proveedor específico y no cumple stock, no mostrar
+                if (filtroProveedor !== 'todos' && !mejorOpcion) {
+                    return; // No mostrar esta fila
                 }
-
-                // Verificar si hay proveedores pero no cumplen stock mínimo
-                const proveedoresConProducto = proveedores.filter(prov => {
-                    if (filtroProveedor !== 'todos' && prov.nombre !== filtroProveedor) return false;
-                    return prov.productos.some(p => p.codigo === prod.codigo);
-                });
 
                 const row = document.createElement('tr');
                 
-                if (!mejorOpcion && proveedoresConProducto.length > 0) {
-                    // Hay producto pero no cumple stock mínimo
-                    const primerProv = proveedoresConProducto[0];
-                    const producto = primerProv.productos.find(p => p.codigo === prod.codigo);
+                if (!mejorOpcion && filtroProveedor === 'todos') {
+                    // Mostrar solo en "Todos" los que no cumplen stock mínimo
+                    const primeraOpcion = opcionesTodas[0];
                     
-                    row.innerHTML = `
-                        <td><strong>${prod.codigo}</strong></td>
-                        <td>${prod.descripcion}</td>
-                        <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1" style="width:70px;"></td>
-                        <td>
-                            <span class="badge badge-danger" title="Stock por debajo del mínimo requerido (${primerProv.stockMinimo})">
-                                ${producto.existencia} ⚠️
-                            </span>
-                        </td>
-                        <td>$${producto.precio.toFixed(2)}</td>
-                        <td class="text-highlight">$${(producto.precio * prod.piezas).toFixed(2)}</td>
-                        <td>
-                            <select class="proveedor-select" data-codigo="${prod.codigo}">
-                                ${proveedoresConProducto.map(p => `
-                                    <option value="${p.nombre}" ${p.nombre === primerProv.nombre ? 'selected' : ''}>
-                                        ${p.nombre}
-                                    </option>
-                                `).join('')}
-                            </select>
-                            <div class="alert alert-danger" style="padding:4px 8px; margin-top:4px; font-size:0.75rem;">
-                                <span class="material-icons" style="font-size:14px;">warning</span>
-                                Stock bajo
-                            </div>
-                        </td>
-                        <td class="text-muted">Stock insuficiente</td>
-                    `;
-                } else if (!mejorOpcion) {
-                    // No se encuentra en ningún proveedor
-                    row.innerHTML = `
-                        <td><strong>${prod.codigo}</strong></td>
-                        <td>${prod.descripcion}</td>
-                        <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1" style="width:70px;"></td>
-                        <td><span class="badge badge-warning">Sin stock</span></td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>
-                            <select class="proveedor-select" data-codigo="${prod.codigo}">
-                                <option value="">Seleccionar</option>
-                                ${proveedores.map(p => `<option value="${p.nombre}">${p.nombre}</option>`).join('')}
-                            </select>
-                        </td>
-                        <td class="text-muted">No disponible</td>
-                    `;
-                } else {
+                    if (primeraOpcion) {
+                        row.innerHTML = `
+                            <td><strong>${prod.codigo}</strong></td>
+                            <td>${prod.descripcion}</td>
+                            <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1" style="width:70px;"></td>
+                            <td>
+                                <span class="badge badge-danger" title="Stock por debajo del mínimo (${primeraOpcion.stockMinimo})">
+                                    ${primeraOpcion.existencia} ⚠️
+                                </span>
+                            </td>
+                            <td>$${primeraOpcion.precio.toFixed(2)}</td>
+                            <td class="text-highlight">$${(primeraOpcion.precio * prod.piezas).toFixed(2)}</td>
+                            <td>
+                                <select class="proveedor-select" data-codigo="${prod.codigo}">
+                                    ${opcionesTodas.map(p => `
+                                        <option value="${p.proveedor}" ${p.proveedor === primeraOpcion.proveedor ? 'selected' : ''}>
+                                            ${p.proveedor}
+                                        </option>
+                                    `).join('')}
+                                </select>
+                                <div style="font-size:0.7rem; color:var(--danger); margin-top:4px;">
+                                    ⚠️ Stock bajo
+                                </div>
+                            </td>
+                            <td class="text-muted">Stock insuficiente</td>
+                        `;
+                    } else {
+                        row.innerHTML = `
+                            <td><strong>${prod.codigo}</strong></td>
+                            <td>${prod.descripcion}</td>
+                            <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1" style="width:70px;"></td>
+                            <td><span class="badge badge-warning">Sin stock</span></td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>
+                                <select class="proveedor-select" data-codigo="${prod.codigo}">
+                                    <option value="">Seleccionar</option>
+                                    ${proveedores.map(p => `<option value="${p.nombre}">${p.nombre}</option>`).join('')}
+                                </select>
+                            </td>
+                            <td class="text-muted">No disponible</td>
+                        `;
+                    }
+                } else if (mejorOpcion) {
                     const subtotal = mejorOpcion.precio * prod.piezas;
                     row.innerHTML = `
                         <td><strong>${prod.codigo}</strong></td>
@@ -1358,14 +1436,16 @@
                             <span class="badge ${mejorOpcion.existencia > 0 ? 'badge-success' : 'badge-warning'}">
                                 ${mejorOpcion.existencia}
                             </span>
+                            ${mejorOpcion.activarStock && mejorOpcion.existencia < mejorOpcion.stockMinimo ? 
+                                '<span class="material-icons warning-icon" style="font-size:16px; margin-left:4px;" title="Stock bajo">warning</span>' : ''}
                         </td>
                         <td>$${mejorOpcion.precio.toFixed(2)}</td>
                         <td class="text-highlight">$${subtotal.toFixed(2)}</td>
                         <td>
                             <select class="proveedor-select" data-codigo="${prod.codigo}">
-                                ${proveedores.filter(p => filtroProveedor === 'todos' || p.nombre === filtroProveedor).map(p => `
-                                    <option value="${p.nombre}" ${p.nombre === mejorOpcion.proveedor ? 'selected' : ''}>
-                                        ${p.nombre}
+                                ${opcionesTodas.map(p => `
+                                    <option value="${p.proveedor}" ${p.proveedor === mejorOpcion.proveedor ? 'selected' : ''}>
+                                        ${p.proveedor}
                                     </option>
                                 `).join('')}
                             </select>
@@ -1410,9 +1490,8 @@
             const producto = proveedor.productos.find(p => p.codigo === codigo);
             if (!producto) return;
             
-            // Verificar stock mínimo
-            if (producto.existencia < proveedor.stockMinimo) {
-                showToast(`Advertencia: Stock bajo para ${codigo} en ${proveedor.nombre}`, 'warning');
+            if (proveedor.activarStock && producto.existencia < proveedor.stockMinimo) {
+                showToast(`⚠️ Stock bajo para ${codigo} en ${proveedor.nombre}`, 'warning');
             }
             
             const piezas = parseInt(row.querySelector('.piezas-input')?.value) || 1;
@@ -1422,7 +1501,7 @@
                 <span class="badge ${producto.existencia > 0 ? 'badge-success' : 'badge-warning'}">
                     ${producto.existencia}
                 </span>
-                ${producto.existencia < proveedor.stockMinimo ? 
+                ${proveedor.activarStock && producto.existencia < proveedor.stockMinimo ? 
                     '<span class="material-icons warning-icon" style="font-size:16px; margin-left:4px;" title="Stock bajo">warning</span>' : ''}
             `;
             row.cells[4].textContent = `$${producto.precio.toFixed(2)}`;
@@ -1443,6 +1522,14 @@
             
             row.cells[5].innerHTML = `<span class="text-highlight">$${subtotal.toFixed(2)}</span>`;
             
+            // Actualizar también en productosMaestro
+            const codigo = row.cells[0].textContent.trim();
+            const prodMaestro = productosMaestro.find(p => p.codigo === codigo);
+            if (prodMaestro) {
+                prodMaestro.piezas = piezas;
+                guardarDatos();
+            }
+            
             actualizarTotalGeneral();
         }
 
@@ -1460,7 +1547,7 @@
                 `$${total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
 
-        // Búsqueda de productos
+        // ==================== BÚSQUEDA DE PRODUCTOS ====================
         const searchInput = document.getElementById('searchProducto');
         const searchResults = document.getElementById('searchResults');
 
@@ -1472,7 +1559,6 @@
                 return;
             }
 
-            // Buscar en todos los proveedores
             const resultados = [];
             const seen = new Set();
 
@@ -1484,7 +1570,6 @@
                          prod.descripcion.toLowerCase().includes(query))) {
                         seen.add(key);
                         
-                        // Verificar si está en la lista maestra
                         const enListaMaestra = productosMaestro.some(p => p.codigo === prod.codigo);
                         
                         resultados.push({
@@ -1496,7 +1581,6 @@
                 });
             });
 
-            // Limitar a 10 resultados
             const resultadosLimitados = resultados.slice(0, 10);
 
             if (resultadosLimitados.length === 0) {
@@ -1524,7 +1608,6 @@
             searchResults.classList.add('show');
         });
 
-        // Cerrar resultados al hacer clic fuera
         document.addEventListener('click', function(e) {
             if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
                 searchResults.classList.remove('show');
@@ -1534,26 +1617,36 @@
         function agregarAlPedido(codigo, descripcion, event) {
             event.stopPropagation();
             
-            // Verificar si ya existe en la lista maestra
             if (productosMaestro.some(p => p.codigo === codigo)) {
                 showToast('Este producto ya está en el pedido', 'warning');
                 return;
             }
             
-            // Agregar a la lista maestra
-            productosMaestro.push({
+            // Agregar al INICIO de la lista
+            productosMaestro.unshift({
                 codigo: codigo,
                 descripcion: descripcion,
                 piezas: 1
             });
             
             showToast(`Producto ${codigo} agregado al pedido`, 'success');
+            guardarDatos();
             generarTablaComparativa();
+            
+            // Resaltar la nueva fila
+            setTimeout(() => {
+                const primeraFila = document.querySelector('#cuerpoTabla tr:first-child');
+                if (primeraFila) {
+                    primeraFila.classList.add('new-row');
+                    setTimeout(() => primeraFila.classList.remove('new-row'), 2000);
+                }
+            }, 100);
+            
             searchResults.classList.remove('show');
             searchInput.value = '';
         }
 
-        // Funciones PDF
+        // ==================== PDFs ====================
         function generarPDFPorProveedor(nombreProveedor) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
@@ -1640,10 +1733,25 @@
             }, 500);
         });
 
-        // Inicialización
-        actualizarListaProveedores();
-        actualizarFiltroProveedores();
-        generarTablaComparativa();
+        // ==================== INICIALIZACIÓN ====================
+        function inicializar() {
+            const datosCargados = cargarDatos();
+            
+            actualizarListaProveedores();
+            actualizarFiltroProveedores();
+            
+            if (datosCargados && proveedores.length > 0 && productosMaestro.length > 0) {
+                generarTablaComparativa();
+            } else {
+                document.getElementById('cuerpoTabla').innerHTML = 
+                    '<tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--gray-400);">Cargue proveedores y lista maestra para ver el comparativo</td></tr>';
+            }
+            
+            // Configurar valor por defecto del stock mínimo
+            document.getElementById('stockMinimo').value = '20';
+        }
+
+        inicializar();
     </script>
 </body>
 </html>
