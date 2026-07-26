@@ -3,1087 +3,1122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cotización – Sistema Pro (Acceso)</title>
+    <title>Cotización - Sistema Pro</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
     <style>
-        /* ========== ESTILOS GENERALES ========== */
         :root {
-            --primary: #2563eb; --primary-dark: #1d4ed8; --primary-light: #dbeafe;
-            --success: #059669; --success-light: #d1fae5; --warning: #d97706;
-            --warning-light: #fef3c7; --danger: #dc2626; --danger-light: #fee2e2;
-            --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
-            --gray-300: #d1d5db; --gray-400: #9ca3af; --gray-500: #6b7280;
-            --gray-600: #4b5563; --gray-700: #374151; --gray-800: #1f2937;
-            --gray-900: #111827; --sidebar-width: 280px; --sidebar-collapsed: 72px;
-            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05); --shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-            --radius-sm: 6px; --radius: 8px; --radius-lg: 12px; --radius-xl: 16px;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #dbeafe;
+            --success: #059669;
+            --success-light: #d1fae5;
+            --warning: #d97706;
+            --warning-light: #fef3c7;
+            --danger: #dc2626;
+            --danger-light: #fee2e2;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 72px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius-sm: 6px;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        * { margin:0; padding:0; box-sizing:border-box; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Inter', sans-serif; background: var(--gray-100); color: var(--gray-800);
-            line-height:1.5; display:flex; min-height:100vh; overflow-x:hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-800);
+            line-height: 1.5;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* ========== PANTALLA DE LOGIN ========== */
-        .login-overlay {
-            position: fixed; inset:0; background: linear-gradient(135deg, #1e3a8a, #2563eb);
-            display:flex; align-items:center; justify-content:center; z-index:10000;
-            flex-direction:column;
-        }
-        .login-card {
-            background: white; border-radius: var(--radius-xl); padding: 40px 32px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 380px; max-width: 90%;
-            text-align: center;
-        }
-        .login-card h2 { font-size: 1.8rem; margin-bottom: 8px; color: var(--gray-900); }
-        .login-card p { color: var(--gray-500); margin-bottom: 24px; font-size:0.9rem; }
-        .login-card .material-icons { font-size: 48px; color: var(--primary); }
-        .login-input {
-            width:100%; padding:12px 14px; margin-bottom:16px; border:1px solid var(--gray-300);
-            border-radius: var(--radius); font-size:0.95rem; transition: var(--transition);
-        }
-        .login-input:focus { border-color: var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,0.1); }
-        .login-btn {
-            width:100%; padding:12px; background: var(--primary); color:white; border:none;
-            border-radius: var(--radius); font-weight:600; cursor:pointer; margin-top:8px;
-            transition: var(--transition);
-        }
-        .login-btn:hover { background: var(--primary-dark); }
-        .remember-row {
-            display:flex; align-items:center; justify-content:space-between; margin:12px 0;
-            font-size:0.85rem; color: var(--gray-600);
-        }
-        .remember-row label { display:flex; align-items:center; gap:6px; cursor:pointer; }
-        .error-msg { color: var(--danger); font-size:0.85rem; margin-top:8px; display:none; }
-
-        /* ========== ESTILOS ORIGINALES DE LA APP ========== */
         .sidebar {
-            position:fixed; left:0; top:0; bottom:0; width:var(--sidebar-width);
-            background:white; border-right:1px solid var(--gray-200); z-index:50;
-            transition:var(--transition); display:flex; flex-direction:column; box-shadow:var(--shadow-lg);
+            position: fixed; left: 0; top: 0; bottom: 0;
+            width: var(--sidebar-width); background: white;
+            border-right: 1px solid var(--gray-200); z-index: 50;
+            transition: var(--transition); display: flex; flex-direction: column;
+            box-shadow: var(--shadow-lg);
         }
         .sidebar.collapsed { width: var(--sidebar-collapsed); }
-        .sidebar-header { padding:24px 20px; border-bottom:1px solid var(--gray-200); display:flex; align-items:center; gap:12px; }
-        .sidebar-header .logo-icon { font-size:32px; color:var(--primary); flex-shrink:0; }
-        .sidebar-header .logo-text { font-size:1.25rem; font-weight:700; color:var(--gray-900); white-space:nowrap; overflow:hidden; transition:var(--transition); }
-        .sidebar.collapsed .logo-text { opacity:0; width:0; }
-        .sidebar-toggle { position:absolute; right:-12px; top:32px; width:24px; height:24px; background:white; border:1px solid var(--gray-200); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:51; box-shadow:var(--shadow-sm); transition:var(--transition); }
-        .sidebar-toggle:hover { background:var(--gray-50); box-shadow:var(--shadow); }
-        .sidebar-nav { flex:1; padding:16px 12px; overflow-y:auto; }
-        .nav-item { display:flex; align-items:center; gap:12px; padding:12px 16px; margin-bottom:4px; border-radius:var(--radius); cursor:pointer; transition:var(--transition); color:var(--gray-600); font-weight:500; font-size:0.95rem; white-space:nowrap; position:relative; }
-        .nav-item:hover { background:var(--gray-50); color:var(--gray-900); }
-        .nav-item.active { background:var(--primary-light); color:var(--primary); font-weight:600; }
-        .nav-item.active::before { content:''; position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:24px; background:var(--primary); border-radius:0 4px 4px 0; }
-        .nav-item .material-icons { font-size:22px; flex-shrink:0; }
-        .sidebar.collapsed .nav-text { opacity:0; width:0; display:none; }
-        .sidebar.collapsed .nav-item { justify-content:center; padding:12px; }
-        .sidebar-footer { padding:16px; border-top:1px solid var(--gray-200); font-size:0.75rem; color:var(--gray-400); text-align:center; white-space:nowrap; overflow:hidden; }
-        .sidebar.collapsed .sidebar-footer { display:none; }
-        .main-content { margin-left:var(--sidebar-width); flex:1; padding:24px; transition:var(--transition); min-height:100vh; }
-        .main-content.expanded { margin-left:var(--sidebar-collapsed); }
-        .page-container { max-width:1400px; margin:0 auto; }
-        .page-header { margin-bottom:32px; }
-        .page-header h1 { font-size:2rem; font-weight:700; color:var(--gray-900); display:flex; align-items:center; gap:12px; }
-        .page-header h1 .material-icons { font-size:36px; color:var(--primary); }
-        .page-header p { color:var(--gray-500); margin-top:8px; font-size:0.95rem; }
-        .card { background:white; border-radius:var(--radius-lg); padding:24px; margin-bottom:24px; box-shadow:var(--shadow); border:1px solid var(--gray-200); transition:var(--transition); }
-        .card:hover { box-shadow:var(--shadow-md); }
-        .card-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--gray-200); }
-        .card-header .material-icons { font-size:28px; color:var(--primary); }
-        .card-header h2 { font-size:1.25rem; font-weight:600; color:var(--gray-900); }
-        .alert { padding:16px; border-radius:var(--radius); margin-bottom:20px; display:flex; align-items:flex-start; gap:12px; font-size:0.9rem; line-height:1.5; }
-        .alert-info { background:var(--primary-light); color:#1e40af; border-left:4px solid var(--primary); }
-        .alert-warning { background:var(--warning-light); color:#92400e; border-left:4px solid var(--warning); }
-        .alert-danger { background:var(--danger-light); color:#991b1b; border-left:4px solid var(--danger); }
-        .alert .material-icons { font-size:20px; flex-shrink:0; margin-top:1px; }
-        .form-group { margin-bottom:20px; }
-        .form-label { display:block; margin-bottom:8px; font-weight:500; color:var(--gray-700); font-size:0.9rem; }
-        .form-input { width:100%; padding:10px 14px; border:1px solid var(--gray-300); border-radius:var(--radius); font-size:0.95rem; transition:var(--transition); background:white; font-family:inherit; }
-        .form-input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,0.1); }
-        .form-input:hover { border-color:var(--gray-400); }
-        .input-group { display:flex; gap:12px; align-items:end; }
-        .input-group .form-group { flex:1; margin-bottom:0; }
-        .checkbox-group { display:flex; align-items:center; gap:12px; padding:12px; background:var(--gray-50); border-radius:var(--radius); border:1px solid var(--gray-200); margin-bottom:12px; flex-wrap:wrap; }
-        .checkbox-wrapper { display:flex; align-items:center; gap:8px; }
-        .checkbox-wrapper input[type="checkbox"] { width:20px; height:20px; cursor:pointer; accent-color:var(--primary); }
-        .checkbox-wrapper label { cursor:pointer; user-select:none; }
-        .config-input { width:90px; padding:8px 12px; border:1px solid var(--gray-300); border-radius:var(--radius-sm); font-size:0.9rem; margin-left:12px; }
-        .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 20px; border-radius:var(--radius); font-size:0.9rem; font-weight:500; cursor:pointer; transition:var(--transition); border:none; font-family:inherit; white-space:nowrap; }
-        .btn-primary { background:var(--primary); color:white; }
-        .btn-primary:hover { background:var(--primary-dark); box-shadow:var(--shadow-md); transform:translateY(-1px); }
-        .btn-secondary { background:white; color:var(--gray-700); border:1px solid var(--gray-300); }
-        .btn-secondary:hover { background:var(--gray-50); border-color:var(--gray-400); }
-        .btn-success { background:var(--success); color:white; }
-        .btn-success:hover { background:#047857; box-shadow:var(--shadow-md); transform:translateY(-1px); }
-        .btn-danger { background:var(--danger); color:white; }
-        .btn-danger:hover { background:#b91c1c; }
-        .btn-info { background:#0891b2; color:white; }
-        .btn-info:hover { background:#0e7490; }
-        .btn-sm { padding:6px 12px; font-size:0.85rem; }
-        .btn-xs { padding:4px 8px; font-size:0.75rem; gap:4px; }
-        .btn-lg { padding:14px 28px; font-size:1rem; }
-        .btn-block { width:100%; }
-        .search-box { position:relative; margin-bottom:20px; }
-        .search-box .material-icons { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--gray-400); }
-        .search-box input { width:100%; padding:12px 12px 12px 44px; border:2px solid var(--gray-200); border-radius:var(--radius-lg); font-size:1rem; transition:var(--transition); }
-        .search-box input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,0.1); }
-        .search-results { position:absolute; top:100%; left:0; right:0; background:white; border:1px solid var(--gray-200); border-radius:var(--radius); box-shadow:var(--shadow-lg); max-height:300px; overflow-y:auto; z-index:100; display:none; }
-        .search-results.show { display:block; }
-        .search-result-item { padding:12px 16px; border-bottom:1px solid var(--gray-100); transition:var(--transition); display:flex; justify-content:space-between; align-items:center; }
-        .search-result-item:hover { background:var(--primary-light); }
-        .result-actions { display:flex; gap:8px; align-items:center; }
-        .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
-        .modal-overlay.show { display:flex; }
-        .modal { background:white; border-radius:var(--radius-xl); padding:32px; max-width:800px; width:90%; max-height:80vh; overflow-y:auto; box-shadow:var(--shadow-xl); animation:modalIn 0.3s ease; }
-        @keyframes modalIn { from{opacity:0;transform:scale(0.95) translateY(-20px);} to{opacity:1;transform:scale(1) translateY(0);} }
-        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid var(--gray-200); }
-        .modal-header h2 { font-size:1.5rem; font-weight:700; color:var(--gray-900); display:flex; align-items:center; gap:12px; }
-        .modal-close { background:none; border:none; cursor:pointer; color:var(--gray-400); font-size:28px; padding:4px; border-radius:50%; transition:var(--transition); }
-        .modal-close:hover { color:var(--gray-600); background:var(--gray-100); }
-        .proveedor-card { padding:16px; margin-bottom:12px; border:1px solid var(--gray-200); border-radius:var(--radius); background:var(--gray-50); transition:var(--transition); }
-        .proveedor-card:hover { border-color:var(--primary); box-shadow:var(--shadow-sm); }
-        .proveedor-card.mejor { border-color:var(--success); background:var(--success-light); }
-        .proveedor-card.segundo { border-color:var(--primary); background:var(--primary-light); }
-        .proveedor-card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-        .rank-badge { padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:600; }
-        .rank-1 { background:#059669; color:white; } .rank-2 { background:#2563eb; color:white; } .rank-3 { background:#7c3aed; color:white; } .rank-other { background:var(--gray-300); color:var(--gray-700); }
-        .proveedor-card-details { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:12px; }
-        .detail-item { display:flex; flex-direction:column; }
-        .detail-item label { font-size:0.75rem; color:var(--gray-500); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
-        .detail-item span { font-size:1rem; font-weight:600; color:var(--gray-900); }
-        .table-container { overflow-x:auto; border-radius:var(--radius); border:1px solid var(--gray-200); }
-        .table { width:100%; border-collapse:collapse; font-size:0.85rem; }
-        .table thead { background:var(--gray-50); position:sticky; top:0; z-index:10; }
-        .table th { padding:12px 10px; text-align:left; font-weight:600; color:var(--gray-600); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px; border-bottom:2px solid var(--gray-200); white-space:nowrap; background:var(--gray-50); }
-        .table td { padding:10px; border-bottom:1px solid var(--gray-200); color:var(--gray-700); }
-        .table tbody tr:hover { background:var(--gray-50); }
-        .table tbody tr.new-row { animation:highlightRow 2s ease; }
-        @keyframes highlightRow { 0%{background-color:var(--primary-light);} 100%{background-color:transparent;} }
-        .table input[type="number"] { width:70px; padding:6px 8px; border:1px solid var(--gray-300); border-radius:var(--radius-sm); font-size:0.85rem; text-align:center; }
-        .table select { padding:6px 8px; border:1px solid var(--gray-300); border-radius:var(--radius-sm); font-size:0.85rem; background:white; width:100%; }
-        .badge { display:inline-block; padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:600; }
-        .badge-success { background:var(--success-light); color:#065f46; } .badge-warning { background:var(--warning-light); color:#92400e; } .badge-danger { background:var(--danger-light); color:#991b1b; } .badge-info { background:var(--primary-light); color:#1e40af; } .badge-fdc { background:#f3f4f6; color:#6b7280; } .badge-se { background:#fef3c7; color:#92400e; }
-        .text-highlight { color:var(--danger); font-weight:600; } .text-muted { color:var(--gray-400); font-style:italic; } .warning-icon { color:var(--warning); cursor:help; }
-        .total-card { background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:white; padding:24px; border-radius:var(--radius-lg); margin:24px 0; box-shadow:var(--shadow-lg); }
-        .total-card .total-label { font-size:0.9rem; opacity:0.9; margin-bottom:4px; } .total-card .total-amount { font-size:2rem; font-weight:700; }
-        .section { display:none; } .section.active { display:block; }
-        .proveedor-list { margin-top:16px; display:grid; gap:8px; }
-        .proveedor-item { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:var(--gray-50); border-radius:var(--radius); border:1px solid var(--gray-200); }
-        .proveedor-item .proveedor-info { display:flex; align-items:center; gap:8px; flex:1; }
-        .proveedor-item .proveedor-name { font-weight:500; } .proveedor-item .product-count { font-size:0.85rem; color:var(--gray-500); }
-        .btn-group { display:flex; gap:12px; flex-wrap:wrap; }
-        .provider-settings { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:12px; padding:16px; background:var(--gray-50); border-radius:var(--radius); margin-bottom:16px; }
-        .stock-bajo-alert { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; background:var(--danger-light); color:#991b1b; border-radius:4px; font-size:0.7rem; font-weight:600; margin-top:4px; }
-        .toast-container { position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
-        .toast { padding:16px 24px; border-radius:8px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); font-weight:500; max-width:400px; animation:slideIn 0.3s ease; display:flex; align-items:center; gap:8px; }
-        .toast-success { background:#059669; color:white; } .toast-warning { background:#d97706; color:white; } .toast-danger { background:#dc2626; color:white; } .toast-info { background:#2563eb; color:white; }
-        @keyframes slideIn { from{transform:translateX(100%);opacity:0;} to{transform:translateX(0);opacity:1;} }
-        @keyframes slideOut { from{transform:translateX(0);opacity:1;} to{transform:translateX(100%);opacity:0;} }
+        .sidebar-header {
+            padding: 24px 20px; border-bottom: 1px solid var(--gray-200);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .sidebar-header .logo-icon { font-size: 32px; color: var(--primary); flex-shrink: 0; }
+        .sidebar-header .logo-text { font-size: 1.25rem; font-weight: 700; color: var(--gray-900); white-space: nowrap; overflow: hidden; transition: var(--transition); }
+        .sidebar.collapsed .logo-text { opacity: 0; width: 0; }
 
-        @media (max-width:768px) {
-            .sidebar { width:var(--sidebar-collapsed); }
-            .sidebar .logo-text,.sidebar .nav-text,.sidebar-footer { display:none; }
-            .sidebar .nav-item { justify-content:center; padding:12px; }
-            .main-content { margin-left:var(--sidebar-collapsed); }
-            .sidebar-toggle { display:none; }
-            .input-group { flex-direction:column; }
-            .btn-group { flex-direction:column; }
-            .table { font-size:0.75rem; }
-            .provider-settings { grid-template-columns:1fr; }
-            .modal { width:95%; padding:20px; }
+        .sidebar-toggle {
+            position: absolute; right: -12px; top: 32px; width: 24px; height: 24px;
+            background: white; border: 1px solid var(--gray-200); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            z-index: 51; box-shadow: var(--shadow-sm); transition: var(--transition);
+        }
+        .sidebar-toggle:hover { background: var(--gray-50); box-shadow: var(--shadow); }
+        .sidebar-toggle .material-icons { font-size: 16px; color: var(--gray-600); }
+
+        .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            margin-bottom: 4px; border-radius: var(--radius); cursor: pointer;
+            transition: var(--transition); color: var(--gray-600); font-weight: 500;
+            font-size: 0.95rem; white-space: nowrap; position: relative;
+        }
+        .nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+        .nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+        .nav-item.active::before {
+            content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+            width: 3px; height: 24px; background: var(--primary); border-radius: 0 4px 4px 0;
+        }
+        .nav-item .material-icons { font-size: 22px; flex-shrink: 0; }
+        .sidebar.collapsed .nav-text { opacity: 0; width: 0; display: none; }
+        .sidebar.collapsed .nav-item { justify-content: center; padding: 12px; }
+
+        .sidebar-footer { padding: 16px; border-top: 1px solid var(--gray-200); font-size: 0.75rem; color: var(--gray-400); text-align: center; white-space: nowrap; overflow: hidden; }
+        .sidebar.collapsed .sidebar-footer { display: none; }
+
+        .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 24px; transition: var(--transition); min-height: 100vh; }
+        .main-content.expanded { margin-left: var(--sidebar-collapsed); }
+        .page-container { max-width: 1400px; margin: 0 auto; }
+        .page-header { margin-bottom: 32px; }
+        .page-header h1 { font-size: 2rem; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: 12px; }
+        .page-header h1 .material-icons { font-size: 36px; color: var(--primary); }
+        .page-header p { color: var(--gray-500); margin-top: 8px; font-size: 0.95rem; }
+
+        .card {
+            background: white; border-radius: var(--radius-lg); padding: 24px;
+            margin-bottom: 24px; box-shadow: var(--shadow); border: 1px solid var(--gray-200);
+            transition: var(--transition);
+        }
+        .card:hover { box-shadow: var(--shadow-md); }
+        .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--gray-200); }
+        .card-header .material-icons { font-size: 28px; color: var(--primary); }
+        .card-header h2 { font-size: 1.25rem; font-weight: 600; color: var(--gray-900); }
+
+        .alert {
+            padding: 16px; border-radius: var(--radius); margin-bottom: 20px;
+            display: flex; align-items: flex-start; gap: 12px; font-size: 0.9rem; line-height: 1.5;
+        }
+        .alert-info { background: var(--primary-light); color: #1e40af; border-left: 4px solid var(--primary); }
+        .alert-warning { background: var(--warning-light); color: #92400e; border-left: 4px solid var(--warning); }
+        .alert-danger { background: var(--danger-light); color: #991b1b; border-left: 4px solid var(--danger); }
+        .alert .material-icons { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--gray-700); font-size: 0.9rem; }
+        .form-input {
+            width: 100%; padding: 10px 14px; border: 1px solid var(--gray-300);
+            border-radius: var(--radius); font-size: 0.95rem; transition: var(--transition);
+            background: white; font-family: inherit;
+        }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .form-input:hover { border-color: var(--gray-400); }
+
+        .input-group { display: flex; gap: 12px; align-items: end; }
+        .input-group .form-group { flex: 1; margin-bottom: 0; }
+
+        .checkbox-group {
+            display: flex; align-items: center; gap: 12px; padding: 12px;
+            background: var(--gray-50); border-radius: var(--radius);
+            border: 1px solid var(--gray-200); margin-bottom: 12px; flex-wrap: wrap;
+        }
+        .checkbox-wrapper { display: flex; align-items: center; gap: 8px; }
+        .checkbox-wrapper input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary); }
+        .checkbox-wrapper label { cursor: pointer; user-select: none; }
+        .config-input { width: 90px; padding: 8px 12px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.9rem; margin-left: 12px; }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px 20px; border-radius: var(--radius); font-size: 0.9rem;
+            font-weight: 500; cursor: pointer; transition: var(--transition); border: none;
+            font-family: inherit; white-space: nowrap;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+        .btn-secondary { background: white; color: var(--gray-700); border: 1px solid var(--gray-300); }
+        .btn-secondary:hover { background: var(--gray-50); border-color: var(--gray-400); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #047857; box-shadow: var(--shadow-md); transform: translateY(-1px); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-info { background: #0891b2; color: white; }
+        .btn-info:hover { background: #0e7490; }
+        .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
+        .btn-xs { padding: 4px 8px; font-size: 0.75rem; gap: 4px; }
+        .btn-lg { padding: 14px 28px; font-size: 1rem; }
+        .btn-block { width: 100%; }
+
+        .search-box { position: relative; margin-bottom: 20px; }
+        .search-box .material-icons { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
+        .search-box input {
+            width: 100%; padding: 12px 12px 12px 44px; border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg); font-size: 1rem; transition: var(--transition);
+        }
+        .search-box input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .search-results {
+            position: absolute; top: 100%; left: 0; right: 0; background: white;
+            border: 1px solid var(--gray-200); border-radius: var(--radius);
+            box-shadow: var(--shadow-lg); max-height: 300px; overflow-y: auto;
+            z-index: 100; display: none;
+        }
+        .search-results.show { display: block; }
+        .search-result-item {
+            padding: 12px 16px; border-bottom: 1px solid var(--gray-100);
+            transition: var(--transition); display: flex; justify-content: space-between; align-items: center;
+        }
+        .search-result-item:hover { background: var(--primary-light); }
+        .result-actions { display: flex; gap: 8px; align-items: center; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5); z-index: 1000; display: none;
+            align-items: center; justify-content: center; backdrop-filter: blur(4px);
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: white; border-radius: var(--radius-xl); padding: 32px;
+            max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto;
+            box-shadow: var(--shadow-xl); animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--gray-200); }
+        .modal-header h2 { font-size: 1.5rem; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: 12px; }
+        .modal-close { background: none; border: none; cursor: pointer; color: var(--gray-400); font-size: 28px; padding: 4px; border-radius: 50%; transition: var(--transition); }
+        .modal-close:hover { color: var(--gray-600); background: var(--gray-100); }
+
+        .proveedor-card {
+            padding: 16px; margin-bottom: 12px; border: 1px solid var(--gray-200);
+            border-radius: var(--radius); background: var(--gray-50); transition: var(--transition);
+        }
+        .proveedor-card:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); }
+        .proveedor-card.mejor { border-color: var(--success); background: var(--success-light); }
+        .proveedor-card.segundo { border-color: var(--primary); background: var(--primary-light); }
+        .proveedor-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .rank-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .rank-1 { background: #059669; color: white; }
+        .rank-2 { background: #2563eb; color: white; }
+        .rank-3 { background: #7c3aed; color: white; }
+        .rank-other { background: var(--gray-300); color: var(--gray-700); }
+        .proveedor-card-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 12px; }
+        .detail-item { display: flex; flex-direction: column; }
+        .detail-item label { font-size: 0.75rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .detail-item span { font-size: 1rem; font-weight: 600; color: var(--gray-900); }
+
+        /* Table */
+        .table-container { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--gray-200); }
+        .table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .table thead { background: var(--gray-50); position: sticky; top: 0; z-index: 10; }
+        .table th {
+            padding: 12px 10px; text-align: left; font-weight: 600; color: var(--gray-600);
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--gray-200); white-space: nowrap; background: var(--gray-50);
+        }
+        .table td { padding: 10px; border-bottom: 1px solid var(--gray-200); color: var(--gray-700); }
+        .table tbody tr:hover { background: var(--gray-50); }
+        .table tbody tr.new-row { animation: highlightRow 2s ease; }
+        @keyframes highlightRow {
+            0% { background-color: var(--primary-light); }
+            100% { background-color: transparent; }
+        }
+        .table input[type="number"] { width: 70px; padding: 6px 8px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.85rem; text-align: center; }
+        .table select { padding: 6px 8px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.85rem; background: white; width: 100%; }
+
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+        .badge-success { background: var(--success-light); color: #065f46; }
+        .badge-warning { background: var(--warning-light); color: #92400e; }
+        .badge-danger { background: var(--danger-light); color: #991b1b; }
+        .badge-info { background: var(--primary-light); color: #1e40af; }
+        .badge-fdc { background: #f3f4f6; color: #6b7280; }
+        .badge-se { background: #fef3c7; color: #92400e; }
+
+        .text-highlight { color: var(--danger); font-weight: 600; }
+        .text-muted { color: var(--gray-400); font-style: italic; }
+        .warning-icon { color: var(--warning); cursor: help; }
+
+        .total-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 24px; border-radius: var(--radius-lg);
+            margin: 24px 0; box-shadow: var(--shadow-lg);
+        }
+        .total-card .total-label { font-size: 0.9rem; opacity: 0.9; margin-bottom: 4px; }
+        .total-card .total-amount { font-size: 2rem; font-weight: 700; }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .proveedor-list { margin-top: 16px; display: grid; gap: 8px; }
+        .proveedor-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 16px; background: var(--gray-50); border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+        }
+        .proveedor-item .proveedor-info { display: flex; align-items: center; gap: 8px; flex: 1; }
+        .proveedor-item .proveedor-name { font-weight: 500; }
+        .proveedor-item .product-count { font-size: 0.85rem; color: var(--gray-500); }
+
+        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; }
+        .provider-settings { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; padding: 16px; background: var(--gray-50); border-radius: var(--radius); margin-bottom: 16px; }
+
+        .stock-bajo-alert {
+            display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px;
+            background: var(--danger-light); color: #991b1b; border-radius: 4px;
+            font-size: 0.7rem; font-weight: 600; margin-top: 4px;
+        }
+
+        /* Toast */
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+        .toast {
+            padding: 16px 24px; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            font-weight: 500; max-width: 400px; animation: slideIn 0.3s ease;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .toast-success { background: #059669; color: white; }
+        .toast-warning { background: #d97706; color: white; }
+        .toast-danger { background: #dc2626; color: white; }
+        .toast-info { background: #2563eb; color: white; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { width: var(--sidebar-collapsed); }
+            .sidebar .logo-text, .sidebar .nav-text, .sidebar-footer { display: none; }
+            .sidebar .nav-item { justify-content: center; padding: 12px; }
+            .main-content { margin-left: var(--sidebar-collapsed); }
+            .sidebar-toggle { display: none; }
+            .input-group { flex-direction: column; }
+            .btn-group { flex-direction: column; }
+            .table { font-size: 0.75rem; }
+            .provider-settings { grid-template-columns: 1fr; }
+            .modal { width: 95%; padding: 20px; }
         }
     </style>
 </head>
 <body>
-
-    <!-- ========== PANTALLA DE LOGIN ========== -->
-    <div id="loginScreen" class="login-overlay">
-        <div class="login-card">
-            <span class="material-icons">inventory_2</span>
-            <h2>Cotizador Pro</h2>
-            <p>Ingrese sus credenciales</p>
-            <input type="text" id="username" class="login-input" placeholder="Usuario" autocomplete="username">
-            <input type="password" id="password" class="login-input" placeholder="Contraseña" autocomplete="current-password">
-            <div class="remember-row">
-                <label>
-                    <input type="checkbox" id="rememberMe"> Recordar contraseña
-                </label>
-            </div>
-            <button class="login-btn" id="loginBtn">Iniciar sesión</button>
-            <div class="error-msg" id="loginError">Usuario o contraseña incorrectos</div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="material-icons logo-icon">inventory_2</span>
+            <span class="logo-text">Cotizador Pro</span>
         </div>
-    </div>
-
-    <!-- ========== APLICACIÓN (OCULTA HASTA HACER LOGIN) ========== -->
-    <div id="appContent" style="display:none; width:100%;">
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <span class="material-icons logo-icon">inventory_2</span>
-                <span class="logo-text">Cotizador Pro</span>
+        <div class="sidebar-toggle" id="sidebarToggle">
+            <span class="material-icons">chevron_left</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item active" data-section="proveedores">
+                <span class="material-icons">business</span>
+                <span class="nav-text">Proveedores</span>
             </div>
-            <div class="sidebar-toggle" id="sidebarToggle">
-                <span class="material-icons">chevron_left</span>
+            <div class="nav-item" data-section="lista">
+                <span class="material-icons">list_alt</span>
+                <span class="nav-text">Lista Maestra</span>
             </div>
-            <nav class="sidebar-nav">
-                <div class="nav-item active" data-section="proveedores">
-                    <span class="material-icons">business</span>
-                    <span class="nav-text">Proveedores</span>
-                </div>
-                <div class="nav-item" data-section="lista">
-                    <span class="material-icons">list_alt</span>
-                    <span class="nav-text">Lista Maestra</span>
-                </div>
-                <div class="nav-item" data-section="comparativo">
-                    <span class="material-icons">compare_arrows</span>
-                    <span class="nav-text">Comparativo</span>
-                </div>
-            </nav>
-            <div class="sidebar-footer">
-                <span id="userDisplay"></span>   |   
-                <a href="#" id="logoutLink" style="color: var(--primary); cursor:pointer;">Cerrar sesión</a>
+            <div class="nav-item" data-section="comparativo">
+                <span class="material-icons">compare_arrows</span>
+                <span class="nav-text">Comparativo</span>
             </div>
-        </aside>
+        </nav>
+        <div class="sidebar-footer">© 2024 Cotizador Pro v2.0</div>
+    </aside>
 
-        <main class="main-content" id="mainContent">
-            <div class="page-container">
-                <section class="section active" id="section-proveedores">
-                    <div class="page-header">
-                        <h1><span class="material-icons">business</span> Gestión de Proveedores</h1>
-                        <p id="welcomeMsg" style="margin-top:4px;"></p>
+    <main class="main-content" id="mainContent">
+        <div class="page-container">
+            <section class="section active" id="section-proveedores">
+                <div class="page-header">
+                    <h1><span class="material-icons">business</span> Gestión de Proveedores</h1>
+                    <p>Agrega y administra los proveedores con sus listas de precios</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="material-icons">add_business</span>
+                        <h2>Agregar Nuevo Proveedor</h2>
                     </div>
-                    <!-- resto del contenido original de proveedores -->
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="material-icons">add_business</span>
-                            <h2>Agregar Nuevo Proveedor</h2>
+                    <div class="alert alert-info">
+                        <span class="material-icons">info</span>
+                        <div>
+                            <strong>Formato requerido del Excel:</strong><br>
+                            Columnas: <b>Código | Descripción | Existencia | Precio con IVA</b>
                         </div>
-                        <div class="alert alert-info">
-                            <span class="material-icons">info</span>
-                            <div>
-                                <strong>Formato requerido del Excel:</strong><br>
-                                Columnas: <b>Código | Descripción | Existencia | Precio con IVA</b>
-                            </div>
-                        </div>
-                        <div class="provider-settings">
-                            <div class="checkbox-group">
-                                <div class="checkbox-wrapper">
-                                    <input type="checkbox" id="activarStockMinimo">
-                                    <label for="activarStockMinimo">Activar Stock Mínimo Requerido</label>
-                                </div>
-                                <input type="number" id="stockMinimo" class="config-input" value="20" min="0" disabled>
-                                <span style="font-size:0.85rem;color:var(--gray-500);">unidades</span>
-                            </div>
-                            <div class="checkbox-group">
-                                <div class="checkbox-wrapper">
-                                    <input type="checkbox" id="aplicarDescuento">
-                                    <label for="aplicarDescuento">Aplicar Descuento</label>
-                                </div>
-                                <input type="number" id="porcentajeDescuento" class="config-input" value="0" min="0" max="100" step="0.01" disabled>
-                                <span style="font-size:0.85rem;color:var(--gray-500);">%</span>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <div class="form-group">
-                                <label class="form-label" for="nombreProveedor">Nombre del Proveedor</label>
-                                <input type="text" id="nombreProveedor" class="form-input" placeholder="Ej: Farmacias del Ahorro">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="archivoProveedor">Archivo Excel</label>
-                                <input type="file" id="archivoProveedor" class="form-input" accept=".xlsx,.xls">
-                            </div>
-                        </div>
-                        <button id="btnAgregarProveedor" class="btn btn-primary btn-lg btn-block">
-                            <span class="material-icons">add</span> Agregar Proveedor
-                        </button>
-                        <div id="listaProveedores" class="proveedor-list" style="margin-top:24px;"></div>
                     </div>
-                </section>
-
-                <section class="section" id="section-lista">
-                    <div class="page-header">
-                        <h1><span class="material-icons">list_alt</span> Lista Maestra</h1>
-                        <p>Define los productos que necesitas cotizar</p>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="material-icons">upload_file</span>
-                            <h2>Cargar Lista de Productos</h2>
-                        </div>
-                        <div class="alert alert-warning">
-                            <span class="material-icons">tips_and_updates</span>
-                            <div>
-                                <strong>Formato requerido del Excel:</strong><br>
-                                Columnas: <b>Código | Descripción | Piezas Requeridas</b>
+                    <div class="provider-settings">
+                        <div class="checkbox-group">
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="activarStockMinimo">
+                                <label for="activarStockMinimo">Activar Stock Mínimo Requerido</label>
                             </div>
+                            <input type="number" id="stockMinimo" class="config-input" value="20" min="0" disabled>
+                            <span style="font-size:0.85rem;color:var(--gray-500);">unidades</span>
+                        </div>
+                        <div class="checkbox-group">
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="aplicarDescuento">
+                                <label for="aplicarDescuento">Aplicar Descuento</label>
+                            </div>
+                            <input type="number" id="porcentajeDescuento" class="config-input" value="0" min="0" max="100" step="0.01" disabled>
+                            <span style="font-size:0.85rem;color:var(--gray-500);">%</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <div class="form-group">
+                            <label class="form-label" for="nombreProveedor">Nombre del Proveedor</label>
+                            <input type="text" id="nombreProveedor" class="form-input" placeholder="Ej: Farmacias del Ahorro">
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="archivoMaestro">Seleccionar Archivo Excel</label>
-                            <input type="file" id="archivoMaestro" class="form-input" accept=".xlsx,.xls">
-                        </div>
-                        <button id="btnCargarMaestro" class="btn btn-primary btn-lg btn-block">
-                            <span class="material-icons">cloud_upload</span> Cargar Lista Maestra
-                        </button>
-                        <div id="estadoMaestro" style="margin-top:16px;"></div>
-                    </div>
-                </section>
-
-                <section class="section" id="section-comparativo">
-                    <div class="page-header">
-                        <h1><span class="material-icons">compare_arrows</span> Comparativo de Precios</h1>
-                        <p>Compara precios entre proveedores y genera pedidos</p>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="material-icons">search</span>
-                            <h2>Buscar Producto</h2>
-                        </div>
-                        <div class="search-box">
-                            <span class="material-icons">search</span>
-                            <input type="text" id="searchProducto" placeholder="Buscar por código o descripción...">
-                            <div class="search-results" id="searchResults"></div>
+                            <label class="form-label" for="archivoProveedor">Archivo Excel</label>
+                            <input type="file" id="archivoProveedor" class="form-input" accept=".xlsx,.xls">
                         </div>
                     </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="material-icons">filter_list</span>
-                            <h2>Filtrar por Proveedor</h2>
-                        </div>
-                        <div class="form-group">
-                            <select id="filtroProveedor" class="form-input">
-                                <option value="todos">Todos los proveedores</option>
-                            </select>
-                        </div>
-                        <div class="table-container">
-                            <table class="table" id="tablaComparativa">
-                                <thead>
-                                    <tr>
-                                        <th>Código</th>
-                                        <th>Descripción</th>
-                                        <th>Piezas</th>
-                                        <th>Existencia</th>
-                                        <th>Precio Unit.</th>
-                                        <th>Subtotal</th>
-                                        <th>Proveedor</th>
-                                        <th>2da Opción</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="cuerpoTabla"></tbody>
-                            </table>
-                        </div>
-                        <div class="total-card">
-                            <div class="total-label">Total General del Pedido</div>
-                            <div class="total-amount" id="totalGeneral">$0.00</div>
-                        </div>
-                        <div class="btn-group">
-                            <button id="btnGenerarFiltrado" class="btn btn-primary">
-                                <span class="material-icons">picture_as_pdf</span> Generar PDF (Proveedor Seleccionado)
-                            </button>
-                            <button id="btnGenerarTodos" class="btn btn-success">
-                                <span class="material-icons">download</span> Generar Todos los PDFs
-                            </button>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </main>
-
-        <div class="modal-overlay" id="modalDetalle">
-            <div class="modal">
-                <div class="modal-header">
-                    <h2><span class="material-icons" style="color:var(--primary);">info</span> Detalle del Producto</h2>
-                    <button class="modal-close" onclick="cerrarModal()">
-                        <span class="material-icons">close</span>
+                    <button id="btnAgregarProveedor" class="btn btn-primary btn-lg btn-block">
+                        <span class="material-icons">add</span> Agregar Proveedor
                     </button>
+                    <div id="listaProveedores" class="proveedor-list" style="margin-top:24px;"></div>
                 </div>
-                <div id="modalContent"></div>
-            </div>
-        </div>
+            </section>
 
-        <div class="toast-container" id="toastContainer"></div>
+            <section class="section" id="section-lista">
+                <div class="page-header">
+                    <h1><span class="material-icons">list_alt</span> Lista Maestra</h1>
+                    <p>Define los productos que necesitas cotizar</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="material-icons">upload_file</span>
+                        <h2>Cargar Lista de Productos</h2>
+                    </div>
+                    <div class="alert alert-warning">
+                        <span class="material-icons">tips_and_updates</span>
+                        <div>
+                            <strong>Formato requerido del Excel:</strong><br>
+                            Columnas: <b>Código | Descripción | Piezas Requeridas</b>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="archivoMaestro">Seleccionar Archivo Excel</label>
+                        <input type="file" id="archivoMaestro" class="form-input" accept=".xlsx,.xls">
+                    </div>
+                    <button id="btnCargarMaestro" class="btn btn-primary btn-lg btn-block">
+                        <span class="material-icons">cloud_upload</span> Cargar Lista Maestra
+                    </button>
+                    <div id="estadoMaestro" style="margin-top:16px;"></div>
+                </div>
+            </section>
+
+            <section class="section" id="section-comparativo">
+                <div class="page-header">
+                    <h1><span class="material-icons">compare_arrows</span> Comparativo de Precios</h1>
+                    <p>Compara precios entre proveedores y genera pedidos</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="material-icons">search</span>
+                        <h2>Buscar Producto</h2>
+                    </div>
+                    <div class="search-box">
+                        <span class="material-icons">search</span>
+                        <input type="text" id="searchProducto" placeholder="Buscar por código o descripción...">
+                        <div class="search-results" id="searchResults"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="material-icons">filter_list</span>
+                        <h2>Filtrar por Proveedor</h2>
+                    </div>
+                    <div class="form-group">
+                        <select id="filtroProveedor" class="form-input">
+                            <option value="todos">Todos los proveedores</option>
+                        </select>
+                    </div>
+                    <div class="table-container">
+                        <table class="table" id="tablaComparativa">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Descripción</th>
+                                    <th>Piezas</th>
+                                    <th>Existencia</th>
+                                    <th>Precio Unit.</th>
+                                    <th>Subtotal</th>
+                                    <th>Proveedor</th>
+                                    <th>2da Opción</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpoTabla"></tbody>
+                        </table>
+                    </div>
+                    <div class="total-card">
+                        <div class="total-label">Total General del Pedido</div>
+                        <div class="total-amount" id="totalGeneral">$0.00</div>
+                    </div>
+                    <div class="btn-group">
+                        <button id="btnGenerarFiltrado" class="btn btn-primary">
+                            <span class="material-icons">picture_as_pdf</span> Generar PDF (Proveedor Seleccionado)
+                        </button>
+                        <button id="btnGenerarTodos" class="btn btn-success">
+                            <span class="material-icons">download</span> Generar Todos los PDFs
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="modalDetalle">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><span class="material-icons" style="color:var(--primary);">info</span> Detalle del Producto</h2>
+                <button class="modal-close" onclick="cerrarModal()">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div id="modalContent"></div>
+        </div>
     </div>
+
+    <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // ========== AUTENTICACIÓN ==========
-        const USERS = {
-            "ADMIN": { password: "1234", role: "admin" },
-            "ADN":   { password: "1234", role: "user" }
-        };
+        const STORAGE_KEY = 'cotizador_pro_data';
+        let proveedores = [];
+        let productosMaestro = [];
 
-        function login(username, password, remember) {
-            let upper = username.toUpperCase();
-            let user = USERS[upper];
-            if (user && user.password === password) {
-                sessionStorage.setItem('currentUser', JSON.stringify({ username: upper, role: user.role }));
-                if (remember) {
-                    localStorage.setItem('rememberedUser', upper);
-                    localStorage.setItem('rememberedPass', password);
-                } else {
-                    localStorage.removeItem('rememberedUser');
-                    localStorage.removeItem('rememberedPass');
+        function guardarDatos() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    proveedores: proveedores.map(p => ({...p, productos: p.productos.map(prod => ({...prod}))})),
+                    productosMaestro: [...productosMaestro]
+                }));
+            } catch (e) { console.warn('No se pudieron guardar los datos:', e); }
+        }
+
+        function cargarDatos() {
+            try {
+                const data = localStorage.getItem(STORAGE_KEY);
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    proveedores = parsed.proveedores || [];
+                    productosMaestro = parsed.productosMaestro || [];
+                    return true;
                 }
-                return true;
-            }
+            } catch (e) { console.warn('No se pudieron cargar los datos:', e); }
             return false;
         }
 
-        function logout() {
-            sessionStorage.removeItem('currentUser');
-            document.getElementById('appContent').style.display = 'none';
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-            document.getElementById('rememberMe').checked = false;
+        window.addEventListener('beforeunload', guardarDatos);
+        setInterval(guardarDatos, 5000);
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            const icons = { success: 'check_circle', warning: 'warning', danger: 'error', info: 'info' };
+            toast.innerHTML = `<span class="material-icons" style="font-size:20px;">${icons[type]}</span> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
-        function checkAutoLogin() {
-            let session = sessionStorage.getItem('currentUser');
-            if (session) {
-                let user = JSON.parse(session);
-                showApp(user.username, user.role);
+        function abrirModal(codigo, descripcion) {
+            const modal = document.getElementById('modalDetalle');
+            const content = document.getElementById('modalContent');
+            
+            const opciones = [];
+            proveedores.forEach(prov => {
+                const producto = prov.productos.find(p => p.codigo === codigo);
+                if (producto) {
+                    opciones.push({
+                        proveedor: prov.nombre,
+                        existencia: producto.existencia,
+                        precio: producto.precio
+                    });
+                }
+            });
+            
+            opciones.sort((a, b) => a.precio - b.precio);
+            
+            let html = `
+                <div style="margin-bottom:20px;">
+                    <h3 style="color:var(--gray-900);font-size:1.2rem;">${codigo}</h3>
+                    <p style="color:var(--gray-500);">${descripcion}</p>
+                </div>
+                <div style="margin-bottom:16px;"><strong>Proveedores disponibles: ${opciones.length}</strong></div>
+            `;
+            
+            if (opciones.length === 0) {
+                html += `
+                    <div class="alert alert-warning">
+                        <span class="material-icons">warning</span>
+                        <div><strong>FDC - Fuera de Catálogo</strong><br>Este producto no está disponible en ningún proveedor.</div>
+                    </div>
+                `;
+            } else {
+                opciones.forEach((op, index) => {
+                    let rankClass = '', rankBadge = '', cardClass = '';
+                    if (index === 0) { rankClass = 'rank-1'; rankBadge = '🏆 Mejor precio'; cardClass = 'mejor'; }
+                    else if (index === 1) { rankClass = 'rank-2'; rankBadge = '🥈 2da opción'; cardClass = 'segundo'; }
+                    else if (index === 2) { rankClass = 'rank-3'; rankBadge = '🥉 3ra opción'; }
+                    else { rankClass = 'rank-other'; rankBadge = `#${index + 1}`; }
+                    
+                    html += `
+                        <div class="proveedor-card ${cardClass}">
+                            <div class="proveedor-card-header">
+                                <div style="display:flex;align-items:center;gap:12px;">
+                                    <span class="rank-badge ${rankClass}">${rankBadge}</span>
+                                    <strong style="font-size:1.1rem;">${op.proveedor}</strong>
+                                </div>
+                            </div>
+                            <div class="proveedor-card-details">
+                                <div class="detail-item">
+                                    <label>Precio Unitario</label>
+                                    <span style="color:var(--success);">$${op.precio.toFixed(2)}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Existencia</label>
+                                    <span>${op.existencia} unidades</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            content.innerHTML = html;
+            modal.classList.add('show');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalDetalle').classList.remove('show');
+        }
+
+        document.getElementById('modalDetalle').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModal();
+        });
+
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        let sidebarOpen = true;
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebarOpen = !sidebarOpen;
+            sidebar.classList.toggle('collapsed', !sidebarOpen);
+            mainContent.classList.toggle('expanded', !sidebarOpen);
+            sidebarToggle.querySelector('.material-icons').textContent = sidebarOpen ? 'chevron_left' : 'chevron_right';
+        });
+
+        const navItems = document.querySelectorAll('.nav-item');
+        const sections = document.querySelectorAll('.section');
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const sectionId = item.dataset.section;
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                sections.forEach(section => section.classList.remove('active'));
+                document.getElementById(`section-${sectionId}`).classList.add('active');
+                if (sectionId === 'comparativo') generarTablaComparativa();
+            });
+        });
+
+        document.getElementById('activarStockMinimo').addEventListener('change', function() {
+            document.getElementById('stockMinimo').disabled = !this.checked;
+            if (!this.checked) document.getElementById('stockMinimo').value = '20';
+        });
+
+        document.getElementById('aplicarDescuento').addEventListener('change', function() {
+            document.getElementById('porcentajeDescuento').disabled = !this.checked;
+            if (!this.checked) document.getElementById('porcentajeDescuento').value = '0';
+        });
+
+        document.getElementById('btnAgregarProveedor').addEventListener('click', () => {
+            const nombre = document.getElementById('nombreProveedor').value.trim();
+            const fileInput = document.getElementById('archivoProveedor');
+            const activarStock = document.getElementById('activarStockMinimo').checked;
+            const stockMinimo = activarStock ? (parseInt(document.getElementById('stockMinimo').value) || 20) : 0;
+            const aplicarDescuento = document.getElementById('aplicarDescuento').checked;
+            const porcentajeDescuento = aplicarDescuento ? (parseFloat(document.getElementById('porcentajeDescuento').value) || 0) : 0;
+            
+            if (!nombre) { showToast('Por favor, ingrese el nombre del proveedor', 'warning'); return; }
+            if (!fileInput.files[0]) { showToast('Por favor, seleccione un archivo Excel', 'warning'); return; }
+            if (proveedores.some(p => p.nombre.toLowerCase() === nombre.toLowerCase())) {
+                showToast('Ya existe un proveedor con este nombre', 'warning'); return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    if (json.length < 2) { showToast('El archivo Excel está vacío', 'warning'); return; }
+
+                    let productos = json.slice(1).map(row => ({
+                        codigo: String(row[0] || '').trim(),
+                        descripcion: String(row[1] || '').trim(),
+                        existencia: parseFloat(row[2]) || 0,
+                        precio: parseFloat(row[3]) || 0
+                    })).filter(p => p.codigo && p.precio > 0);
+
+                    if (aplicarDescuento && porcentajeDescuento > 0) {
+                        productos = productos.map(p => ({...p, precioOriginal: p.precio, precio: p.precio * (1 - porcentajeDescuento / 100)}));
+                    }
+                    if (productos.length === 0) { showToast('No se encontraron productos válidos', 'warning'); return; }
+
+                    proveedores.push({ nombre, productos, stockMinimo, descuento: aplicarDescuento ? porcentajeDescuento : 0, activarStock });
+                    actualizarListaProveedores();
+                    actualizarFiltroProveedores();
+                    guardarDatos();
+                    
+                    document.getElementById('nombreProveedor').value = '';
+                    document.getElementById('archivoProveedor').value = '';
+                    document.getElementById('activarStockMinimo').checked = false;
+                    document.getElementById('stockMinimo').value = '20';
+                    document.getElementById('stockMinimo').disabled = true;
+                    document.getElementById('aplicarDescuento').checked = false;
+                    document.getElementById('porcentajeDescuento').value = '0';
+                    document.getElementById('porcentajeDescuento').disabled = true;
+                    
+                    showToast(`Proveedor "${nombre}" cargado exitosamente (${productos.length} productos)`, 'success');
+                } catch (error) {
+                    showToast('Error al procesar el archivo Excel', 'danger');
+                    console.error(error);
+                }
+            };
+            reader.readAsArrayBuffer(fileInput.files[0]);
+        });
+
+        function actualizarListaProveedores() {
+            const div = document.getElementById('listaProveedores');
+            if (proveedores.length === 0) {
+                div.innerHTML = '<p style="color:var(--gray-400);text-align:center;padding:20px;">No hay proveedores cargados</p>';
                 return;
             }
-            let remUser = localStorage.getItem('rememberedUser');
-            let remPass = localStorage.getItem('rememberedPass');
-            if (remUser && remPass) {
-                if (login(remUser, remPass, true)) {
-                    let sessionData = JSON.parse(sessionStorage.getItem('currentUser'));
-                    showApp(sessionData.username, sessionData.role);
-                    return;
+            div.innerHTML = proveedores.map((p, index) => `
+                <div class="proveedor-item">
+                    <div class="proveedor-info">
+                        <span class="material-icons" style="color:var(--primary);">store</span>
+                        <div>
+                            <div class="proveedor-name">${p.nombre}</div>
+                            <div class="product-count">${p.productos.length} productos | Stock mín: ${p.activarStock ? p.stockMinimo : 'No'} | Desc: ${p.descuento}%</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="eliminarProveedor(${index})">
+                        <span class="material-icons">delete</span>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function eliminarProveedor(index) {
+            proveedores.splice(index, 1);
+            actualizarListaProveedores();
+            actualizarFiltroProveedores();
+            generarTablaComparativa();
+            guardarDatos();
+        }
+
+        function actualizarFiltroProveedores() {
+            const select = document.getElementById('filtroProveedor');
+            select.innerHTML = '<option value="todos">Todos los proveedores</option>';
+            proveedores.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.nombre;
+                opt.textContent = p.nombre;
+                select.appendChild(opt);
+            });
+            select.onchange = () => generarTablaComparativa();
+        }
+
+        document.getElementById('btnCargarMaestro').addEventListener('click', () => {
+            const file = document.getElementById('archivoMaestro').files[0];
+            if (!file) { showToast('Por favor, seleccione un archivo Excel', 'warning'); return; }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    if (json.length < 2) { showToast('El archivo Excel está vacío', 'warning'); return; }
+
+                    productosMaestro = json.slice(1).map(row => ({
+                        codigo: String(row[0] || '').trim(),
+                        descripcion: String(row[1] || '').trim(),
+                        piezas: parseFloat(row[2]) || 1
+                    })).filter(p => p.codigo);
+                    if (productosMaestro.length === 0) { showToast('No se encontraron productos válidos', 'warning'); return; }
+
+                    document.getElementById('estadoMaestro').innerHTML = `
+                        <div class="alert alert-info">
+                            <span class="material-icons">check_circle</span>
+                            <div><strong>✅ Lista maestra cargada exitosamente</strong><br>${productosMaestro.length} productos encontrados</div>
+                        </div>
+                    `;
+                    guardarDatos();
+                    generarTablaComparativa();
+                    document.querySelector('.nav-item[data-section="comparativo"]').click();
+                } catch (error) {
+                    showToast('Error al procesar el archivo Excel', 'danger');
+                    console.error(error);
                 }
-            }
-            document.getElementById('loginScreen').style.display = 'flex';
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        function eliminarProductoMaestro(codigo) {
+            productosMaestro = productosMaestro.filter(p => p.codigo !== codigo);
+            guardarDatos();
+            generarTablaComparativa();
+            showToast(`Producto ${codigo} eliminado del pedido`, 'warning');
         }
 
-        function showApp(username, role) {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('appContent').style.display = 'block';
-            document.getElementById('welcomeMsg').textContent = `Bienvenido, ${username} (${role})`;
-            document.getElementById('userDisplay').textContent = `${username} (${role})`;
-            // Inicializar la app si aún no se ha hecho
-            if (!window.appInicializada) {
-                inicializarApp();
-                window.appInicializada = true;
-            } else {
-                generarTablaComparativa(); // refrescar por si acaso
-            }
-        }
-
-        document.getElementById('loginBtn').addEventListener('click', () => {
-            let user = document.getElementById('username').value.trim();
-            let pass = document.getElementById('password').value;
-            let remember = document.getElementById('rememberMe').checked;
-            if (login(user, pass, remember)) {
-                let sessionData = JSON.parse(sessionStorage.getItem('currentUser'));
-                showApp(sessionData.username, sessionData.role);
-            } else {
-                document.getElementById('loginError').style.display = 'block';
-            }
-        });
-
-        document.getElementById('password').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') document.getElementById('loginBtn').click();
-        });
-
-        document.getElementById('logoutLink').addEventListener('click', (e) => {
-            e.preventDefault();
-            logout();
-        });
-
-        // ========== CÓDIGO ORIGINAL DE LA APLICACIÓN ==========
-        function inicializarApp() {
-            const STORAGE_KEY = 'cotizador_pro_data';
-            let proveedores = [];
-            let productosMaestro = [];
-
-            function guardarDatos() {
-                try {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                        proveedores: proveedores.map(p => ({...p, productos: p.productos.map(prod => ({...prod}))})),
-                        productosMaestro: [...productosMaestro]
-                    }));
-                } catch (e) { console.warn('No se pudieron guardar los datos:', e); }
+        // ==================== FUNCIÓN MODIFICADA (ignora existencia 0) ====================
+        function generarTablaComparativa() {
+            const tbody = document.getElementById('cuerpoTabla');
+            const filtroProveedor = document.getElementById('filtroProveedor').value;
+            
+            if (proveedores.length === 0 || productosMaestro.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--gray-400);">Cargue proveedores y lista maestra para ver el comparativo</td></tr>';
+                actualizarTotalGeneral();
+                return;
             }
 
-            function cargarDatos() {
-                try {
-                    const data = localStorage.getItem(STORAGE_KEY);
-                    if (data) {
-                        const parsed = JSON.parse(data);
-                        proveedores = parsed.proveedores || [];
-                        productosMaestro = parsed.productosMaestro || [];
-                        return true;
-                    }
-                } catch (e) { console.warn('No se pudieron cargar los datos:', e); }
-                return false;
-            }
+            tbody.innerHTML = '';
 
-            window.addEventListener('beforeunload', guardarDatos);
-            setInterval(guardarDatos, 5000);
-
-            function showToast(message, type = 'info') {
-                const container = document.getElementById('toastContainer');
-                const toast = document.createElement('div');
-                toast.className = `toast toast-${type}`;
-                const icons = { success: 'check_circle', warning: 'warning', danger: 'error', info: 'info' };
-                toast.innerHTML = `<span class="material-icons" style="font-size:20px;">${icons[type]}</span> ${message}`;
-                container.appendChild(toast);
-                setTimeout(() => {
-                    toast.style.animation = 'slideOut 0.3s ease';
-                    setTimeout(() => toast.remove(), 300);
-                }, 3000);
-            }
-
-            window.abrirModal = function(codigo, descripcion) {
-                const modal = document.getElementById('modalDetalle');
-                const content = document.getElementById('modalContent');
+            productosMaestro.forEach((prod) => {
+                // Recolectar proveedores con existencia > 0
+                const proveedoresValidos = [];
                 
-                const opciones = [];
                 proveedores.forEach(prov => {
-                    const producto = prov.productos.find(p => p.codigo === codigo);
-                    if (producto) {
-                        opciones.push({
+                    const encontrado = prov.productos.find(p => p.codigo === prod.codigo);
+                    // IGNORAR existencia 0
+                    if (encontrado && encontrado.existencia > 0) {
+                        proveedoresValidos.push({
                             proveedor: prov.nombre,
-                            existencia: producto.existencia,
-                            precio: producto.precio
+                            ...encontrado,
+                            stockMinimo: prov.stockMinimo,
+                            activarStock: prov.activarStock
                         });
                     }
                 });
+
+                // Ordenar por precio
+                proveedoresValidos.sort((a, b) => a.precio - b.precio);
                 
-                opciones.sort((a, b) => a.precio - b.precio);
-                
-                let html = `
-                    <div style="margin-bottom:20px;">
-                        <h3 style="color:var(--gray-900);font-size:1.2rem;">${codigo}</h3>
-                        <p style="color:var(--gray-500);">${descripcion}</p>
-                    </div>
-                    <div style="margin-bottom:16px;"><strong>Proveedores disponibles: ${opciones.length}</strong></div>
-                `;
-                
-                if (opciones.length === 0) {
-                    html += `
-                        <div class="alert alert-warning">
-                            <span class="material-icons">warning</span>
-                            <div><strong>FDC - Fuera de Catálogo</strong><br>Este producto no está disponible en ningún proveedor.</div>
-                        </div>
-                    `;
-                } else {
-                    opciones.forEach((op, index) => {
-                        let rankClass = '', rankBadge = '', cardClass = '';
-                        if (index === 0) { rankClass = 'rank-1'; rankBadge = '🏆 Mejor precio'; cardClass = 'mejor'; }
-                        else if (index === 1) { rankClass = 'rank-2'; rankBadge = '🥈 2da opción'; cardClass = 'segundo'; }
-                        else if (index === 2) { rankClass = 'rank-3'; rankBadge = '🥉 3ra opción'; }
-                        else { rankClass = 'rank-other'; rankBadge = `#${index + 1}`; }
-                        
-                        html += `
-                            <div class="proveedor-card ${cardClass}">
-                                <div class="proveedor-card-header">
-                                    <div style="display:flex;align-items:center;gap:12px;">
-                                        <span class="rank-badge ${rankClass}">${rankBadge}</span>
-                                        <strong style="font-size:1.1rem;">${op.proveedor}</strong>
-                                    </div>
-                                </div>
-                                <div class="proveedor-card-details">
-                                    <div class="detail-item">
-                                        <label>Precio Unitario</label>
-                                        <span style="color:var(--success);">$${op.precio.toFixed(2)}</span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <label>Existencia</label>
-                                        <span>${op.existencia} unidades</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
+                const proveedorAsignado = proveedoresValidos.length > 0 ? proveedoresValidos[0] : null;
+                const segundaOpcion = proveedoresValidos.length > 1 ? proveedoresValidos[1] : null;
+
+                // Lógica de filtrado
+                if (filtroProveedor !== 'todos') {
+                    if (!proveedorAsignado || proveedorAsignado.proveedor !== filtroProveedor) {
+                        return;
+                    }
+                    // El proveedor asignado siempre tendrá existencia > 0, se muestra normalmente
                 }
-                
-                content.innerHTML = html;
-                modal.classList.add('show');
-            };
 
-            window.cerrarModal = function() {
-                document.getElementById('modalDetalle').classList.remove('show');
-            };
+                // FDC si no hay proveedores con stock > 0
+                if (!proveedorAsignado && filtroProveedor === 'todos') {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${prod.codigo}</strong></td>
+                        <td>${prod.descripcion}</td>
+                        <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1" style="width:70px;"></td>
+                        <td><span class="badge badge-fdc">FDC</span></td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td><span class="text-muted">Fuera de catálogo</span></td>
+                        <td><span class="text-muted">N/A</span></td>
+                        <td>
+                            <div style="display:flex;gap:4px;">
+                                <button class="btn btn-info btn-xs" onclick="abrirModal('${prod.codigo}', '${prod.descripcion.replace(/'/g, "\\'")}')" title="Ver detalle">
+                                    <span class="material-icons" style="font-size:16px;">visibility</span>
+                                </button>
+                                <button class="btn btn-danger btn-xs" onclick="eliminarProductoMaestro('${prod.codigo}')" title="Eliminar">
+                                    <span class="material-icons" style="font-size:16px;">delete</span>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                    return;
+                }
 
-            document.getElementById('modalDetalle').addEventListener('click', function(e) {
-                if (e.target === this) cerrarModal();
+                if (proveedorAsignado) {
+                    const row = document.createElement('tr');
+                    const subtotal = proveedorAsignado.precio * prod.piezas;
+                    
+                    let existenciaHTML = `<span class="badge badge-success">${proveedorAsignado.existencia}</span>`;
+                    
+                    let stockWarningHTML = '';
+                    if (proveedorAsignado.activarStock && 
+                        proveedorAsignado.existencia < proveedorAsignado.stockMinimo) {
+                        stockWarningHTML = `
+                            <span class="material-icons warning-icon" style="font-size:16px;margin-left:4px;" title="Existencia baja">warning</span>
+                            <div class="stock-bajo-alert">Existencia baja</div>
+                        `;
+                    }
+                    
+                    let segundaOpcionHTML = segundaOpcion 
+                        ? `<span class="badge badge-info">${segundaOpcion.proveedor} - $${segundaOpcion.precio.toFixed(2)}</span>` 
+                        : '<span class="text-muted">No disponible</span>';
+                    
+                    row.innerHTML = `
+                        <td><strong>${prod.codigo}</strong></td>
+                        <td>${prod.descripcion}</td>
+                        <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1" style="width:70px;"></td>
+                        <td>${existenciaHTML}${stockWarningHTML}</td>
+                        <td>$${proveedorAsignado.precio.toFixed(2)}</td>
+                        <td class="text-highlight">$${subtotal.toFixed(2)}</td>
+                        <td><span style="font-weight:500;">${proveedorAsignado.proveedor}</span></td>
+                        <td>${segundaOpcionHTML}</td>
+                        <td>
+                            <div style="display:flex;gap:4px;">
+                                <button class="btn btn-info btn-xs" onclick="abrirModal('${prod.codigo}', '${prod.descripcion.replace(/'/g, "\\'")}')" title="Ver detalle">
+                                    <span class="material-icons" style="font-size:16px;">visibility</span>
+                                </button>
+                                <button class="btn btn-danger btn-xs" onclick="eliminarProductoMaestro('${prod.codigo}')" title="Eliminar">
+                                    <span class="material-icons" style="font-size:16px;">delete</span>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                }
             });
 
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            let sidebarOpen = true;
-
-            sidebarToggle.addEventListener('click', () => {
-                sidebarOpen = !sidebarOpen;
-                sidebar.classList.toggle('collapsed', !sidebarOpen);
-                mainContent.classList.toggle('expanded', !sidebarOpen);
-                sidebarToggle.querySelector('.material-icons').textContent = sidebarOpen ? 'chevron_left' : 'chevron_right';
-            });
-
-            const navItems = document.querySelectorAll('.nav-item');
-            const sections = document.querySelectorAll('.section');
-            navItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    const sectionId = item.dataset.section;
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    item.classList.add('active');
-                    sections.forEach(section => section.classList.remove('active'));
-                    document.getElementById(`section-${sectionId}`).classList.add('active');
-                    if (sectionId === 'comparativo') generarTablaComparativa();
+            document.querySelectorAll('.piezas-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    actualizarPiezas(this);
                 });
             });
 
-            document.getElementById('activarStockMinimo').addEventListener('change', function() {
-                document.getElementById('stockMinimo').disabled = !this.checked;
-                if (!this.checked) document.getElementById('stockMinimo').value = '20';
-            });
+            actualizarTotalGeneral();
+        }
 
-            document.getElementById('aplicarDescuento').addEventListener('change', function() {
-                document.getElementById('porcentajeDescuento').disabled = !this.checked;
-                if (!this.checked) document.getElementById('porcentajeDescuento').value = '0';
-            });
+        function actualizarPiezas(inputElement) {
+            const row = inputElement.closest('tr');
+            const precioText = row.cells[4].textContent;
+            if (precioText === '-') return;
+            
+            const precio = parseFloat(precioText.replace('$', '')) || 0;
+            const piezas = parseInt(inputElement.value) || 0;
+            const subtotal = precio * piezas;
+            
+            row.cells[5].innerHTML = `<span class="text-highlight">$${subtotal.toFixed(2)}</span>`;
+            
+            const codigo = row.cells[0].textContent.trim();
+            const prodMaestro = productosMaestro.find(p => p.codigo === codigo);
+            if (prodMaestro) {
+                prodMaestro.piezas = piezas;
+                guardarDatos();
+            }
+            
+            actualizarTotalGeneral();
+        }
 
-            document.getElementById('btnAgregarProveedor').addEventListener('click', () => {
-                const nombre = document.getElementById('nombreProveedor').value.trim();
-                const fileInput = document.getElementById('archivoProveedor');
-                const activarStock = document.getElementById('activarStockMinimo').checked;
-                const stockMinimo = activarStock ? (parseInt(document.getElementById('stockMinimo').value) || 20) : 0;
-                const aplicarDescuento = document.getElementById('aplicarDescuento').checked;
-                const porcentajeDescuento = aplicarDescuento ? (parseFloat(document.getElementById('porcentajeDescuento').value) || 0) : 0;
-                
-                if (!nombre) { showToast('Por favor, ingrese el nombre del proveedor', 'warning'); return; }
-                if (!fileInput.files[0]) { showToast('Por favor, seleccione un archivo Excel', 'warning'); return; }
-                if (proveedores.some(p => p.nombre.toLowerCase() === nombre.toLowerCase())) {
-                    showToast('Ya existe un proveedor con este nombre', 'warning'); return;
+        function actualizarTotalGeneral() {
+            let total = 0;
+            document.querySelectorAll('#cuerpoTabla tr').forEach(row => {
+                const subtotalCell = row.cells[5];
+                if (subtotalCell && subtotalCell.textContent !== '-') {
+                    const subtotal = parseFloat(subtotalCell.textContent.replace('$', '')) || 0;
+                    total += subtotal;
                 }
+            });
+            document.getElementById('totalGeneral').textContent = 
+                `$${total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
 
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, { type: 'array' });
-                        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                        const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                        if (json.length < 2) { showToast('El archivo Excel está vacío', 'warning'); return; }
+        const searchInput = document.getElementById('searchProducto');
+        const searchResults = document.getElementById('searchResults');
 
-                        let productos = json.slice(1).map(row => ({
-                            codigo: String(row[0] || '').trim(),
-                            descripcion: String(row[1] || '').trim(),
-                            existencia: parseFloat(row[2]) || 0,
-                            precio: parseFloat(row[3]) || 0
-                        })).filter(p => p.codigo && p.precio > 0);
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim().toLowerCase();
+            if (query.length < 2) { searchResults.classList.remove('show'); return; }
 
-                        if (aplicarDescuento && porcentajeDescuento > 0) {
-                            productos = productos.map(p => ({...p, precioOriginal: p.precio, precio: p.precio * (1 - porcentajeDescuento / 100)}));
-                        }
-                        if (productos.length === 0) { showToast('No se encontraron productos válidos', 'warning'); return; }
+            const resultados = [];
+            const seen = new Set();
 
-                        proveedores.push({ nombre, productos, stockMinimo, descuento: aplicarDescuento ? porcentajeDescuento : 0, activarStock });
-                        actualizarListaProveedores();
-                        actualizarFiltroProveedores();
-                        guardarDatos();
-                        
-                        document.getElementById('nombreProveedor').value = '';
-                        document.getElementById('archivoProveedor').value = '';
-                        document.getElementById('activarStockMinimo').checked = false;
-                        document.getElementById('stockMinimo').value = '20';
-                        document.getElementById('stockMinimo').disabled = true;
-                        document.getElementById('aplicarDescuento').checked = false;
-                        document.getElementById('porcentajeDescuento').value = '0';
-                        document.getElementById('porcentajeDescuento').disabled = true;
-                        
-                        showToast(`Proveedor "${nombre}" cargado exitosamente (${productos.length} productos)`, 'success');
-                    } catch (error) {
-                        showToast('Error al procesar el archivo Excel', 'danger');
-                        console.error(error);
+            proveedores.forEach(prov => {
+                prov.productos.forEach(prod => {
+                    const key = prod.codigo.toLowerCase();
+                    if (!seen.has(key) && (prod.codigo.toLowerCase().includes(query) || prod.descripcion.toLowerCase().includes(query))) {
+                        seen.add(key);
+                        const enListaMaestra = productosMaestro.some(p => p.codigo === prod.codigo);
+                        resultados.push({...prod, proveedor: prov.nombre, enListaMaestra});
                     }
-                };
-                reader.readAsArrayBuffer(fileInput.files[0]);
+                });
             });
 
-            function actualizarListaProveedores() {
-                const div = document.getElementById('listaProveedores');
-                if (proveedores.length === 0) {
-                    div.innerHTML = '<p style="color:var(--gray-400);text-align:center;padding:20px;">No hay proveedores cargados</p>';
-                    return;
-                }
-                div.innerHTML = proveedores.map((p, index) => `
-                    <div class="proveedor-item">
-                        <div class="proveedor-info">
-                            <span class="material-icons" style="color:var(--primary);">store</span>
-                            <div>
-                                <div class="proveedor-name">${p.nombre}</div>
-                                <div class="product-count">${p.productos.length} productos | Stock mín: ${p.activarStock ? p.stockMinimo : 'No'} | Desc: ${p.descuento}%</div>
-                            </div>
+            const resultadosLimitados = resultados.slice(0, 10);
+
+            if (resultadosLimitados.length === 0) {
+                searchResults.innerHTML = '<div style="padding:16px;text-align:center;color:var(--gray-400);">No se encontraron productos</div>';
+            } else {
+                searchResults.innerHTML = resultadosLimitados.map(r => `
+                    <div class="search-result-item">
+                        <div>
+                            <strong>${r.codigo}</strong> - ${r.descripcion}<br>
+                            <small style="color:var(--gray-500);">${r.proveedor} | $${r.precio.toFixed(2)} | Existencia: ${r.existencia}</small>
+                            ${r.enListaMaestra ? '<br><span class="badge badge-success" style="margin-top:4px;">✅ En pedido actual</span>' : ''}
                         </div>
-                        <button class="btn btn-secondary btn-sm" onclick="eliminarProveedor(${index})">
-                            <span class="material-icons">delete</span>
-                        </button>
+                        <div class="result-actions">
+                            <button class="btn btn-info btn-xs" onclick="abrirModal('${r.codigo}', '${r.descripcion.replace(/'/g, "\\'")}')" title="Ver detalle">
+                                <span class="material-icons" style="font-size:16px;">visibility</span> Detalle
+                            </button>
+                            ${!r.enListaMaestra ? 
+                                `<button class="btn btn-primary btn-xs" onclick="agregarAlPedido('${r.codigo}', '${r.descripcion.replace(/'/g, "\\'")}', event)">
+                                    <span class="material-icons" style="font-size:16px;">add_shopping_cart</span> Agregar
+                                </button>` : ''}
+                        </div>
                     </div>
                 `).join('');
             }
+            searchResults.classList.add('show');
+        });
 
-            window.eliminarProveedor = function(index) {
-                proveedores.splice(index, 1);
-                actualizarListaProveedores();
-                actualizarFiltroProveedores();
-                generarTablaComparativa();
-                guardarDatos();
-            };
-
-            function actualizarFiltroProveedores() {
-                const select = document.getElementById('filtroProveedor');
-                select.innerHTML = '<option value="todos">Todos los proveedores</option>';
-                proveedores.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p.nombre;
-                    opt.textContent = p.nombre;
-                    select.appendChild(opt);
-                });
-                select.onchange = () => generarTablaComparativa();
-            }
-
-            document.getElementById('btnCargarMaestro').addEventListener('click', () => {
-                const file = document.getElementById('archivoMaestro').files[0];
-                if (!file) { showToast('Por favor, seleccione un archivo Excel', 'warning'); return; }
-
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, { type: 'array' });
-                        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                        const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                        if (json.length < 2) { showToast('El archivo Excel está vacío', 'warning'); return; }
-
-                        productosMaestro = json.slice(1).map(row => ({
-                            codigo: String(row[0] || '').trim(),
-                            descripcion: String(row[1] || '').trim(),
-                            piezas: parseFloat(row[2]) || 1
-                        })).filter(p => p.codigo);
-                        if (productosMaestro.length === 0) { showToast('No se encontraron productos válidos', 'warning'); return; }
-
-                        document.getElementById('estadoMaestro').innerHTML = `
-                            <div class="alert alert-info">
-                                <span class="material-icons">check_circle</span>
-                                <div><strong>✅ Lista maestra cargada exitosamente</strong><br>${productosMaestro.length} productos encontrados</div>
-                            </div>
-                        `;
-                        guardarDatos();
-                        generarTablaComparativa();
-                        document.querySelector('.nav-item[data-section="comparativo"]').click();
-                    } catch (error) {
-                        showToast('Error al procesar el archivo Excel', 'danger');
-                        console.error(error);
-                    }
-                };
-                reader.readAsArrayBuffer(file);
-            });
-
-            window.eliminarProductoMaestro = function(codigo) {
-                productosMaestro = productosMaestro.filter(p => p.codigo !== codigo);
-                guardarDatos();
-                generarTablaComparativa();
-                showToast(`Producto ${codigo} eliminado del pedido`, 'warning');
-            };
-
-            function generarTablaComparativa() {
-                const tbody = document.getElementById('cuerpoTabla');
-                const filtroProveedor = document.getElementById('filtroProveedor').value;
-                
-                if (proveedores.length === 0 || productosMaestro.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--gray-400);">Cargue proveedores y lista maestra para ver el comparativo</td></tr>';
-                    actualizarTotalGeneral();
-                    return;
-                }
-
-                tbody.innerHTML = '';
-
-                productosMaestro.forEach((prod) => {
-                    const proveedoresValidos = [];
-                    proveedores.forEach(prov => {
-                        const encontrado = prov.productos.find(p => p.codigo === prod.codigo);
-                        if (encontrado && encontrado.existencia > 0) {
-                            proveedoresValidos.push({
-                                proveedor: prov.nombre,
-                                ...encontrado,
-                                stockMinimo: prov.stockMinimo,
-                                activarStock: prov.activarStock
-                            });
-                        }
-                    });
-
-                    proveedoresValidos.sort((a, b) => a.precio - b.precio);
-                    const proveedorAsignado = proveedoresValidos.length > 0 ? proveedoresValidos[0] : null;
-                    const segundaOpcion = proveedoresValidos.length > 1 ? proveedoresValidos[1] : null;
-
-                    if (filtroProveedor !== 'todos') {
-                        if (!proveedorAsignado || proveedorAsignado.proveedor !== filtroProveedor) return;
-                    }
-
-                    if (!proveedorAsignado && filtroProveedor === 'todos') {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td><strong>${prod.codigo}</strong></td>
-                            <td>${prod.descripcion}</td>
-                            <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1" style="width:70px;"></td>
-                            <td><span class="badge badge-fdc">FDC</span></td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td><span class="text-muted">Fuera de catálogo</span></td>
-                            <td><span class="text-muted">N/A</span></td>
-                            <td>
-                                <div style="display:flex;gap:4px;">
-                                    <button class="btn btn-info btn-xs" onclick="abrirModal('${prod.codigo}', '${prod.descripcion.replace(/'/g, "\\'")}')" title="Ver detalle">
-                                        <span class="material-icons" style="font-size:16px;">visibility</span>
-                                    </button>
-                                    <button class="btn btn-danger btn-xs" onclick="eliminarProductoMaestro('${prod.codigo}')" title="Eliminar">
-                                        <span class="material-icons" style="font-size:16px;">delete</span>
-                                    </button>
-                                </div>
-                            </td>
-                        `;
-                        tbody.appendChild(row);
-                        return;
-                    }
-
-                    if (proveedorAsignado) {
-                        const row = document.createElement('tr');
-                        const subtotal = proveedorAsignado.precio * prod.piezas;
-                        let existenciaHTML = `<span class="badge badge-success">${proveedorAsignado.existencia}</span>`;
-                        let stockWarningHTML = '';
-                        if (proveedorAsignado.activarStock && proveedorAsignado.existencia < proveedorAsignado.stockMinimo) {
-                            stockWarningHTML = `
-                                <span class="material-icons warning-icon" style="font-size:16px;margin-left:4px;" title="Existencia baja">warning</span>
-                                <div class="stock-bajo-alert">Existencia baja</div>
-                            `;
-                        }
-                        let segundaOpcionHTML = segundaOpcion 
-                            ? `<span class="badge badge-info">${segundaOpcion.proveedor} - $${segundaOpcion.precio.toFixed(2)}</span>` 
-                            : '<span class="text-muted">No disponible</span>';
-                        
-                        row.innerHTML = `
-                            <td><strong>${prod.codigo}</strong></td>
-                            <td>${prod.descripcion}</td>
-                            <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1" style="width:70px;"></td>
-                            <td>${existenciaHTML}${stockWarningHTML}</td>
-                            <td>$${proveedorAsignado.precio.toFixed(2)}</td>
-                            <td class="text-highlight">$${subtotal.toFixed(2)}</td>
-                            <td><span style="font-weight:500;">${proveedorAsignado.proveedor}</span></td>
-                            <td>${segundaOpcionHTML}</td>
-                            <td>
-                                <div style="display:flex;gap:4px;">
-                                    <button class="btn btn-info btn-xs" onclick="abrirModal('${prod.codigo}', '${prod.descripcion.replace(/'/g, "\\'")}')" title="Ver detalle">
-                                        <span class="material-icons" style="font-size:16px;">visibility</span>
-                                    </button>
-                                    <button class="btn btn-danger btn-xs" onclick="eliminarProductoMaestro('${prod.codigo}')" title="Eliminar">
-                                        <span class="material-icons" style="font-size:16px;">delete</span>
-                                    </button>
-                                </div>
-                            </td>
-                        `;
-                        tbody.appendChild(row);
-                    }
-                });
-
-                document.querySelectorAll('.piezas-input').forEach(input => {
-                    input.addEventListener('input', function() { actualizarPiezas(this); });
-                });
-                actualizarTotalGeneral();
-            }
-
-            function actualizarPiezas(inputElement) {
-                const row = inputElement.closest('tr');
-                const precioText = row.cells[4].textContent;
-                if (precioText === '-') return;
-                const precio = parseFloat(precioText.replace('$', '')) || 0;
-                const piezas = parseInt(inputElement.value) || 0;
-                const subtotal = precio * piezas;
-                row.cells[5].innerHTML = `<span class="text-highlight">$${subtotal.toFixed(2)}</span>`;
-                const codigo = row.cells[0].textContent.trim();
-                const prodMaestro = productosMaestro.find(p => p.codigo === codigo);
-                if (prodMaestro) {
-                    prodMaestro.piezas = piezas;
-                    guardarDatos();
-                }
-                actualizarTotalGeneral();
-            }
-
-            function actualizarTotalGeneral() {
-                let total = 0;
-                document.querySelectorAll('#cuerpoTabla tr').forEach(row => {
-                    const subtotalCell = row.cells[5];
-                    if (subtotalCell && subtotalCell.textContent !== '-') {
-                        const subtotal = parseFloat(subtotalCell.textContent.replace('$', '')) || 0;
-                        total += subtotal;
-                    }
-                });
-                document.getElementById('totalGeneral').textContent = 
-                    `$${total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-            }
-
-            const searchInput = document.getElementById('searchProducto');
-            const searchResults = document.getElementById('searchResults');
-            searchInput.addEventListener('input', function() {
-                const query = this.value.trim().toLowerCase();
-                if (query.length < 2) { searchResults.classList.remove('show'); return; }
-                const resultados = [];
-                const seen = new Set();
-                proveedores.forEach(prov => {
-                    prov.productos.forEach(prod => {
-                        const key = prod.codigo.toLowerCase();
-                        if (!seen.has(key) && (prod.codigo.toLowerCase().includes(query) || prod.descripcion.toLowerCase().includes(query))) {
-                            seen.add(key);
-                            const enListaMaestra = productosMaestro.some(p => p.codigo === prod.codigo);
-                            resultados.push({...prod, proveedor: prov.nombre, enListaMaestra});
-                        }
-                    });
-                });
-                const resultadosLimitados = resultados.slice(0, 10);
-                if (resultadosLimitados.length === 0) {
-                    searchResults.innerHTML = '<div style="padding:16px;text-align:center;color:var(--gray-400);">No se encontraron productos</div>';
-                } else {
-                    searchResults.innerHTML = resultadosLimitados.map(r => `
-                        <div class="search-result-item">
-                            <div>
-                                <strong>${r.codigo}</strong> - ${r.descripcion}<br>
-                                <small style="color:var(--gray-500);">${r.proveedor} | $${r.precio.toFixed(2)} | Existencia: ${r.existencia}</small>
-                                ${r.enListaMaestra ? '<br><span class="badge badge-success" style="margin-top:4px;">✅ En pedido actual</span>' : ''}
-                            </div>
-                            <div class="result-actions">
-                                <button class="btn btn-info btn-xs" onclick="abrirModal('${r.codigo}', '${r.descripcion.replace(/'/g, "\\'")}')" title="Ver detalle">
-                                    <span class="material-icons" style="font-size:16px;">visibility</span> Detalle
-                                </button>
-                                ${!r.enListaMaestra ? 
-                                    `<button class="btn btn-primary btn-xs" onclick="agregarAlPedido('${r.codigo}', '${r.descripcion.replace(/'/g, "\\'")}', event)">
-                                        <span class="material-icons" style="font-size:16px;">add_shopping_cart</span> Agregar
-                                    </button>` : ''}
-                            </div>
-                        </div>
-                    `).join('');
-                }
-                searchResults.classList.add('show');
-            });
-
-            document.addEventListener('click', function(e) {
-                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                    searchResults.classList.remove('show');
-                }
-            });
-
-            window.agregarAlPedido = function(codigo, descripcion, event) {
-                event.stopPropagation();
-                if (productosMaestro.some(p => p.codigo === codigo)) {
-                    showToast('Este producto ya está en el pedido', 'warning');
-                    return;
-                }
-                productosMaestro.unshift({codigo, descripcion, piezas: 1});
-                showToast(`Producto ${codigo} agregado al pedido`, 'success');
-                guardarDatos();
-                generarTablaComparativa();
-                setTimeout(() => {
-                    const primeraFila = document.querySelector('#cuerpoTabla tr:first-child');
-                    if (primeraFila) {
-                        primeraFila.classList.add('new-row');
-                        setTimeout(() => primeraFila.classList.remove('new-row'), 2000);
-                    }
-                }, 100);
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
                 searchResults.classList.remove('show');
-                searchInput.value = '';
-            };
-
-            function generarPDFPorProveedor(nombreProveedor) {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                doc.setFillColor(37, 99, 235);
-                doc.rect(0, 0, 210, 40, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(20);
-                doc.text('PEDIDO DE COMPRA', 105, 20, { align: 'center' });
-                doc.setFontSize(12);
-                doc.text(`Proveedor: ${nombreProveedor}`, 105, 30, { align: 'center' });
-                doc.setTextColor(0, 0, 0);
-                doc.setFontSize(10);
-                doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 14, 50);
-
-                const filas = Array.from(document.querySelectorAll('#cuerpoTabla tr'))
-                    .filter(row => {
-                        const proveedorCell = row.cells[6];
-                        return proveedorCell && proveedorCell.textContent.trim() === nombreProveedor;
-                    });
-
-                if (filas.length === 0) {
-                    doc.text('No hay productos para este proveedor', 14, 60);
-                    doc.save(`Pedido_${nombreProveedor.replace(/\s+/g, '_')}.pdf`);
-                    return;
-                }
-
-                const datos = filas.map(row => [
-                    row.cells[0].textContent,
-                    row.cells[1].textContent,
-                    row.querySelector('.piezas-input')?.value || row.cells[2].textContent,
-                    row.cells[4].textContent,
-                    row.cells[5].textContent
-                ]);
-
-                const totalProveedor = filas.reduce((sum, row) => {
-                    const subtotal = parseFloat(row.cells[5].textContent.replace('$', '')) || 0;
-                    return sum + subtotal;
-                }, 0);
-
-                doc.autoTable({
-                    head: [['Código', 'Descripción', 'Piezas', 'Precio Unit.', 'Subtotal']],
-                    body: datos,
-                    startY: 60,
-                    theme: 'grid',
-                    headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
-                    foot: [['', '', '', 'TOTAL:', `$${totalProveedor.toFixed(2)}`]],
-                    footStyles: { fillColor: [243, 244, 246], textColor: 0, fontStyle: 'bold' }
-                });
-
-                doc.save(`Pedido_${nombreProveedor.replace(/\s+/g, '_')}.pdf`);
             }
+        });
 
-            document.getElementById('btnGenerarFiltrado').addEventListener('click', () => {
-                const prov = document.getElementById('filtroProveedor').value;
-                if (prov === 'todos') { showToast('Seleccione un proveedor específico en el filtro', 'warning'); return; }
-                generarPDFPorProveedor(prov);
-            });
-
-            document.getElementById('btnGenerarTodos').addEventListener('click', () => {
-                if (proveedores.length === 0) { showToast('No hay proveedores cargados', 'warning'); return; }
-                proveedores.forEach(p => generarPDFPorProveedor(p.nombre));
-                setTimeout(() => showToast(`Se generaron ${proveedores.length} archivos PDF correctamente`, 'success'), 500);
-            });
-
-            function inicializar() {
-                const datosCargados = cargarDatos();
-                actualizarListaProveedores();
-                actualizarFiltroProveedores();
-                if (datosCargados && proveedores.length > 0 && productosMaestro.length > 0) {
-                    generarTablaComparativa();
-                } else {
-                    document.getElementById('cuerpoTabla').innerHTML = 
-                        '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--gray-400);">Cargue proveedores y lista maestra para ver el comparativo</td></tr>';
-                }
-                document.getElementById('stockMinimo').value = '20';
+        function agregarAlPedido(codigo, descripcion, event) {
+            event.stopPropagation();
+            if (productosMaestro.some(p => p.codigo === codigo)) {
+                showToast('Este producto ya está en el pedido', 'warning');
+                return;
             }
-
-            inicializar();
+            productosMaestro.unshift({codigo, descripcion, piezas: 1});
+            showToast(`Producto ${codigo} agregado al pedido`, 'success');
+            guardarDatos();
+            generarTablaComparativa();
+            setTimeout(() => {
+                const primeraFila = document.querySelector('#cuerpoTabla tr:first-child');
+                if (primeraFila) {
+                    primeraFila.classList.add('new-row');
+                    setTimeout(() => primeraFila.classList.remove('new-row'), 2000);
+                }
+            }, 100);
+            searchResults.classList.remove('show');
+            searchInput.value = '';
         }
 
-        // ========== ARRANQUE ==========
-        window.addEventListener('load', checkAutoLogin);
+        function generarPDFPorProveedor(nombreProveedor) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFillColor(37, 99, 235);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(20);
+            doc.text('PEDIDO DE COMPRA', 105, 20, { align: 'center' });
+            doc.setFontSize(12);
+            doc.text(`Proveedor: ${nombreProveedor}`, 105, 30, { align: 'center' });
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 14, 50);
+
+            const filas = Array.from(document.querySelectorAll('#cuerpoTabla tr'))
+                .filter(row => {
+                    const proveedorCell = row.cells[6]; // columna Proveedor ahora es texto
+                    return proveedorCell && proveedorCell.textContent.trim() === nombreProveedor;
+                });
+
+            if (filas.length === 0) {
+                doc.text('No hay productos para este proveedor', 14, 60);
+                doc.save(`Pedido_${nombreProveedor.replace(/\s+/g, '_')}.pdf`);
+                return;
+            }
+
+            const datos = filas.map(row => [
+                row.cells[0].textContent,
+                row.cells[1].textContent,
+                row.querySelector('.piezas-input')?.value || row.cells[2].textContent,
+                row.cells[4].textContent,
+                row.cells[5].textContent
+            ]);
+
+            const totalProveedor = filas.reduce((sum, row) => {
+                const subtotal = parseFloat(row.cells[5].textContent.replace('$', '')) || 0;
+                return sum + subtotal;
+            }, 0);
+
+            doc.autoTable({
+                head: [['Código', 'Descripción', 'Piezas', 'Precio Unit.', 'Subtotal']],
+                body: datos,
+                startY: 60,
+                theme: 'grid',
+                headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
+                foot: [['', '', '', 'TOTAL:', `$${totalProveedor.toFixed(2)}`]],
+                footStyles: { fillColor: [243, 244, 246], textColor: 0, fontStyle: 'bold' }
+            });
+
+            doc.save(`Pedido_${nombreProveedor.replace(/\s+/g, '_')}.pdf`);
+        }
+
+        document.getElementById('btnGenerarFiltrado').addEventListener('click', () => {
+            const prov = document.getElementById('filtroProveedor').value;
+            if (prov === 'todos') { showToast('Seleccione un proveedor específico en el filtro', 'warning'); return; }
+            generarPDFPorProveedor(prov);
+        });
+
+        document.getElementById('btnGenerarTodos').addEventListener('click', () => {
+            if (proveedores.length === 0) { showToast('No hay proveedores cargados', 'warning'); return; }
+            proveedores.forEach(p => generarPDFPorProveedor(p.nombre));
+            setTimeout(() => showToast(`Se generaron ${proveedores.length} archivos PDF correctamente`, 'success'), 500);
+        });
+
+        function inicializar() {
+            const datosCargados = cargarDatos();
+            actualizarListaProveedores();
+            actualizarFiltroProveedores();
+            if (datosCargados && proveedores.length > 0 && productosMaestro.length > 0) {
+                generarTablaComparativa();
+            } else {
+                document.getElementById('cuerpoTabla').innerHTML = 
+                    '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--gray-400);">Cargue proveedores y lista maestra para ver el comparativo</td></tr>';
+            }
+            document.getElementById('stockMinimo').value = '20';
+        }
+
+        inicializar();
     </script>
 </body>
 </html>
