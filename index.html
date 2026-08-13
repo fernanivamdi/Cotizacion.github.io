@@ -3,1087 +3,1909 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cotización – Sistema Pro (Acceso)</title>
+    <meta name="theme-color" content="#14532d">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Política de seguridad para permitir imágenes externas -->
+    <meta http-equiv="Content-Security-Policy" content="img-src * data: blob:;">
+
+    <title>FarmacIn</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <style>
-        /* ========== ESTILOS GENERALES ========== */
+        /* ====== ESTILOS (optimizados para móvil) ====== */
         :root {
-            --primary: #2563eb; --primary-dark: #1d4ed8; --primary-light: #dbeafe;
-            --success: #059669; --success-light: #d1fae5; --warning: #d97706;
-            --warning-light: #fef3c7; --danger: #dc2626; --danger-light: #fee2e2;
-            --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
-            --gray-300: #d1d5db; --gray-400: #9ca3af; --gray-500: #6b7280;
-            --gray-600: #4b5563; --gray-700: #374151; --gray-800: #1f2937;
-            --gray-900: #111827; --sidebar-width: 280px; --sidebar-collapsed: 72px;
-            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05); --shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-            --radius-sm: 6px; --radius: 8px; --radius-lg: 12px; --radius-xl: 16px;
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            font-family: 'Inter', sans-serif; background: var(--gray-100); color: var(--gray-800);
-            line-height:1.5; display:flex; min-height:100vh; overflow-x:hidden;
+            --primary: #14532d;
+            --primary-light: #166534;
+            --bg-app: #f0fdf4;
+            --accent: #22c55e;
+            --danger: #ef4444;
+            --light-gray: #f3f4f6;
+            --medium-gray: #6b7280;
+            --dark-gray: #1f2937;
+            --white: #ffffff;
+            --border: #e5e7eb;
+            --color-analgesico: #ef4444;
+            --color-antiinflamatorio: #ec4899;
+            --color-antibiotico: #8b5cf6;
+            --color-antihistaminico: #f59e0b;
+            --color-respiratorio: #06b6d4;
+            --color-gastrointestinal: #8b5cf6;
+            --color-dermatologico: #10b981;
+            --color-antiseptico: #78716c;
+            --color-sueros: #3b82f6;
+            --color-probiotico: #a855f7;
+            --color-antigripal: #f97316;
+            --color-antitusivo: #6366f1;
+            --color-antimicotico: #8b5cf6;
+            --color-vitaminas: #f59e0b;
         }
 
-        /* ========== PANTALLA DE LOGIN ========== */
-        .login-overlay {
-            position: fixed; inset:0; background: linear-gradient(135deg, #1e3a8a, #2563eb);
-            display:flex; align-items:center; justify-content:center; z-index:10000;
-            flex-direction:column;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
-        .login-card {
-            background: white; border-radius: var(--radius-xl); padding: 40px 32px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 380px; max-width: 90%;
+
+        body {
+            background-color: var(--bg-app);
+            color: var(--dark-gray);
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* ====== Autenticación ====== */
+        #auth-screen {
+            position: fixed;
+            inset: 0;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 9999;
+        }
+
+        .auth-box {
+            background: var(--white);
+            width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            padding: 32px 28px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
             text-align: center;
         }
-        .login-card h2 { font-size: 1.8rem; margin-bottom: 8px; color: var(--gray-900); }
-        .login-card p { color: var(--gray-500); margin-bottom: 24px; font-size:0.9rem; }
-        .login-card .material-icons { font-size: 48px; color: var(--primary); }
-        .login-input {
-            width:100%; padding:12px 14px; margin-bottom:16px; border:1px solid var(--gray-300);
-            border-radius: var(--radius); font-size:0.95rem; transition: var(--transition);
-        }
-        .login-input:focus { border-color: var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,0.1); }
-        .login-btn {
-            width:100%; padding:12px; background: var(--primary); color:white; border:none;
-            border-radius: var(--radius); font-weight:600; cursor:pointer; margin-top:8px;
-            transition: var(--transition);
-        }
-        .login-btn:hover { background: var(--primary-dark); }
-        .remember-row {
-            display:flex; align-items:center; justify-content:space-between; margin:12px 0;
-            font-size:0.85rem; color: var(--gray-600);
-        }
-        .remember-row label { display:flex; align-items:center; gap:6px; cursor:pointer; }
-        .error-msg { color: var(--danger); font-size:0.85rem; margin-top:8px; display:none; }
 
-        /* ========== ESTILOS ORIGINALES DE LA APP ========== */
-        .sidebar {
-            position:fixed; left:0; top:0; bottom:0; width:var(--sidebar-width);
-            background:white; border-right:1px solid var(--gray-200); z-index:50;
-            transition:var(--transition); display:flex; flex-direction:column; box-shadow:var(--shadow-lg);
+        .auth-box h2 {
+            color: var(--primary);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 28px;
         }
-        .sidebar.collapsed { width: var(--sidebar-collapsed); }
-        .sidebar-header { padding:24px 20px; border-bottom:1px solid var(--gray-200); display:flex; align-items:center; gap:12px; }
-        .sidebar-header .logo-icon { font-size:32px; color:var(--primary); flex-shrink:0; }
-        .sidebar-header .logo-text { font-size:1.25rem; font-weight:700; color:var(--gray-900); white-space:nowrap; overflow:hidden; transition:var(--transition); }
-        .sidebar.collapsed .logo-text { opacity:0; width:0; }
-        .sidebar-toggle { position:absolute; right:-12px; top:32px; width:24px; height:24px; background:white; border:1px solid var(--gray-200); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:51; box-shadow:var(--shadow-sm); transition:var(--transition); }
-        .sidebar-toggle:hover { background:var(--gray-50); box-shadow:var(--shadow); }
-        .sidebar-nav { flex:1; padding:16px 12px; overflow-y:auto; }
-        .nav-item { display:flex; align-items:center; gap:12px; padding:12px 16px; margin-bottom:4px; border-radius:var(--radius); cursor:pointer; transition:var(--transition); color:var(--gray-600); font-weight:500; font-size:0.95rem; white-space:nowrap; position:relative; }
-        .nav-item:hover { background:var(--gray-50); color:var(--gray-900); }
-        .nav-item.active { background:var(--primary-light); color:var(--primary); font-weight:600; }
-        .nav-item.active::before { content:''; position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:24px; background:var(--primary); border-radius:0 4px 4px 0; }
-        .nav-item .material-icons { font-size:22px; flex-shrink:0; }
-        .sidebar.collapsed .nav-text { opacity:0; width:0; display:none; }
-        .sidebar.collapsed .nav-item { justify-content:center; padding:12px; }
-        .sidebar-footer { padding:16px; border-top:1px solid var(--gray-200); font-size:0.75rem; color:var(--gray-400); text-align:center; white-space:nowrap; overflow:hidden; }
-        .sidebar.collapsed .sidebar-footer { display:none; }
-        .main-content { margin-left:var(--sidebar-width); flex:1; padding:24px; transition:var(--transition); min-height:100vh; }
-        .main-content.expanded { margin-left:var(--sidebar-collapsed); }
-        .page-container { max-width:1400px; margin:0 auto; }
-        .page-header { margin-bottom:32px; }
-        .page-header h1 { font-size:2rem; font-weight:700; color:var(--gray-900); display:flex; align-items:center; gap:12px; }
-        .page-header h1 .material-icons { font-size:36px; color:var(--primary); }
-        .page-header p { color:var(--gray-500); margin-top:8px; font-size:0.95rem; }
-        .card { background:white; border-radius:var(--radius-lg); padding:24px; margin-bottom:24px; box-shadow:var(--shadow); border:1px solid var(--gray-200); transition:var(--transition); }
-        .card:hover { box-shadow:var(--shadow-md); }
-        .card-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--gray-200); }
-        .card-header .material-icons { font-size:28px; color:var(--primary); }
-        .card-header h2 { font-size:1.25rem; font-weight:600; color:var(--gray-900); }
-        .alert { padding:16px; border-radius:var(--radius); margin-bottom:20px; display:flex; align-items:flex-start; gap:12px; font-size:0.9rem; line-height:1.5; }
-        .alert-info { background:var(--primary-light); color:#1e40af; border-left:4px solid var(--primary); }
-        .alert-warning { background:var(--warning-light); color:#92400e; border-left:4px solid var(--warning); }
-        .alert-danger { background:var(--danger-light); color:#991b1b; border-left:4px solid var(--danger); }
-        .alert .material-icons { font-size:20px; flex-shrink:0; margin-top:1px; }
-        .form-group { margin-bottom:20px; }
-        .form-label { display:block; margin-bottom:8px; font-weight:500; color:var(--gray-700); font-size:0.9rem; }
-        .form-input { width:100%; padding:10px 14px; border:1px solid var(--gray-300); border-radius:var(--radius); font-size:0.95rem; transition:var(--transition); background:white; font-family:inherit; }
-        .form-input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,0.1); }
-        .form-input:hover { border-color:var(--gray-400); }
-        .input-group { display:flex; gap:12px; align-items:end; }
-        .input-group .form-group { flex:1; margin-bottom:0; }
-        .checkbox-group { display:flex; align-items:center; gap:12px; padding:12px; background:var(--gray-50); border-radius:var(--radius); border:1px solid var(--gray-200); margin-bottom:12px; flex-wrap:wrap; }
-        .checkbox-wrapper { display:flex; align-items:center; gap:8px; }
-        .checkbox-wrapper input[type="checkbox"] { width:20px; height:20px; cursor:pointer; accent-color:var(--primary); }
-        .checkbox-wrapper label { cursor:pointer; user-select:none; }
-        .config-input { width:90px; padding:8px 12px; border:1px solid var(--gray-300); border-radius:var(--radius-sm); font-size:0.9rem; margin-left:12px; }
-        .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 20px; border-radius:var(--radius); font-size:0.9rem; font-weight:500; cursor:pointer; transition:var(--transition); border:none; font-family:inherit; white-space:nowrap; }
-        .btn-primary { background:var(--primary); color:white; }
-        .btn-primary:hover { background:var(--primary-dark); box-shadow:var(--shadow-md); transform:translateY(-1px); }
-        .btn-secondary { background:white; color:var(--gray-700); border:1px solid var(--gray-300); }
-        .btn-secondary:hover { background:var(--gray-50); border-color:var(--gray-400); }
-        .btn-success { background:var(--success); color:white; }
-        .btn-success:hover { background:#047857; box-shadow:var(--shadow-md); transform:translateY(-1px); }
-        .btn-danger { background:var(--danger); color:white; }
-        .btn-danger:hover { background:#b91c1c; }
-        .btn-info { background:#0891b2; color:white; }
-        .btn-info:hover { background:#0e7490; }
-        .btn-sm { padding:6px 12px; font-size:0.85rem; }
-        .btn-xs { padding:4px 8px; font-size:0.75rem; gap:4px; }
-        .btn-lg { padding:14px 28px; font-size:1rem; }
-        .btn-block { width:100%; }
-        .search-box { position:relative; margin-bottom:20px; }
-        .search-box .material-icons { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--gray-400); }
-        .search-box input { width:100%; padding:12px 12px 12px 44px; border:2px solid var(--gray-200); border-radius:var(--radius-lg); font-size:1rem; transition:var(--transition); }
-        .search-box input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,0.1); }
-        .search-results { position:absolute; top:100%; left:0; right:0; background:white; border:1px solid var(--gray-200); border-radius:var(--radius); box-shadow:var(--shadow-lg); max-height:300px; overflow-y:auto; z-index:100; display:none; }
-        .search-results.show { display:block; }
-        .search-result-item { padding:12px 16px; border-bottom:1px solid var(--gray-100); transition:var(--transition); display:flex; justify-content:space-between; align-items:center; }
-        .search-result-item:hover { background:var(--primary-light); }
-        .result-actions { display:flex; gap:8px; align-items:center; }
-        .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
-        .modal-overlay.show { display:flex; }
-        .modal { background:white; border-radius:var(--radius-xl); padding:32px; max-width:800px; width:90%; max-height:80vh; overflow-y:auto; box-shadow:var(--shadow-xl); animation:modalIn 0.3s ease; }
-        @keyframes modalIn { from{opacity:0;transform:scale(0.95) translateY(-20px);} to{opacity:1;transform:scale(1) translateY(0);} }
-        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid var(--gray-200); }
-        .modal-header h2 { font-size:1.5rem; font-weight:700; color:var(--gray-900); display:flex; align-items:center; gap:12px; }
-        .modal-close { background:none; border:none; cursor:pointer; color:var(--gray-400); font-size:28px; padding:4px; border-radius:50%; transition:var(--transition); }
-        .modal-close:hover { color:var(--gray-600); background:var(--gray-100); }
-        .proveedor-card { padding:16px; margin-bottom:12px; border:1px solid var(--gray-200); border-radius:var(--radius); background:var(--gray-50); transition:var(--transition); }
-        .proveedor-card:hover { border-color:var(--primary); box-shadow:var(--shadow-sm); }
-        .proveedor-card.mejor { border-color:var(--success); background:var(--success-light); }
-        .proveedor-card.segundo { border-color:var(--primary); background:var(--primary-light); }
-        .proveedor-card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-        .rank-badge { padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:600; }
-        .rank-1 { background:#059669; color:white; } .rank-2 { background:#2563eb; color:white; } .rank-3 { background:#7c3aed; color:white; } .rank-other { background:var(--gray-300); color:var(--gray-700); }
-        .proveedor-card-details { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:12px; }
-        .detail-item { display:flex; flex-direction:column; }
-        .detail-item label { font-size:0.75rem; color:var(--gray-500); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
-        .detail-item span { font-size:1rem; font-weight:600; color:var(--gray-900); }
-        .table-container { overflow-x:auto; border-radius:var(--radius); border:1px solid var(--gray-200); }
-        .table { width:100%; border-collapse:collapse; font-size:0.85rem; }
-        .table thead { background:var(--gray-50); position:sticky; top:0; z-index:10; }
-        .table th { padding:12px 10px; text-align:left; font-weight:600; color:var(--gray-600); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px; border-bottom:2px solid var(--gray-200); white-space:nowrap; background:var(--gray-50); }
-        .table td { padding:10px; border-bottom:1px solid var(--gray-200); color:var(--gray-700); }
-        .table tbody tr:hover { background:var(--gray-50); }
-        .table tbody tr.new-row { animation:highlightRow 2s ease; }
-        @keyframes highlightRow { 0%{background-color:var(--primary-light);} 100%{background-color:transparent;} }
-        .table input[type="number"] { width:70px; padding:6px 8px; border:1px solid var(--gray-300); border-radius:var(--radius-sm); font-size:0.85rem; text-align:center; }
-        .table select { padding:6px 8px; border:1px solid var(--gray-300); border-radius:var(--radius-sm); font-size:0.85rem; background:white; width:100%; }
-        .badge { display:inline-block; padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:600; }
-        .badge-success { background:var(--success-light); color:#065f46; } .badge-warning { background:var(--warning-light); color:#92400e; } .badge-danger { background:var(--danger-light); color:#991b1b; } .badge-info { background:var(--primary-light); color:#1e40af; } .badge-fdc { background:#f3f4f6; color:#6b7280; } .badge-se { background:#fef3c7; color:#92400e; }
-        .text-highlight { color:var(--danger); font-weight:600; } .text-muted { color:var(--gray-400); font-style:italic; } .warning-icon { color:var(--warning); cursor:help; }
-        .total-card { background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:white; padding:24px; border-radius:var(--radius-lg); margin:24px 0; box-shadow:var(--shadow-lg); }
-        .total-card .total-label { font-size:0.9rem; opacity:0.9; margin-bottom:4px; } .total-card .total-amount { font-size:2rem; font-weight:700; }
-        .section { display:none; } .section.active { display:block; }
-        .proveedor-list { margin-top:16px; display:grid; gap:8px; }
-        .proveedor-item { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:var(--gray-50); border-radius:var(--radius); border:1px solid var(--gray-200); }
-        .proveedor-item .proveedor-info { display:flex; align-items:center; gap:8px; flex:1; }
-        .proveedor-item .proveedor-name { font-weight:500; } .proveedor-item .product-count { font-size:0.85rem; color:var(--gray-500); }
-        .btn-group { display:flex; gap:12px; flex-wrap:wrap; }
-        .provider-settings { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:12px; padding:16px; background:var(--gray-50); border-radius:var(--radius); margin-bottom:16px; }
-        .stock-bajo-alert { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; background:var(--danger-light); color:#991b1b; border-radius:4px; font-size:0.7rem; font-weight:600; margin-top:4px; }
-        .toast-container { position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
-        .toast { padding:16px 24px; border-radius:8px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); font-weight:500; max-width:400px; animation:slideIn 0.3s ease; display:flex; align-items:center; gap:8px; }
-        .toast-success { background:#059669; color:white; } .toast-warning { background:#d97706; color:white; } .toast-danger { background:#dc2626; color:white; } .toast-info { background:#2563eb; color:white; }
-        @keyframes slideIn { from{transform:translateX(100%);opacity:0;} to{transform:translateX(0);opacity:1;} }
-        @keyframes slideOut { from{transform:translateX(0);opacity:1;} to{transform:translateX(100%);opacity:0;} }
 
-        @media (max-width:768px) {
-            .sidebar { width:var(--sidebar-collapsed); }
-            .sidebar .logo-text,.sidebar .nav-text,.sidebar-footer { display:none; }
-            .sidebar .nav-item { justify-content:center; padding:12px; }
-            .main-content { margin-left:var(--sidebar-collapsed); }
-            .sidebar-toggle { display:none; }
-            .input-group { flex-direction:column; }
-            .btn-group { flex-direction:column; }
-            .table { font-size:0.75rem; }
-            .provider-settings { grid-template-columns:1fr; }
-            .modal { width:95%; padding:20px; }
+        .auth-box input {
+            width: 100%;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: #f9fafb;
+        }
+
+        .auth-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(20, 83, 45, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+        }
+
+        .auth-link {
+            display: inline-block;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--primary);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* ====== Header y navegación ====== */
+        .header {
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 4px;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .tab-item {
+            text-align: center;
+            color: var(--medium-gray);
+            font-size: 12px;
+            cursor: pointer;
+            padding: 6px 4px;
+            transition: color 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .tab-item.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .tab-item .material-icons {
+            font-size: 24px;
+        }
+
+        .screen {
+            display: none;
+            padding: 20px 16px 90px;
+            min-height: 100vh;
+        }
+        .screen.active {
+            display: block;
+        }
+
+        /* ====== Búsqueda ====== */
+        .search-bar {
+            background-color: var(--white);
+            border-radius: 12px;
+            margin: 12px 0 20px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            border: 1px solid #dcfce7;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .search-bar .search-input-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            min-width: 120px;
+        }
+        .search-bar .search-input-wrapper .material-icons {
+            color: var(--primary);
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        .search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 15px;
+            color: var(--dark-gray);
+        }
+
+        .filter-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f3f4f6;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .filter-toggle.active {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        .filter-toggle .material-icons {
+            font-size: 18px;
+        }
+
+        /* ====== Tarjetas de productos ====== */
+        .med-card {
+            background-color: var(--white);
+            margin-bottom: 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            cursor: pointer;
+            transition: transform 0.15s ease;
+            border-left: 5px solid;
+            position: relative;
+        }
+        .med-card.agotado {
+            opacity: 0.6;
+            border-left-color: var(--danger) !important;
+        }
+        .med-card.agotado .med-status {
+            color: var(--danger);
+        }
+
+        .cat-analgesico { border-color: var(--color-analgesico); }
+        .cat-antiinflamatorio { border-color: var(--color-antiinflamatorio); }
+        .cat-antibiotico { border-color: var(--color-antibiotico); }
+        .cat-antihistaminico { border-color: var(--color-antihistaminico); }
+        .cat-respiratorio { border-color: var(--color-respiratorio); }
+        .cat-gastrointestinal { border-color: var(--color-gastrointestinal); }
+        .cat-dermatologico { border-color: var(--color-dermatologico); }
+        .cat-antiseptico { border-color: var(--color-antiseptico); }
+        .cat-sueros { border-color: var(--color-sueros); }
+        .cat-probiotico { border-color: var(--color-probiotico); }
+        .cat-antigripal { border-color: var(--color-antigripal); }
+        .cat-antitusivo { border-color: var(--color-antitusivo); }
+        .cat-antimicotico { border-color: var(--color-antimicotico); }
+        .cat-vitaminas { border-color: var(--color-vitaminas); }
+        .cat-default { border-color: var(--accent); }
+
+        .med-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+        }
+
+        .med-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background-color: #f0fdf4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            overflow: hidden;
+            border: 1px solid #dcfce7;
+            flex-shrink: 0;
+        }
+        .med-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .med-info { flex: 1; min-width: 0; }
+        .med-name { font-size: 15px; font-weight: 600; }
+        .med-subname { font-size: 13px; color: var(--medium-gray); margin: 2px 0; }
+        .med-details { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 4px; flex-wrap: wrap; }
+        .med-status { color: var(--accent); font-weight: 500; display: flex; align-items: center; gap: 3px; }
+        .med-status.agotado { color: var(--danger); }
+        .med-price { font-size: 15px; font-weight: 700; color: var(--primary); margin-top: 4px; }
+        .med-stock { font-size: 12px; color: var(--medium-gray); margin-top: 2px; }
+        .med-arrow { color: #9ca3af; font-size: 20px; margin-left: 8px; }
+
+        .fav-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #f9fafb;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            z-index: 2;
+        }
+        .fav-btn .material-icons {
+            font-size: 18px;
+            color: #9ca3af;
+            transition: color 0.2s ease;
+        }
+        .fav-btn.active { background: #fef2f2; }
+        .fav-btn.active .material-icons { color: var(--danger); font-weight: bold; }
+
+        /* ====== Perfil ====== */
+        .profile-banner {
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            border-radius: 0 0 16px 16px;
+            margin-bottom: 20px;
+        }
+        .profile-avatar {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--primary);
+            font-size: 30px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .profile-name { font-size: 18px; font-weight: 600; margin-top: 8px; }
+        .profile-email { font-size: 14px; opacity: 0.9; word-break: break-all; }
+        .profile-role { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+
+        .profile-section {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            border: 1px solid #dcfce7;
+        }
+        .section-title {
+            font-size: 13px;
+            color: var(--medium-gray);
+            padding: 10px 16px 4px;
+            font-weight: 500;
+        }
+        .profile-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0fdf4;
+            cursor: pointer;
+            transition: background-color 0.15s;
+        }
+        .profile-option:last-child { border-bottom: none; }
+        .profile-option:hover { background-color: #f9fafb; }
+        .option-left { display: flex; align-items: center; gap: 12px; }
+        .option-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background-color: #ecfdf5;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .option-text { font-size: 15px; font-weight: 500; }
+        .option-arrow { color: #9ca3af; font-size: 18px; }
+        .logout-option { background-color: #fef2f2; }
+        .logout-option .option-icon { background-color: #fee2e2; color: var(--danger); }
+        .logout-option .option-text { color: var(--danger); font-weight: 600; }
+        .admin-option .option-icon { background-color: #dbeafe; color: #2563eb; }
+
+        /* ====== Contacto ====== */
+        .contact-header {
+            text-align: center;
+            padding: 24px 16px 12px;
+        }
+        .contact-header h2 {
+            font-size: 28px;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        .contact-header p {
+            font-size: 16px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .map-container {
+            margin: 16px 0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
+        .map-iframe {
+            width: 100%;
+            height: 280px;
+            border: none;
+        }
+
+        .contact-info {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .contact-info h3 {
+            font-size: 20px;
+            color: #111827;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 14px;
+            font-size: 15px;
+        }
+        .contact-item:last-child { margin-bottom: 0; }
+        .contact-item .material-icons {
+            color: var(--primary);
+            font-size: 22px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        .contact-item strong {
+            color: var(--dark-gray);
+            display: block;
+            margin-bottom: 2px;
+        }
+        .contact-item span {
+            color: var(--medium-gray);
+            line-height: 1.5;
+        }
+        .contact-item a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* ====== Carrito ====== */
+        #cart-items { padding-bottom: 140px; }
+
+        .cart-card, .order-card {
+            padding: 12px;
+            background: white;
+            border-radius: 10px;
+            margin: 8px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .cart-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+        }
+        .del-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 4px;
+            background: var(--danger);
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .cart-footer {
+            position: fixed;
+            bottom: 85px;
+            left: 0;
+            right: 0;
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 16px;
+            border-top: 1px solid var(--border);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        /* ====== Modal de producto ====== */
+        #med-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            overflow-y: auto;
+        }
+        #med-modal.active {
+            display: flex;
+        }
+        #med-modal > div {
+            background-color: white;
+            width: 100%;
+            max-width: 420px;
+            border-radius: 20px;
+            padding: 24px 20px;
+            animation: fadeInUp 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .product-img-150 {
+            width: 100%;
+            max-width: 220px;
+            height: auto;
+            aspect-ratio: 1/1;
+            object-fit: contain;
+            border-radius: 12px;
+            background-color: #f0fdf4;
+            display: block;
+            margin: 0 auto 16px;
+            padding: 8px;
+            border: 1px solid #dcfce7;
+        }
+
+        .detail-row {
+            margin: 10px 0;
+            line-height: 1.5;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid #f0fdf4;
+            padding: 6px 0;
+        }
+        .detail-label { font-weight: 600; color: var(--dark-gray); flex-shrink: 0; }
+        .detail-value { text-align: right; color: var(--medium-gray); max-width: 60%; }
+
+        .detail-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 16px 0;
+            text-align: right;
+        }
+
+        /* ====== Botones ====== */
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+            margin: 8px 0;
+        }
+        .btn-accent:hover { background-color: #15803d; }
+        .btn-secondary {
+            background-color: #e5e7eb;
+            color: #333;
+        }
+        .btn-secondary:hover { background-color: #d1d5db; }
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        .btn-danger:hover { background-color: #dc2626; }
+        .btn-warning {
+            background-color: #f59e0b;
+            color: white;
+        }
+        .btn-warning:hover { background-color: #d97706; }
+
+        /* ====== Administración ====== */
+        .admin-product-list {
+            margin-top: 16px;
+        }
+        .admin-product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .admin-product-item .info {
+            flex: 1;
+            font-size: 14px;
+        }
+        .admin-product-item .actions button {
+            margin-left: 6px;
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .admin-form {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+        .admin-form input, .admin-form select, .admin-form textarea {
+            width: 100%;
+            padding: 8px 10px;
+            margin: 6px 0 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .admin-form label {
+            font-weight: 600;
+            font-size: 13px;
+            display: block;
+            margin-top: 8px;
+        }
+        .admin-form .form-row {
+            display: flex;
+            gap: 10px;
+        }
+        .admin-form .form-row > div {
+            flex: 1;
+        }
+
+        /* ====== Modal de pago ====== */
+        #payment-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 10001;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            overflow-y: auto;
+        }
+        #payment-modal.active {
+            display: flex;
+        }
+        #payment-modal > div {
+            background-color: white;
+            width: 100%;
+            max-width: 420px;
+            border-radius: 20px;
+            padding: 24px 20px;
+            animation: fadeInUp 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        #payment-card-form input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin: 4px 0;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+        #payment-card-form label {
+            font-weight: 600;
+            font-size: 13px;
+            display: block;
+            margin-top: 8px;
         }
     </style>
 </head>
 <body>
 
-    <!-- ========== PANTALLA DE LOGIN ========== -->
-    <div id="loginScreen" class="login-overlay">
-        <div class="login-card">
-            <span class="material-icons">inventory_2</span>
-            <h2>PEDIDOS</h2>
-            <p>Ingrese sus credenciales</p>
-            <input type="text" id="username" class="login-input" placeholder="Usuario" autocomplete="username">
-            <input type="password" id="password" class="login-input" placeholder="Contraseña" autocomplete="current-password">
-            <div class="remember-row">
-                <label>
-                    <input type="checkbox" id="rememberMe"> Recordar contraseña
-                </label>
+<!-- ====== PANTALLA DE LOGIN ====== -->
+<div id="auth-screen">
+    <div id="login-form" class="auth-box">
+        <h2>Iniciar Sesión</h2>
+        <input type="email" id="login-email" placeholder="Correo Electrónico" autocomplete="email" required>
+        <input type="password" id="login-pass" placeholder="Contraseña" autocomplete="current-password" required>
+        <button onclick="login()" class="btn btn-primary">Entrar</button>
+        <div class="auth-link" onclick="mostrarRegistro()">¿No tienes cuenta? Regístrate</div>
+    </div>
+
+    <div id="register-form" class="auth-box" style="display: none;">
+        <h2>Crear Cuenta</h2>
+        <input type="email" id="reg-email" placeholder="Correo Electrónico" autocomplete="email" required>
+        <input type="password" id="reg-pass" placeholder="Crea tu contraseña" autocomplete="new-password" required>
+        <button onclick="registrarse()" class="btn btn-primary">Registrarme</button>
+        <div class="auth-link" onclick="mostrarLogin()">¿Ya tienes cuenta? Inicia sesión</div>
+    </div>
+</div>
+
+<!-- ====== APLICACIÓN PRINCIPAL ====== -->
+<div id="main-app" style="display:none;">
+
+    <!-- INICIO -->
+    <div id="screen-home" class="screen active">
+        <div class="header">
+            <h1><i class="material-icons">local_pharmacy</i> FARMACIN</h1>
+        </div>
+        <div class="search-bar">
+            <div class="search-input-wrapper">
+                <i class="material-icons">search</i>
+                <input type="text" id="search-input" placeholder="Buscar medicamento..." oninput="filterMeds()">
             </div>
-            <button class="login-btn" id="loginBtn">Iniciar sesión</button>
-            <div class="error-msg" id="loginError">Usuario o contraseña incorrectos</div>
+            <div id="filter-agotados" class="filter-toggle" onclick="toggleFilterAgotados()">
+                <i class="material-icons">warning</i>
+                <span>Agotados</span>
+            </div>
+        </div>
+        <div id="med-list"></div>
+    </div>
+
+    <!-- CARRITO -->
+    <div id="screen-cart" class="screen">
+        <div class="header"><h1><i class="material-icons">shopping_cart</i> Carrito de Compras</h1></div>
+        <div id="cart-items" style="padding-top:16px;"></div>
+        <div class="cart-footer">
+            <h3>Total: $<span id="cart-total">0.00</span> MXN</h3>
+            <button onclick="showPaymentModal()" class="btn btn-primary" style="margin-top:10px;">Proceder al Pago</button>
         </div>
     </div>
 
-    <!-- ========== APLICACIÓN (OCULTA HASTA HACER LOGIN) ========== -->
-    <div id="appContent" style="display:none; width:100%;">
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <span class="material-icons logo-icon">inventory_2</span>
-                <span class="logo-text">PEDIDOS</span>
-            </div>
-            <div class="sidebar-toggle" id="sidebarToggle">
-                <span class="material-icons">chevron_left</span>
-            </div>
-            <nav class="sidebar-nav">
-                <div class="nav-item active" data-section="proveedores">
-                    <span class="material-icons">business</span>
-                    <span class="nav-text">PROVEEDORES</span>
-                </div>
-                <div class="nav-item" data-section="lista">
-                    <span class="material-icons">list_alt</span>
-                    <span class="nav-text">CARGAR PEDIDO</span>
-                </div>
-                <div class="nav-item" data-section="comparativo">
-                    <span class="material-icons">compare_arrows</span>
-                    <span class="nav-text">COMPARATIVO</span>
-                </div>
-            </nav>
-            <div class="sidebar-footer">
-                <span id="userDisplay"></span>   |   
-                <a href="#" id="logoutLink" style="color: var(--primary); cursor:pointer;">Cerrar sesión</a>
-            </div>
-        </aside>
+    <!-- PEDIDOS -->
+    <div id="screen-orders" class="screen">
+        <div class="header"><h1><i class="material-icons">receipt_long</i> Mis Pedidos</h1></div>
+        <div id="orders-list" style="padding:16px 0;"></div>
+    </div>
 
-        <main class="main-content" id="mainContent">
-            <div class="page-container">
-                <section class="section active" id="section-proveedores">
-                    <div class="page-header">
-                        <h1><span class="material-icons">business</span>CARGAR PROVEEDORES</h1>
-                        <p id="welcomeMsg" style="margin-top:4px;"></p>
-                    </div>
-                    <!-- resto del contenido original de proveedores -->
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="material-icons">add_business</span>
-                            <h2>Agregar Nuevo Proveedor</h2>
-                        </div>
-                        <div class="alert alert-info">
-                            <span class="material-icons">info</span>
-                            <div>
-                                <strong>Formato requerido del Excel:</strong><br>
-                                Columnas: <b>Código | Descripción | Existencia | Precio con IVA</b>
-                            </div>
-                        </div>
-                        <div class="provider-settings">
-                            <div class="checkbox-group">
-                                <div class="checkbox-wrapper">
-                                    <input type="checkbox" id="activarStockMinimo">
-                                    <label for="activarStockMinimo">Activar Stock Mínimo Requerido</label>
-                                </div>
-                                <input type="number" id="stockMinimo" class="config-input" value="20" min="0" disabled>
-                                <span style="font-size:0.85rem;color:var(--gray-500);">unidades</span>
-                            </div>
-                            <div class="checkbox-group">
-                                <div class="checkbox-wrapper">
-                                    <input type="checkbox" id="aplicarDescuento">
-                                    <label for="aplicarDescuento">Aplicar Descuento</label>
-                                </div>
-                                <input type="number" id="porcentajeDescuento" class="config-input" value="0" min="0" max="100" step="0.01" disabled>
-                                <span style="font-size:0.85rem;color:var(--gray-500);">%</span>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <div class="form-group">
-                                <label class="form-label" for="nombreProveedor">Nombre del Proveedor</label>
-                                <input type="text" id="nombreProveedor" class="form-input" placeholder="Ej: Farmacias del Ahorro">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="archivoProveedor">Archivo Excel</label>
-                                <input type="file" id="archivoProveedor" class="form-input" accept=".xlsx,.xls">
-                            </div>
-                        </div>
-                        <button id="btnAgregarProveedor" class="btn btn-primary btn-lg btn-block">
-                            <span class="material-icons">add</span> Agregar Proveedor
-                        </button>
-                        <div id="listaProveedores" class="proveedor-list" style="margin-top:24px;"></div>
-                    </div>
-                </section>
-
-                <section class="section" id="section-lista">
-                    <div class="page-header">
-                        <h1><span class="material-icons">list_alt</span>PEDIDOS</h1>
-                        <p>Define los productos que necesitas cotizar</p>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="material-icons">upload_file</span>
-                            <h2>Cargar Lista de Productos</h2>
-                        </div>
-                        <div class="alert alert-warning">
-                            <span class="material-icons">tips_and_updates</span>
-                            <div>
-                                <strong>Formato requerido del Excel:</strong><br>
-                                Columnas: <b>Código | Descripción | Piezas Requeridas</b>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="archivoMaestro">Seleccionar Archivo Excel</label>
-                            <input type="file" id="archivoMaestro" class="form-input" accept=".xlsx,.xls">
-                        </div>
-                        <button id="btnCargarMaestro" class="btn btn-primary btn-lg btn-block">
-                            <span class="material-icons">cloud_upload</span> Cargar Lista Maestra
-                        </button>
-                        <div id="estadoMaestro" style="margin-top:16px;"></div>
-                    </div>
-                </section>
-
-                <section class="section" id="section-comparativo">
-                    <div class="page-header">
-                        <h1><span class="material-icons">compare_arrows</span>COMPARATIVO</h1>
-                        <p>Compara precios entre proveedores y genera pedidos</p>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="material-icons">search</span>
-                            <h2>Buscar Producto</h2>
-                        </div>
-                        <div class="search-box">
-                            <span class="material-icons">search</span>
-                            <input type="text" id="searchProducto" placeholder="Buscar por código o descripción...">
-                            <div class="search-results" id="searchResults"></div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="material-icons">filter_list</span>
-                            <h2>Filtrar por Proveedor</h2>
-                        </div>
-                        <div class="form-group">
-                            <select id="filtroProveedor" class="form-input">
-                                <option value="todos">Todos los proveedores</option>
-                            </select>
-                        </div>
-                        <div class="table-container">
-                            <table class="table" id="tablaComparativa">
-                                <thead>
-                                    <tr>
-                                        <th>Código</th>
-                                        <th>Descripción</th>
-                                        <th>Piezas</th>
-                                        <th>Existencia</th>
-                                        <th>Precio Unit.</th>
-                                        <th>Subtotal</th>
-                                        <th>Proveedor</th>
-                                        <th>2da Opción</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="cuerpoTabla"></tbody>
-                            </table>
-                        </div>
-                        <div class="total-card">
-                            <div class="total-label">Total General del Pedido</div>
-                            <div class="total-amount" id="totalGeneral">$0.00</div>
-                        </div>
-                        <div class="btn-group">
-                            <button id="btnGenerarFiltrado" class="btn btn-primary">
-                                <span class="material-icons">picture_as_pdf</span> Generar PDF (Proveedor Seleccionado)
-                            </button>
-                            <button id="btnGenerarTodos" class="btn btn-success">
-                                <span class="material-icons">download</span> Generar Todos los PDFs
-                            </button>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </main>
-
-        <div class="modal-overlay" id="modalDetalle">
-            <div class="modal">
-                <div class="modal-header">
-                    <h2><span class="material-icons" style="color:var(--primary);">info</span> Detalle del Producto</h2>
-                    <button class="modal-close" onclick="cerrarModal()">
-                        <span class="material-icons">close</span>
-                    </button>
+    <!-- CONTACTO -->
+    <div id="screen-contact" class="screen">
+        <div class="header"><h1><i class="material-icons">contact_mail</i> Contacto</h1></div>
+        <div class="contact-header">
+            <h2>Estamos aquí para ayudarte</h2>
+            <p>Conoce nuestra ubicación y contáctanos cuando lo necesites</p>
+        </div>
+        <div class="map-container">
+            <iframe
+                class="map-iframe"
+                src="https://www.google.com/maps?q=Universidad%20UNIC%2C%20Puebla%2C%20M%C3%A9xico&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                allowfullscreen
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
+        <div class="contact-info">
+            <h3><i class="material-icons">place</i> Dirección</h3>
+            <div class="contact-item">
+                <i class="material-icons">location_on</i>
+                <div>
+                    <strong>Ubicación</strong>
+                    <span>Calle 13 Sur &amp; Avenida 17 Poniente, cerca de la Universidad UNIC, Puebla<br>212 Av. 25 Ote., Puebla de Zaragoza, Puebla</span>
                 </div>
-                <div id="modalContent"></div>
+            </div>
+            <div class="contact-item">
+                <i class="material-icons">phone</i>
+                <div>
+                    <strong>Teléfono</strong>
+                    <a href="tel:+522213747454">+52 221 374 7454</a>
+                </div>
+            </div>
+            <div class="contact-item">
+                <i class="material-icons">mail</i>
+                <div>
+                    <strong>Correo electrónico</strong>
+                    <a href="mailto:carlosivanfernando@universidadunic.mx">carlosivanfernando@universidadunic.mx</a>
+                </div>
+            </div>
+            <div class="contact-item">
+                <i class="material-icons">schedule</i>
+                <div>
+                    <strong>Horario de atención</strong>
+                    <span>Lunes a Viernes: 8:00 - 21:00 hrs<br>Sábados: 9:00 - 18:00 hrs<br>Domingos: 10:00 - 15:00 hrs</span>
+                </div>
+            </div>
+            <div class="contact-item">
+                <i class="material-icons">sms</i>
+                <div>
+                    <strong>WhatsApp</strong>
+                    <a href="https://wa.me/522213747454?text=Hola%20Farmacin%2C%20necesito%20informaci%C3%B3n" target="_blank" rel="noopener">Escribir por WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAVORITOS -->
+    <div id="screen-favorites" class="screen">
+        <div class="header">
+            <h1><i class="material-icons">favorite</i> Mis Favoritos</h1>
+            <button onclick="showScreen('screen-more')" class="btn btn-secondary" style="width:auto; padding:6px 12px; border-radius:16px;">Volver</button>
+        </div>
+        <div id="favorites-list" style="padding-top:16px;"></div>
+    </div>
+
+    <!-- PERFIL -->
+    <div id="screen-more" class="screen">
+        <div class="profile-banner">
+            <div class="profile-avatar" id="profile-avatar">JD</div>
+            <div class="profile-name" id="profile-fullname">Usuario</div>
+            <div class="profile-email" id="profile-email">correo@ejemplo.com</div>
+            <div class="profile-role" id="profile-role">Cliente</div>
+        </div>
+        <div class="profile-section">
+            <div class="section-title">Cuenta</div>
+            <div class="profile-option" onclick="showScreen('screen-favorites')">
+                <div class="option-left">
+                    <div class="option-icon"><i class="material-icons">favorite</i></div>
+                    <div class="option-text">Mis favoritos</div>
+                </div>
+                <div class="option-arrow">›</div>
+            </div>
+            <div class="profile-option" onclick="showScreen('screen-orders')">
+                <div class="option-left">
+                    <div class="option-icon"><i class="material-icons">receipt_long</i></div>
+                    <div class="option-text">Historial de pedidos</div>
+                </div>
+                <div class="option-arrow">›</div>
+            </div>
+            <!-- Opciones de administrador -->
+            <div id="admin-option" class="profile-option admin-option" style="display:none;" onclick="showScreen('screen-admin')">
+                <div class="option-left">
+                    <div class="option-icon"><i class="material-icons">settings</i></div>
+                    <div class="option-text">Administrar productos</div>
+                </div>
+                <div class="option-arrow">›</div>
+            </div>
+            <div id="stats-option" class="profile-option admin-option" style="display:none;" onclick="showScreen('screen-stats')">
+                <div class="option-left">
+                    <div class="option-icon"><i class="material-icons">analytics</i></div>
+                    <div class="option-text">Estadísticas</div>
+                </div>
+                <div class="option-arrow">›</div>
+            </div>
+            <div class="profile-option logout-option" onclick="cerrarSesion()">
+                <div class="option-left">
+                    <div class="option-icon"><i class="material-icons">logout</i></div>
+                    <div class="option-text">Cerrar sesión</div>
+                </div>
+                <div class="option-arrow">›</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMINISTRACIÓN -->
+    <div id="screen-admin" class="screen">
+        <div class="header">
+            <h1><i class="material-icons">settings</i> Administración</h1>
+            <button onclick="showScreen('screen-more')" class="btn btn-secondary" style="width:auto; padding:6px 12px; border-radius:16px;">Volver</button>
+        </div>
+
+        <div class="admin-form" id="admin-form">
+            <h3 id="form-title" style="margin-bottom:12px;">Agregar producto</h3>
+            <input type="hidden" id="edit-id" value="">
+            <div class="form-row">
+                <div>
+                    <label>Código de barras</label>
+                    <input type="text" id="f-barcode" placeholder="750..." required>
+                </div>
+                <div>
+                    <label>Precio (MXN)</label>
+                    <input type="number" id="f-price" step="0.01" placeholder="0.00" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    <label>Nombre comercial</label>
+                    <input type="text" id="f-commercial" placeholder="Ej. Tempra" required>
+                </div>
+                <div>
+                    <label>Sustancia activa</label>
+                    <input type="text" id="f-active" placeholder="Paracetamol" required>
+                </div>
+            </div>
+            <div>
+                <label>Descripción</label>
+                <input type="text" id="f-description" placeholder="Analgésico y antipirético">
+            </div>
+            <div class="form-row">
+                <div>
+                    <label>Fórmula / concentración</label>
+                    <input type="text" id="f-formula" placeholder="500 MG">
+                </div>
+                <div>
+                    <label>Vía de administración</label>
+                    <input type="text" id="f-route" placeholder="Oral, Tópica, etc.">
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    <label>Presentación</label>
+                    <input type="text" id="f-presentation" placeholder="Caja 20 tabletas">
+                </div>
+                <div>
+                    <label>Categoría</label>
+                    <input type="text" id="f-category" placeholder="Analgésico">
+                </div>
+            </div>
+            <div>
+                <label>Indicación</label>
+                <input type="text" id="f-indication" placeholder="Dolor leve a moderado">
+            </div>
+            <div class="form-row">
+                <div>
+                    <label>URL de imagen (opcional)</label>
+                    <input type="text" id="f-image" placeholder="https://...">
+                </div>
+                <div>
+                    <label>Stock (existencia)</label>
+                    <input type="number" id="f-stock" placeholder="10" min="0" value="0">
+                </div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:12px;">
+                <button onclick="saveProduct()" class="btn btn-primary" style="flex:1;">Guardar</button>
+                <button onclick="cancelEdit()" class="btn btn-secondary" style="flex:1;" id="btn-cancel">Cancelar</button>
             </div>
         </div>
 
-        <div class="toast-container" id="toastContainer"></div>
+        <div style="margin-top:20px;">
+            <h3>Lista de productos</h3>
+            <div id="admin-product-list" class="admin-product-list"></div>
+        </div>
     </div>
 
-    <script>
-        // ========== AUTENTICACIÓN ==========
-        const USERS = {
-            "ADMIN": { password: "1234", role: "admin" },
-            "ADN":   { password: "1234", role: "user" }
-        };
+    <!-- ESTADÍSTICAS -->
+    <div id="screen-stats" class="screen">
+        <div class="header">
+            <h1><i class="material-icons">analytics</i> Estadísticas</h1>
+            <button onclick="showScreen('screen-more')" class="btn btn-secondary" style="width:auto; padding:6px 12px; border-radius:16px;">Volver</button>
+        </div>
+        <div style="background:white; padding:20px; border-radius:12px; margin-top:20px;">
+            <h3>Resumen de hoy</h3>
+            <div style="display:flex; justify-content:space-between; margin:10px 0;">
+                <span>Total de pedidos:</span>
+                <span id="stats-today-orders">0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin:10px 0;">
+                <span>Monto total:</span>
+                <span id="stats-today-total">$0.00</span>
+            </div>
+        </div>
+        <div style="background:white; padding:20px; border-radius:12px; margin-top:20px;">
+            <h3>Pedidos de hoy</h3>
+            <div id="stats-today-list"></div>
+        </div>
+    </div>
 
-        function login(username, password, remember) {
-            let upper = username.toUpperCase();
-            let user = USERS[upper];
-            if (user && user.password === password) {
-                sessionStorage.setItem('currentUser', JSON.stringify({ username: upper, role: user.role }));
-                if (remember) {
-                    localStorage.setItem('rememberedUser', upper);
-                    localStorage.setItem('rememberedPass', password);
-                } else {
-                    localStorage.removeItem('rememberedUser');
-                    localStorage.removeItem('rememberedPass');
-                }
-                return true;
+    <!-- BARRA DE NAVEGACIÓN -->
+    <div class="tab-bar">
+        <div class="tab-item active" onclick="showScreen('screen-home')">
+            <i class="material-icons">home</i>
+            <span>Inicio</span>
+        </div>
+        <div class="tab-item" onclick="showScreen('screen-cart')">
+            <i class="material-icons">shopping_cart</i>
+            <span>Carrito</span>
+        </div>
+        <div class="tab-item" onclick="showScreen('screen-orders')">
+            <i class="material-icons">receipt_long</i>
+            <span>Pedidos</span>
+        </div>
+        <div class="tab-item" onclick="showScreen('screen-contact')">
+            <i class="material-icons">contact_mail</i>
+            <span>Contacto</span>
+        </div>
+        <div class="tab-item" onclick="showScreen('screen-more')">
+            <i class="material-icons">person</i>
+            <span>Perfil</span>
+        </div>
+    </div>
+</div>
+
+<!-- ====== MODAL DETALLE PRODUCTO ====== -->
+<div id="med-modal" onclick="if(event.target===this)closeModal()">
+    <div>
+        <img id="modal-product-img" src="" alt="Imagen del producto" class="product-img-150" onerror="imgFallback(this)">
+        <h2 id="modal-title" style="margin-bottom:16px; text-align:center; color:var(--primary);"></h2>
+
+        <div class="detail-row"><span class="detail-label">Código:</span><span class="detail-value" id="modal-barcode"></span></div>
+        <div class="detail-row"><span class="detail-label">Descripción:</span><span class="detail-value" id="modal-desc"></span></div>
+        <div class="detail-row"><span class="detail-label">Sustancia:</span><span class="detail-value" id="modal-active"></span></div>
+        <div class="detail-row"><span class="detail-label">Nombre comercial:</span><span class="detail-value" id="modal-commercial"></span></div>
+        <div class="detail-row"><span class="detail-label">Fórmula:</span><span class="detail-value" id="modal-formula"></span></div>
+        <div class="detail-row"><span class="detail-label">Indicación:</span><span class="detail-value" id="modal-indication"></span></div>
+        <div class="detail-row"><span class="detail-label">Vía de administración:</span><span class="detail-value" id="modal-route"></span></div>
+        <div class="detail-row"><span class="detail-label">Presentación:</span><span class="detail-value" id="modal-presentation"></span></div>
+        <div class="detail-row"><span class="detail-label">Categoría:</span><span class="detail-value" id="modal-category"></span></div>
+        <div class="detail-row"><span class="detail-label">Stock disponible:</span><span class="detail-value" id="modal-stock"></span></div>
+        <div class="detail-price">Precio: $<span id="modal-price"></span> MXN</div>
+
+        <button onclick="addToCartCurrent()" class="btn btn-accent">Agregar al Carrito</button>
+        <button onclick="closeModal()" class="btn btn-secondary">Cerrar</button>
+    </div>
+</div>
+
+<!-- ====== MODAL DE PAGO ====== -->
+<div id="payment-modal" onclick="if(event.target===this)closePaymentModal()">
+    <div>
+        <h2 style="margin-bottom:16px; text-align:center; color:var(--primary);">Método de Pago</h2>
+        <div id="payment-options" style="margin-bottom:16px;">
+            <button onclick="selectPaymentMethod('efectivo')" class="btn btn-primary" style="margin:4px 0;">Pagar en Efectivo</button>
+            <button onclick="selectPaymentMethod('tarjeta')" class="btn btn-primary" style="margin:4px 0; background:#2563eb;">Pagar con Tarjeta</button>
+        </div>
+        <div id="payment-card-form" style="display:none;">
+            <h3>Tarjeta de crédito o débito</h3>
+            <p>6 meses sin intereses*</p>
+            <p style="font-size:12px; color:var(--medium-gray);">* Indica un campo obligatorio</p>
+            <div style="margin:12px 0;">
+                <label>Opciones de Pago*</label>
+                <div style="display:flex; flex-direction:column; gap:4px; margin:4px 0;">
+                    <label><input type="radio" name="payment-option" value="mensual" checked> Paga mensualmente (6 cuotas de MXN <span id="cuota-mensual">0.00</span> (precio total MXN <span id="total-pago">0.00</span>) + impuestos aplicables) (solo tarjeta de crédito)</label>
+                    <label><input type="radio" name="payment-option" value="total"> Pagar en su totalidad (Un pago de MXN <span id="total-unico">0.00</span> + impuestos aplicables)</label>
+                </div>
+            </div>
+            <div>
+                <label>Nombre</label>
+                <input type="text" id="card-name" placeholder="Nombre" style="width:100%; padding:8px; margin:4px 0; border:1px solid var(--border); border-radius:6px;">
+            </div>
+            <div>
+                <label>Número de tarjeta</label>
+                <input type="text" id="card-number" placeholder="Número de tarjeta" style="width:100%; padding:8px; margin:4px 0; border:1px solid var(--border); border-radius:6px;">
+            </div>
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1;">
+                    <label>Fecha de Vencimiento</label>
+                    <input type="text" id="card-expiry" placeholder="MM / AA" style="width:100%; padding:8px; margin:4px 0; border:1px solid var(--border); border-radius:6px;">
+                </div>
+                <div style="flex:1;">
+                    <label>Código de seguridad (CVC)</label>
+                    <input type="text" id="card-cvc" placeholder="CVC" style="width:100%; padding:8px; margin:4px 0; border:1px solid var(--border); border-radius:6px;">
+                </div>
+            </div>
+            <div>
+                <label>País (No se puede cambiar)</label>
+                <input type="text" id="card-country" value="Mexico" disabled style="width:100%; padding:8px; margin:4px 0; border:1px solid var(--border); border-radius:6px; background:#f3f4f6;">
+            </div>
+            <button onclick="processCardPayment()" class="btn btn-primary" style="margin-top:12px;">FINALIZAR COMPRA</button>
+        </div>
+        <button onclick="closePaymentModal()" class="btn btn-secondary" style="margin-top:8px;">Cancelar</button>
+    </div>
+</div>
+
+<script>
+    'use strict';
+
+    // ============================================================
+    //  VARIABLES GLOBALES
+    // ============================================================
+    let medications = [];
+    let cart = [];
+    let orders = [];
+    let favorites = [];
+    let currentMed = null;
+    let currentUserRol = 'cliente';
+    let filterAgotados = false;
+    let pendingTotal = 0;
+
+    // ============================================================
+    //  UTILIDADES
+    // ============================================================
+    function leerLS(clave, defecto) {
+        try {
+            const dato = localStorage.getItem(clave);
+            return dato ? JSON.parse(dato) : defecto;
+        } catch (e) {
+            return defecto;
+        }
+    }
+
+    function claveUsuario(base) {
+        const correo = localStorage.getItem('sesionActual') || 'invitado';
+        return base + '_' + correo;
+    }
+
+    function imgFallback(img) {
+        const parent = img.parentNode;
+        const icon = document.createElement('i');
+        icon.className = 'material-icons';
+        icon.style.cssText = 'font-size:24px;color:var(--primary);';
+        icon.textContent = 'medication';
+        parent.replaceChild(icon, img);
+    }
+
+    // ============================================================
+    //  USUARIOS
+    // ============================================================
+    function getUsuarios() {
+        let usuarios = leerLS('usuarios', []);
+        const adminIndex = usuarios.findIndex(u => u.correo === 'ivan@admin.com');
+        if (adminIndex === -1) {
+            usuarios.push({ correo: 'ivan@admin.com', contrasena: '1234', rol: 'administrador' });
+        } else {
+            usuarios[adminIndex].contrasena = '1234';
+            usuarios[adminIndex].rol = 'administrador';
+        }
+        localStorage.setItem('usuarios', JSON.stringify(usuarios));
+        return usuarios;
+    }
+    function guardarUsuarios(lista) { localStorage.setItem('usuarios', JSON.stringify(lista)); }
+
+    function mostrarRegistro() {
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('register-form').style.display = 'block';
+    }
+
+    function mostrarLogin() {
+        document.getElementById('register-form').style.display = 'none';
+        document.getElementById('login-form').style.display = 'block';
+    }
+
+    function correoValido(correo) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+    }
+
+    function registrarse() {
+        const correo = document.getElementById('reg-email').value.trim().toLowerCase();
+        const contrasena = document.getElementById('reg-pass').value.trim();
+        const lista = getUsuarios();
+        if (!correo || !contrasena) return alert("⚠️ Completa todos los campos");
+        if (!correoValido(correo)) return alert("⚠️ Ingresa un correo válido");
+        if (contrasena.length < 4) return alert("⚠️ La contraseña debe tener al menos 4 caracteres");
+        if (lista.find(u => u.correo === correo)) return alert("❌ Correo ya registrado");
+        const rol = (correo === 'ivan@admin.com' && contrasena === '1234') ? 'administrador' : 'cliente';
+        lista.push({ correo, contrasena, rol });
+        guardarUsuarios(lista);
+        document.getElementById('reg-email').value = '';
+        document.getElementById('reg-pass').value = '';
+        alert("✅ Cuenta creada con rol: " + rol);
+        mostrarLogin();
+    }
+
+    function login() {
+        const correo = document.getElementById('login-email').value.trim().toLowerCase();
+        const contrasena = document.getElementById('login-pass').value.trim();
+        if (!correo || !contrasena) return alert("⚠️ Completa todos los campos");
+        const lista = getUsuarios();
+        const usuario = lista.find(u => u.correo === correo && u.contrasena === contrasena);
+        if (!usuario) return alert("❌ Datos incorrectos");
+        localStorage.setItem('sesionActual', correo);
+        localStorage.setItem('sessionRol', usuario.rol || 'cliente');
+        document.getElementById('login-email').value = '';
+        document.getElementById('login-pass').value = '';
+        entrarApp();
+    }
+
+    function entrarApp() {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        const correo = localStorage.getItem('sesionActual') || '';
+        const rol = localStorage.getItem('sessionRol') || 'cliente';
+        currentUserRol = rol;
+        document.getElementById('profile-email').textContent = correo;
+        document.getElementById('profile-avatar').textContent = correo.substring(0, 2).toUpperCase();
+        document.getElementById('profile-fullname').textContent = correo.split('@')[0];
+        document.getElementById('profile-role').textContent = rol === 'administrador' ? 'Administrador' : 'Cliente';
+        const showAdmin = (rol === 'administrador');
+        document.getElementById('admin-option').style.display = showAdmin ? 'flex' : 'none';
+        document.getElementById('stats-option').style.display = showAdmin ? 'flex' : 'none';
+        document.getElementById('search-input').value = '';
+        loadData();
+        renderMedications();
+        showScreen('screen-home');
+    }
+
+    function cerrarSesion() {
+        if (confirm("¿Cerrar sesión?")) {
+            localStorage.removeItem('sesionActual');
+            localStorage.removeItem('sessionRol');
+            cart = [];
+            orders = [];
+            favorites = [];
+            document.getElementById('main-app').style.display = 'none';
+            document.getElementById('auth-screen').style.display = 'flex';
+            mostrarLogin();
+        }
+    }
+
+    document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+    document.getElementById('reg-pass').addEventListener('keydown', e => { if (e.key === 'Enter') registrarse(); });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('sesionActual')) entrarApp();
+    });
+
+    // ============================================================
+    //  DATOS DE MEDICAMENTOS (CON STOCK FIJO)
+    // ============================================================
+    // Arreglo por defecto con stocks fijos
+    const MEDICAMENTOS_POR_DEFECTO = [
+        { id: 1, barcode: "7501095452147", description: "ANALGÉSICO Y ANTIPIRÉTICO", active: "PARACETAMOL", commercial: "TEMPRA", formula: "500 MG", indication: "DOLOR LEVE A MODERADO Y FIEBRE", route: "ORAL", presentation: "CAJA 20 TABLETAS", category: "ANALGÉSICO", categoryClass: "cat-analgesico", price: 114, stock: 10, image: "https://i.postimg.cc/kDB8LMcS/TEMPRA-500MG-20TAB.webp" },
+        { id: 2, barcode: "7501095452505", description: "ANALGÉSICO Y ANTIPIRÉTICO", active: "PARACETAMOL", commercial: "TEMPRA FORTE", formula: "650 MG", indication: "DOLOR MODERADO A INTENSO Y FIEBRE ALTA", route: "ORAL", presentation: "CAJA 24 TABLETAS", category: "ANALGÉSICO", categoryClass: "cat-analgesico", price: 120, stock: 8, image: "https://i.postimg.cc/14f6bRHD/TEMPRA-FTE-650MG.webp" },
+        { id: 3, barcode: "7501008491012", description: "ANALGÉSICO, ANTIPIRÉTICO Y ANTIINFLAMATORIO", active: "ÁCIDO ACETILSALICÍLICO", commercial: "ASPIRINA", formula: "500 MG", indication: "DOLOR, INFLAMACIÓN, FIEBRE Y PREVENCIÓN DE COÁGULOS", route: "ORAL", presentation: "CAJA 40 TABLETAS", category: "ANALGÉSICO", categoryClass: "cat-analgesico", price: 55, stock: 15, image: "https://i.postimg.cc/PvpwDKxD/ASPIRINA-500MG.webp" },
+        { id: 4, barcode: "7501008491203", description: "ANTIINFLAMATORIO NO ESTEROIDEO", active: "IBUPROFENO", commercial: "ADVIL", formula: "400 MG", indication: "DOLOR, INFLAMACIÓN Y FIEBRE", route: "ORAL", presentation: "CAJA 20 CÁPSULAS", category: "ANTIINFLAMATORIO", categoryClass: "cat-antiinflamatorio", price: 170, stock: 12, image: "https://i.postimg.cc/N29HXbMr/ADVIL-400MG-10CAP.webp" },
+        { id: 5, barcode: "7501008491302", description: "ANTIINFLAMATORIO NO ESTEROIDEO", active: "NAPROXENO SÓDICO", commercial: "FLANAX", formula: "550 MG", indication: "DOLOR MUSCULAR, ARTICULAR Y MENSTRUAL", route: "ORAL", presentation: "CAJA 12 TABLETAS", category: "ANTIINFLAMATORIO", categoryClass: "cat-antiinflamatorio", price: 140, stock: 7, image: "https://i.postimg.cc/XXpFtN80/FLANAX-550-12TAB.webp" },
+        { id: 6, barcode: "7501008491401", description: "INHIBIDOR DE BOMBA DE PROTONES", active: "OMEPRAZOL", commercial: "LOSEC", formula: "20 MG", indication: "REFLUJO GASTROESOFÁGICO Y GASTRITIS", route: "ORAL", presentation: "CAJA 14 CÁPSULAS", category: "GASTROINTESTINAL", categoryClass: "cat-gastrointestinal", price: 260, stock: 5, image: "https://i.postimg.cc/14f6bRHm/LOSEC-A.webp" },
+        { id: 7, barcode: "7501008491500", description: "INHIBIDOR DE BOMBA DE PROTONES", active: "ESOMEPRAZOL", commercial: "NEXIUM", formula: "40 MG", indication: "ENFERMEDAD POR REFLUJO GASTROESOFÁGICO", route: "ORAL", presentation: "CAJA 14 TABLETAS", category: "GASTROINTESTINAL", categoryClass: "cat-gastrointestinal", price: 430, stock: 4, image: "https://i.postimg.cc/dDLdgQBD/NEXIUM-20MG-14TAB.webp" },
+        { id: 8, barcode: "7501008491609", description: "ANTIÁCIDO Y PROTECTOR GÁSTRICO", active: "MAGALDRATO", commercial: "RIOPAN", formula: "800 MG", indication: "ACIDEZ, ARDOR ESTOMACAL E INDIGESTIÓN", route: "ORAL", presentation: "FRASCO 250 ML", category: "GASTROINTESTINAL", categoryClass: "cat-gastrointestinal", price: 145, stock: 0, image: "https://i.postimg.cc/Z0C3XYcC/RIOPAN-800MG-250ML.webp" },
+        { id: 9, barcode: "7501008491708", description: "ANTIDIARREICO", active: "LOPERAMIDA", commercial: "IMODIUM", formula: "2 MG", indication: "TRATAMIENTO DE DIARREA AGUDA O CRÓNICA", route: "ORAL", presentation: "CAJA 12 CÁPSULAS", category: "GASTROINTESTINAL", categoryClass: "cat-gastrointestinal", price: 115, stock: 6, image: "https://i.postimg.cc/14f6bRHQ/IMODIUM-2MG-12TAB.webp" },
+        { id: 10, barcode: "7501008491807", description: "ANTIESPASMÓDICO", active: "BUTILHIOSCINA", commercial: "BUSCAPINA", formula: "10 MG", indication: "CÓLICOS ABDOMINALES Y ESPASMOS", route: "ORAL", presentation: "CAJA 20 TABLETAS", category: "GASTROINTESTINAL", categoryClass: "cat-gastrointestinal", price: 185, stock: 9, image: "https://i.postimg.cc/N29HXbM6/BUSCAPINA-10MG-12TAB.webp" },
+        { id: 11, barcode: "7501008491906", description: "ANTIBIÓTICO BETALACTÁMICO", active: "AMOXICILINA", commercial: "AMOXIL", formula: "500 MG", indication: "INFECCIONES BACTERIANAS", route: "ORAL", presentation: "CAJA 12 CÁPSULAS", category: "ANTIBIÓTICO", categoryClass: "cat-antibiotico", price: 220, stock: 10, image: "https://i.postimg.cc/H8cyM3x8/AMOXIL-500MG-12CAP.webp" },
+        { id: 12, barcode: "7501008492002", description: "ANTIBIÓTICO COMBINADO", active: "AMOXICILINA + ÁCIDO CLAVULÁNICO", commercial: "AUGMENTIN", formula: "875/125 MG", indication: "INFECCIONES RESISTENTES A AMOXICILINA", route: "ORAL", presentation: "CAJA 14 TABLETAS", category: "ANTIBIÓTICO", categoryClass: "cat-antibiotico", price: 480, stock: 3, image: "https://i.postimg.cc/q6h3KQR3/AUGMENTIN-875MG.webp" },
+        { id: 13, barcode: "7501008492101", description: "ANTIBIÓTICO MACRÓLIDO", active: "AZITROMICINA", commercial: "ZITHROMAX", formula: "500 MG", indication: "INFECCIONES RESPIRATORIAS, DE PIEL Y TEJIDOS", route: "ORAL", presentation: "CAJA 3 TABLETAS", category: "ANTIBIÓTICO", categoryClass: "cat-antibiotico", price: 320, stock: 0, image: "https://i.postimg.cc/4nqtGCLV/ZITROMAX.webp" },
+        { id: 14, barcode: "7501008492200", description: "ANTIBIÓTICO CEFALOSPORINA", active: "CEFALEXINA", commercial: "KEFLEX", formula: "500 MG", indication: "INFECCIONES DE PIEL, VÍAS URINARIAS Y RESPIRATORIAS", route: "ORAL", presentation: "CAJA 20 CÁPSULAS", category: "ANTIBIÓTICO", categoryClass: "cat-antibiotico", price: 250, stock: 8, image: "https://i.postimg.cc/QVH5vNbh/KEFLEX.webp" },
+        { id: 15, barcode: "7501008492309", description: "ANTIHISTAMÍNICO", active: "LORATADINA", commercial: "CLARITIN", formula: "10 MG", indication: "ALERGIAS, RINITIS Y URTICARIA", route: "ORAL", presentation: "CAJA 10 TABLETAS", category: "ANTIHISTAMÍNICO", categoryClass: "cat-antihistaminico", price: 175, stock: 11, image: "https://i.postimg.cc/p5hFjkTC/CLARITIN-10MG-10TAB.webp" },
+        { id: 16, barcode: "7501008492408", description: "ANTIHISTAMÍNICO DE SEGUNDA GENERACIÓN", active: "LEVOCETIRIZINA", commercial: "XUZAL", formula: "5 MG", indication: "RINITIS ALÉRGICA Y URTICARIA CRÓNICA", route: "ORAL", presentation: "CAJA 10 TABLETAS", category: "ANTIHISTAMÍNICO", categoryClass: "cat-antihistaminico", price: 290, stock: 6, image: "https://i.postimg.cc/4nqtGCLc/XUZAL-5MG-10CAP.webp" },
+        { id: 17, barcode: "7501008492507", description: "BRONCODILATADOR", active: "SALBUTAMOL", commercial: "VENTOLIN", formula: "100 MCG", indication: "ASMA Y BRONCOESPASMO", route: "INHALACIÓN", presentation: "INHALADOR", category: "RESPIRATORIO", categoryClass: "cat-respiratorio", price: 235, stock: 0, image: "https://i.postimg.cc/Z023mk7C/VENTOLIN-100MCG-200.webp" },
+        { id: 18, barcode: "7501008492606", description: "MUCOLÍTICO Y EXPECTORANTE", active: "AMBROXOL", commercial: "MUCOSOLVAN", formula: "30 MG", indication: "TOS CON FLEMAS Y AFECCIONES RESPIRATORIAS", route: "ORAL", presentation: "CAJA 20 TABLETAS", category: "RESPIRATORIO", categoryClass: "cat-respiratorio", price: 170, stock: 14, image: "https://i.postimg.cc/nMC7NVkV/MUCOSOLVAN-30MG-20TAB.webp" },
+        { id: 19, barcode: "7501008492705", description: "ANTIINFLAMATORIO NO ESTEROIDEO", active: "DICLOFENACO", commercial: "VOLTAREN", formula: "50 MG", indication: "DOLOR E INFLAMACIÓN ARTICULAR", route: "ORAL", presentation: "CAJA 20 TABLETAS", category: "ANTIINFLAMATORIO", categoryClass: "cat-antiinflamatorio", price: 165, stock: 8, image: "https://i.postimg.cc/yWt9KqQ3/VOLTAREN-100M.webp" },
+        { id: 20, barcode: "7501008492804", description: "ANTIINFLAMATORIO NO ESTEROIDEO", active: "MELOXICAM", commercial: "MELOX", formula: "15 MG", indication: "ARTRITIS, OSTEOARTRITIS Y DOLOR CRÓNICO", route: "ORAL", presentation: "CAJA 10 TABLETAS", category: "ANTIINFLAMATORIO", categoryClass: "cat-antiinflamatorio", price: 180, stock: 5, image: "https://i.postimg.cc/Z0C3XYcT/MELOXICAM.webp" },
+        { id: 21, barcode: "7501008492903", description: "ANTIMICÓTICO", active: "FLUCONAZOL", commercial: "DIFLUCAN", formula: "150 MG", indication: "INFECCIONES POR HONGOS", route: "ORAL", presentation: "CAJA 1 CÁPSULA", category: "ANTIMICÓTICO", categoryClass: "cat-antimicotico", price: 150, stock: 0, image: "https://i.postimg.cc/ctgn3THF/DIFLUCAN.webp" },
+        { id: 22, barcode: "7501008493009", description: "ANTIFÚNGICO TÓPICO", active: "CLOTRIMAZOL", commercial: "CANESTEN", formula: "1%", indication: "INFECCIONES POR HONGOS EN PIEL Y MUCOSAS", route: "TÓPICA", presentation: "CREMA 20 G", category: "DERMATOLÓGICO", categoryClass: "cat-dermatologico", price: 120, stock: 3, image: "https://i.postimg.cc/5QYCzp0q/CANESTEN-V.webp" },
+        { id: 23, barcode: "7501008493108", description: "ANTISÉPTICO Y DESINFECTANTE", active: "POVIDONA YODADA", commercial: "ISODINE", formula: "10%", indication: "DESINFECCIÓN DE HERIDAS Y PIEL", route: "TÓPICA", presentation: "FRASCO 120 ML", category: "ANTISÉPTICO", categoryClass: "cat-antiseptico", price: 95, stock: 0, image: "https://i.postimg.cc/V5dM2sRw/ISODINE-120ML.webp" },
+        { id: 24, barcode: "7501008493207", description: "SUPLEMENTO VITAMÍNICO", active: "VITAMINA C (ÁCIDO ASCÓRBICO)", commercial: "CEBIÓN", formula: "500 MG", indication: "PREVENCIÓN DE DEFICIENCIA DE VITAMINA C Y REFUERZO INMUNOLÓGICO", route: "ORAL", presentation: "CAJA 20 TABLETAS MASTICABLES", category: "VITAMINAS", categoryClass: "cat-vitaminas", price: 130, stock: 10, image: "https://i.postimg.cc/LgY1PvXv/CEBION.webp" },
+        { id: 25, barcode: "7501008493306", description: "REHIDRATANTE", active: "ELECTROLITOS", commercial: "SUEROX", formula: "SOLUCIÓN", indication: "DESHIDRATACIÓN", route: "ORAL", presentation: "BOTELLA 630 ML", category: "SUEROS", categoryClass: "cat-sueros", price: 28, stock: 20, image: "https://i.postimg.cc/nMC7NVk9/SUEROX.webp" },
+        { id: 26, barcode: "7501008493405", description: "PROBIÓTICO", active: "BACILLUS CLAUSII", commercial: "ENTEROGERMINA", formula: "2 MIL MILLONES", indication: "FLORA INTESTINAL", route: "ORAL", presentation: "CAJA 10 FRASCOS", category: "PROBIÓTICO", categoryClass: "cat-probiotico", price: 280, stock: 7, image: "https://i.postimg.cc/fkJX1WKQ/ENTEROGERMINA-2B.webp" },
+        { id: 27, barcode: "7501008493504", description: "ANALGÉSICO", active: "KETOROLACO", commercial: "DOLAC", formula: "10 MG", indication: "DOLOR AGUDO", route: "ORAL", presentation: "CAJA 10 TABLETAS", category: "ANALGÉSICO", categoryClass: "cat-analgesico", price: 180, stock: 6, image: "https://i.postimg.cc/Wthrxp7C/DOLAC-10MG.webp" },
+        { id: 28, barcode: "7501008493603", description: "ANTIGRIPAL", active: "PARACETAMOL + CLORFENAMINA + FENILEFRINA", commercial: "XL-3", formula: "VARIAS", indication: "GRIPE", route: "ORAL", presentation: "CAJA 12 TABLETAS", category: "ANTIGRIPAL", categoryClass: "cat-antigripal", price: 95, stock: 0, image: "https://i.postimg.cc/1426SxCq/XL3-TABLETAS.webp" },
+        { id: 29, barcode: "7501008493702", description: "ANTIGRIPAL", active: "PARACETAMOL + FENILEFRINA", commercial: "TABCIN", formula: "VARIAS", indication: "RESFRIADO", route: "ORAL", presentation: "CAJA 12 CÁPSULAS", category: "ANTIGRIPAL", categoryClass: "cat-antigripal", price: 105, stock: 4, image: "https://i.postimg.cc/V5dM2sRM/TABCIN-12TAB.webp" },
+        { id: 30, barcode: "7501008493801", description: "ANTITUSIVO", active: "DEXTROMETORFANO", commercial: "ROBITUSSIN", formula: "JARABE", indication: "TOS SECA", route: "ORAL", presentation: "FRASCO 120 ML", category: "RESPIRATORIO", categoryClass: "cat-respiratorio", price: 145, stock: 0, image: "https://i.postimg.cc/YjhgT23v/ROBITUSSIN.webp" }
+    ];
+
+    // ============================================================
+    //  CARGA DE DATOS (SIN ALEATORIEDAD)
+    // ============================================================
+    function loadData() {
+        // Intentar cargar desde localStorage, si falla o está vacío usar el arreglo por defecto
+        const stored = localStorage.getItem('medications');
+        if (stored) {
+            try {
+                medications = JSON.parse(stored);
+                // Asegurar que todos los campos de texto estén en mayúsculas
+                medications = medications.map(med => {
+                    const campos = ['commercial', 'active', 'category', 'description', 'indication', 'route', 'presentation', 'formula'];
+                    campos.forEach(campo => {
+                        if (med[campo] && typeof med[campo] === 'string') {
+                            med[campo] = med[campo].toUpperCase();
+                        }
+                    });
+                    if (med.stock === undefined || med.stock === null) med.stock = 0;
+                    return med;
+                });
+            } catch (e) {
+                // Si hay error al parsear, usar el arreglo por defecto
+                medications = JSON.parse(JSON.stringify(MEDICAMENTOS_POR_DEFECTO));
             }
-            return false;
+        } else {
+            // Si no hay datos en localStorage, usar el arreglo por defecto
+            medications = JSON.parse(JSON.stringify(MEDICAMENTOS_POR_DEFECTO));
         }
+        // Guardar en localStorage para futuras ejecuciones
+        localStorage.setItem('medications', JSON.stringify(medications));
 
-        function logout() {
-            sessionStorage.removeItem('currentUser');
-            document.getElementById('appContent').style.display = 'none';
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-            document.getElementById('rememberMe').checked = false;
+        // Cargar carrito, pedidos y favoritos del usuario actual
+        cart = leerLS(claveUsuario('cart'), []);
+        orders = leerLS(claveUsuario('orders'), []);
+        favorites = leerLS(claveUsuario('favorites'), []);
+    }
+
+    function saveData() {
+        localStorage.setItem('medications', JSON.stringify(medications));
+        localStorage.setItem(claveUsuario('cart'), JSON.stringify(cart));
+        localStorage.setItem(claveUsuario('orders'), JSON.stringify(orders));
+        localStorage.setItem(claveUsuario('favorites'), JSON.stringify(favorites));
+    }
+
+    // ============================================================
+    //  FILTRO AGOTADOS
+    // ============================================================
+    function toggleFilterAgotados() {
+        filterAgotados = !filterAgotados;
+        document.getElementById('filter-agotados').classList.toggle('active', filterAgotados);
+        filterMeds();
+    }
+
+    // ============================================================
+    //  FAVORITOS
+    // ============================================================
+    function toggleFavorite(medId, event) {
+        event.stopPropagation();
+        const index = favorites.findIndex(fav => fav.id === medId);
+        if (index === -1) {
+            const med = medications.find(m => m.id === medId);
+            if (med) favorites.push(med);
+        } else {
+            favorites.splice(index, 1);
         }
+        saveData();
+        renderMedications();
+        if (document.getElementById('screen-favorites').classList.contains('active')) {
+            renderFavorites();
+        }
+    }
 
-        function checkAutoLogin() {
-            let session = sessionStorage.getItem('currentUser');
-            if (session) {
-                let user = JSON.parse(session);
-                showApp(user.username, user.role);
+    function isFavorite(medId) {
+        return favorites.some(fav => fav.id === medId);
+    }
+
+    // ============================================================
+    //  RENDERIZADO DE TARJETAS
+    // ============================================================
+    function crearTarjetaMed(med) {
+        const div = document.createElement('div');
+        const esAgotado = (med.stock === 0);
+        div.className = 'med-card ' + (med.categoryClass || 'cat-default') + (esAgotado ? ' agotado' : '');
+
+        // Usar solo click (touchstart puede causar conflictos en WebView)
+        div.addEventListener('click', function(e) {
+            if (e.target.closest('.fav-btn')) return;
+            showMedDetail(med.id);
+        });
+
+        const favActive = isFavorite(med.id) ? 'active' : '';
+        const favIcon = isFavorite(med.id) ? 'favorite' : 'favorite_border';
+        const statusText = esAgotado ? 'Agotado' : 'Disponible';
+        const statusClass = esAgotado ? 'agotado' : '';
+
+        div.innerHTML = `
+            <button class="fav-btn ${favActive}" onclick="toggleFavorite(${med.id}, event)">
+                <i class="material-icons">${favIcon}</i>
+            </button>
+            <div class="med-img">
+                ${med.image ? `<img src="${med.image}" alt="${med.commercial}" loading="lazy" onerror="imgFallback(this)">` : `<i class="material-icons" style="font-size:24px; color:var(--primary);">medication</i>`}
+            </div>
+            <div class="med-info">
+                <div class="med-name">${med.commercial}</div>
+                <div class="med-subname">${med.active}</div> 
+                <div class="med-details">
+                    <span class="med-category">${med.category}</span>
+                    <span class="med-status ${statusClass}"><i class="material-icons" style="font-size:12px;">${esAgotado ? 'cancel' : 'check_circle'}</i> ${statusText}</span>
+                </div>
+                <div class="med-price">$${med.price.toFixed(2)}</div>
+                <div class="med-stock">Stock: ${med.stock}</div>
+            </div>
+            <i class="material-icons med-arrow">arrow_forward_ios</i>
+        `;
+        return div;
+    }
+
+    function renderMedications(filtered = null) {
+        if (filtered === null) filtered = medications;
+        if (filterAgotados) filtered = filtered.filter(m => m.stock === 0);
+        const container = document.getElementById('med-list');
+        container.innerHTML = '';
+        if (filtered.length === 0) {
+            container.innerHTML = '<p style="text-align:center; padding:40px; color:#666;">No se encontraron medicamentos</p>';
+            return;
+        }
+        filtered.forEach(med => container.appendChild(crearTarjetaMed(med)));
+    }
+
+    function renderFavorites() {
+        const container = document.getElementById('favorites-list');
+        container.innerHTML = '';
+        if (favorites.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="material-icons" style="font-size:48px; color:#d1d5db; margin-bottom:12px;">favorite_border</i>
+                    <p>Aún no tienes medicamentos favoritos</p>
+                    <small>Agrega desde la lista de inicio</small>
+                </div>
+            `;
+            return;
+        }
+        favorites.forEach(med => container.appendChild(crearTarjetaMed(med)));
+    }
+
+    function filterMeds() {
+        const term = document.getElementById('search-input').value.toLowerCase().trim();
+        let filtered = medications.filter(m =>
+            m.commercial.toLowerCase().includes(term) ||
+            m.active.toLowerCase().includes(term) ||
+            m.category.toLowerCase().includes(term) ||
+            m.indication.toLowerCase().includes(term) ||
+            m.barcode.includes(term)
+        );
+        if (filterAgotados) filtered = filtered.filter(m => m.stock === 0);
+        renderMedications(filtered);
+    }
+
+    // ============================================================
+    //  MODAL DETALLE DEL PRODUCTO (CORREGIDO Y ROBUSTO)
+    // ============================================================
+    function showMedDetail(id) {
+        try {
+            // Verificar que medications no esté vacío
+            if (!medications || medications.length === 0) {
+                alert('Error: No hay medicamentos cargados. Reinicia la aplicación.');
                 return;
             }
-            let remUser = localStorage.getItem('rememberedUser');
-            let remPass = localStorage.getItem('rememberedPass');
-            if (remUser && remPass) {
-                if (login(remUser, remPass, true)) {
-                    let sessionData = JSON.parse(sessionStorage.getItem('currentUser'));
-                    showApp(sessionData.username, sessionData.role);
-                    return;
-                }
-            }
-            document.getElementById('loginScreen').style.display = 'flex';
-        }
 
-        function showApp(username, role) {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('appContent').style.display = 'block';
-            document.getElementById('welcomeMsg').textContent = `Bienvenido, ${username} (${role})`;
-            document.getElementById('userDisplay').textContent = `${username} (${role})`;
-            // Inicializar la app si aún no se ha hecho
-            if (!window.appInicializada) {
-                inicializarApp();
-                window.appInicializada = true;
+            currentMed = medications.find(m => m.id === id);
+            if (!currentMed) {
+                alert('Error: Producto no encontrado (ID: ' + id + ')');
+                return;
+            }
+
+            // Actualizar cada campo del modal
+            const img = document.getElementById('modal-product-img');
+            if (currentMed.image) {
+                img.style.display = 'block';
+                img.src = currentMed.image;
             } else {
-                generarTablaComparativa(); // refrescar por si acaso
+                img.style.display = 'none';
+            }
+
+            document.getElementById('modal-title').textContent = currentMed.commercial || 'Sin nombre';
+            document.getElementById('modal-barcode').textContent = currentMed.barcode || '—';
+            document.getElementById('modal-desc').textContent = currentMed.description || '—';
+            document.getElementById('modal-active').textContent = currentMed.active || '—';
+            document.getElementById('modal-commercial').textContent = currentMed.commercial || '—';
+            document.getElementById('modal-formula').textContent = currentMed.formula || '—';
+            document.getElementById('modal-indication').textContent = currentMed.indication || '—';
+            document.getElementById('modal-route').textContent = currentMed.route || '—';
+            document.getElementById('modal-presentation').textContent = currentMed.presentation || '—';
+            document.getElementById('modal-category').textContent = currentMed.category || '—';
+            document.getElementById('modal-stock').textContent = currentMed.stock !== undefined ? currentMed.stock : '0';
+            document.getElementById('modal-price').textContent = currentMed.price ? currentMed.price.toFixed(2) : '0.00';
+
+            // Mostrar el modal
+            const modal = document.getElementById('med-modal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        } catch (e) {
+            console.error('Error en showMedDetail:', e);
+            alert('Ocurrió un error al mostrar el detalle del producto. Por favor, reinicia la aplicación.');
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('med-modal').classList.remove('active');
+        document.body.style.overflow = '';
+        currentMed = null;
+    }
+
+    function addToCartCurrent() {
+        if (!currentMed) return;
+        if (currentMed.stock === 0) {
+            alert('❌ Producto agotado, no se puede agregar al carrito.');
+            return;
+        }
+        const existing = cart.find(item => item.id === currentMed.id);
+        if (existing) {
+            if (existing.quantity >= currentMed.stock) {
+                alert('❌ No hay suficiente stock disponible.');
+                return;
+            }
+            existing.quantity += 1;
+        } else {
+            cart.push(Object.assign({}, currentMed, { quantity: 1 }));
+        }
+        saveData();
+        alert(`${currentMed.commercial} agregado al carrito`);
+        closeModal();
+    }
+
+    // ============================================================
+    //  NAVEGACIÓN ENTRE PANTALLAS
+    // ============================================================
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+
+        const tabs = document.querySelectorAll('.tab-item');
+        tabs.forEach(t => t.classList.remove('active'));
+        const index = ['screen-home', 'screen-cart', 'screen-orders', 'screen-contact', 'screen-more', 'screen-admin', 'screen-stats'].indexOf(screenId);
+        if (index >= 0 && tabs[index]) tabs[index].classList.add('active');
+
+        if (screenId === 'screen-cart') renderCart();
+        if (screenId === 'screen-orders') renderOrders();
+        if (screenId === 'screen-favorites') renderFavorites();
+        if (screenId === 'screen-admin') renderAdminProducts();
+        if (screenId === 'screen-stats') renderStats();
+
+        window.scrollTo(0, 0);
+    }
+
+    // ============================================================
+    //  CARRITO
+    // ============================================================
+    function renderCart() {
+        const container = document.getElementById('cart-items');
+        container.innerHTML = '';
+        let total = 0;
+        if (cart.length === 0) {
+            container.innerHTML = '<p style="text-align:center; padding:40px; color:#666;">Tu carrito está vacío</p>';
+            document.getElementById('cart-total').textContent = '0.00';
+            return;
+        }
+        cart.forEach((item, idx) => {
+            const subtotal = item.price * item.quantity;
+            total += subtotal;
+            const div = document.createElement('div');
+            div.className = 'cart-card';
+            div.innerHTML = `
+                <div class="cart-row">
+                    <div>
+                        <strong>${item.commercial}</strong><br>
+                        <small>$${item.price.toFixed(2)} × ${item.quantity} = $${subtotal.toFixed(2)}</small>
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:center; flex-shrink:0;">
+                        <button class="qty-btn" onclick="changeQuantity(${idx}, -1)">−</button>
+                        <span>${item.quantity}</span>
+                        <button class="qty-btn" onclick="changeQuantity(${idx}, 1)">+</button>
+                        <button class="del-btn" onclick="removeFromCart(${idx})">×</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+        document.getElementById('cart-total').textContent = total.toFixed(2);
+        pendingTotal = total;
+    }
+
+    function changeQuantity(index, delta) {
+        if (!cart[index]) return;
+        const item = cart[index];
+        const med = medications.find(m => m.id === item.id);
+        if (!med) return;
+        const newQty = item.quantity + delta;
+        if (newQty < 1) {
+            cart.splice(index, 1);
+        } else if (newQty > med.stock) {
+            alert('❌ No hay suficiente stock disponible.');
+            return;
+        } else {
+            item.quantity = newQty;
+        }
+        saveData();
+        renderCart();
+    }
+
+    function removeFromCart(index) {
+        if (!cart[index]) return;
+        cart.splice(index, 1);
+        saveData();
+        renderCart();
+    }
+
+    // ============================================================
+    //  PAGO
+    // ============================================================
+    function showPaymentModal() {
+        if (cart.length === 0) {
+            alert("El carrito está vacío");
+            return;
+        }
+        const total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+        pendingTotal = total;
+        document.getElementById('cuota-mensual').textContent = (total / 6).toFixed(2);
+        document.getElementById('total-pago').textContent = total.toFixed(2);
+        document.getElementById('total-unico').textContent = total.toFixed(2);
+        document.getElementById('payment-card-form').style.display = 'none';
+        document.getElementById('payment-options').style.display = 'block';
+        document.getElementById('payment-modal').classList.add('active');
+    }
+
+    function closePaymentModal() {
+        document.getElementById('payment-modal').classList.remove('active');
+    }
+
+    function generarCodigoReferencia() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let codigo = '#EF-';
+        for (let i = 0; i < 7; i++) {
+            codigo += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return codigo;
+    }
+
+    function selectPaymentMethod(method) {
+        if (method === 'efectivo') {
+            const ref = generarCodigoReferencia();
+            const mensaje = `✅ Pago en efectivo seleccionado.\n\n🔑 Código de referencia: ${ref}\n\nPresenta este código al realizar el pago en la farmacia.\nMonto a pagar: $${pendingTotal.toFixed(2)} MXN\n\n¿Confirmar el pedido?`;
+            if (confirm(mensaje)) {
+                completeOrder('efectivo', ref);
+            }
+        } else if (method === 'tarjeta') {
+            document.getElementById('payment-options').style.display = 'none';
+            document.getElementById('payment-card-form').style.display = 'block';
+        }
+    }
+
+    function processCardPayment() {
+        const name = document.getElementById('card-name').value.trim();
+        const number = document.getElementById('card-number').value.trim();
+        const expiry = document.getElementById('card-expiry').value.trim();
+        const cvc = document.getElementById('card-cvc').value.trim();
+        if (!name || !number || !expiry || !cvc) {
+            alert("⚠️ Completa todos los campos de la tarjeta.");
+            return;
+        }
+        const ref = generarCodigoReferencia();
+        if (confirm(`¿Confirmar pago con tarjeta por $${pendingTotal.toFixed(2)} MXN?\nCódigo de referencia: ${ref}`)) {
+            completeOrder('tarjeta', ref);
+        }
+    }
+
+    function completeOrder(metodoPago, codigoRef) {
+        // Verificar stock
+        for (let item of cart) {
+            const med = medications.find(m => m.id === item.id);
+            if (!med) {
+                alert(`❌ El producto ${item.commercial} ya no existe.`);
+                return;
+            }
+            if (item.quantity > med.stock) {
+                alert(`❌ No hay suficiente stock de ${med.commercial}. Disponible: ${med.stock}`);
+                return;
             }
         }
 
-        document.getElementById('loginBtn').addEventListener('click', () => {
-            let user = document.getElementById('username').value.trim();
-            let pass = document.getElementById('password').value;
-            let remember = document.getElementById('rememberMe').checked;
-            if (login(user, pass, remember)) {
-                let sessionData = JSON.parse(sessionStorage.getItem('currentUser'));
-                showApp(sessionData.username, sessionData.role);
-            } else {
-                document.getElementById('loginError').style.display = 'block';
+        // Restar stock
+        for (let item of cart) {
+            const med = medications.find(m => m.id === item.id);
+            if (med) {
+                med.stock -= item.quantity;
+                if (med.stock < 0) med.stock = 0;
             }
-        });
-
-        document.getElementById('password').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') document.getElementById('loginBtn').click();
-        });
-
-        document.getElementById('logoutLink').addEventListener('click', (e) => {
-            e.preventDefault();
-            logout();
-        });
-
-        // ========== CÓDIGO ORIGINAL DE LA APLICACIÓN ==========
-        function inicializarApp() {
-            const STORAGE_KEY = 'cotizador_pro_data';
-            let proveedores = [];
-            let productosMaestro = [];
-
-            function guardarDatos() {
-                try {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                        proveedores: proveedores.map(p => ({...p, productos: p.productos.map(prod => ({...prod}))})),
-                        productosMaestro: [...productosMaestro]
-                    }));
-                } catch (e) { console.warn('No se pudieron guardar los datos:', e); }
-            }
-
-            function cargarDatos() {
-                try {
-                    const data = localStorage.getItem(STORAGE_KEY);
-                    if (data) {
-                        const parsed = JSON.parse(data);
-                        proveedores = parsed.proveedores || [];
-                        productosMaestro = parsed.productosMaestro || [];
-                        return true;
-                    }
-                } catch (e) { console.warn('No se pudieron cargar los datos:', e); }
-                return false;
-            }
-
-            window.addEventListener('beforeunload', guardarDatos);
-            setInterval(guardarDatos, 5000);
-
-            function showToast(message, type = 'info') {
-                const container = document.getElementById('toastContainer');
-                const toast = document.createElement('div');
-                toast.className = `toast toast-${type}`;
-                const icons = { success: 'check_circle', warning: 'warning', danger: 'error', info: 'info' };
-                toast.innerHTML = `<span class="material-icons" style="font-size:20px;">${icons[type]}</span> ${message}`;
-                container.appendChild(toast);
-                setTimeout(() => {
-                    toast.style.animation = 'slideOut 0.3s ease';
-                    setTimeout(() => toast.remove(), 300);
-                }, 3000);
-            }
-
-            window.abrirModal = function(codigo, descripcion) {
-                const modal = document.getElementById('modalDetalle');
-                const content = document.getElementById('modalContent');
-                
-                const opciones = [];
-                proveedores.forEach(prov => {
-                    const producto = prov.productos.find(p => p.codigo === codigo);
-                    if (producto) {
-                        opciones.push({
-                            proveedor: prov.nombre,
-                            existencia: producto.existencia,
-                            precio: producto.precio
-                        });
-                    }
-                });
-                
-                opciones.sort((a, b) => a.precio - b.precio);
-                
-                let html = `
-                    <div style="margin-bottom:20px;">
-                        <h3 style="color:var(--gray-900);font-size:1.2rem;">${codigo}</h3>
-                        <p style="color:var(--gray-500);">${descripcion}</p>
-                    </div>
-                    <div style="margin-bottom:16px;"><strong>Proveedores disponibles: ${opciones.length}</strong></div>
-                `;
-                
-                if (opciones.length === 0) {
-                    html += `
-                        <div class="alert alert-warning">
-                            <span class="material-icons">warning</span>
-                            <div><strong>FDC - Fuera de Catálogo</strong><br>Este producto no está disponible en ningún proveedor.</div>
-                        </div>
-                    `;
-                } else {
-                    opciones.forEach((op, index) => {
-                        let rankClass = '', rankBadge = '', cardClass = '';
-                        if (index === 0) { rankClass = 'rank-1'; rankBadge = 'Mejor precio'; cardClass = 'mejor'; }
-                        else if (index === 1) { rankClass = 'rank-2'; rankBadge = '2da opción'; cardClass = 'segundo'; }
-                        else if (index === 2) { rankClass = 'rank-3'; rankBadge = '3ra opción'; }
-                        else { rankClass = 'rank-other'; rankBadge = `#${index + 1}`; }
-                        
-                        html += `
-                            <div class="proveedor-card ${cardClass}">
-                                <div class="proveedor-card-header">
-                                    <div style="display:flex;align-items:center;gap:12px;">
-                                        <span class="rank-badge ${rankClass}">${rankBadge}</span>
-                                        <strong style="font-size:1.1rem;">${op.proveedor}</strong>
-                                    </div>
-                                </div>
-                                <div class="proveedor-card-details">
-                                    <div class="detail-item">
-                                        <label>Precio Unitario</label>
-                                        <span style="color:var(--success);">$${op.precio.toFixed(2)}</span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <label>Existencia</label>
-                                        <span>${op.existencia} unidades</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-                
-                content.innerHTML = html;
-                modal.classList.add('show');
-            };
-
-            window.cerrarModal = function() {
-                document.getElementById('modalDetalle').classList.remove('show');
-            };
-
-            document.getElementById('modalDetalle').addEventListener('click', function(e) {
-                if (e.target === this) cerrarModal();
-            });
-
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            let sidebarOpen = true;
-
-            sidebarToggle.addEventListener('click', () => {
-                sidebarOpen = !sidebarOpen;
-                sidebar.classList.toggle('collapsed', !sidebarOpen);
-                mainContent.classList.toggle('expanded', !sidebarOpen);
-                sidebarToggle.querySelector('.material-icons').textContent = sidebarOpen ? 'chevron_left' : 'chevron_right';
-            });
-
-            const navItems = document.querySelectorAll('.nav-item');
-            const sections = document.querySelectorAll('.section');
-            navItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    const sectionId = item.dataset.section;
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    item.classList.add('active');
-                    sections.forEach(section => section.classList.remove('active'));
-                    document.getElementById(`section-${sectionId}`).classList.add('active');
-                    if (sectionId === 'comparativo') generarTablaComparativa();
-                });
-            });
-
-            document.getElementById('activarStockMinimo').addEventListener('change', function() {
-                document.getElementById('stockMinimo').disabled = !this.checked;
-                if (!this.checked) document.getElementById('stockMinimo').value = '20';
-            });
-
-            document.getElementById('aplicarDescuento').addEventListener('change', function() {
-                document.getElementById('porcentajeDescuento').disabled = !this.checked;
-                if (!this.checked) document.getElementById('porcentajeDescuento').value = '0';
-            });
-
-            document.getElementById('btnAgregarProveedor').addEventListener('click', () => {
-                const nombre = document.getElementById('nombreProveedor').value.trim();
-                const fileInput = document.getElementById('archivoProveedor');
-                const activarStock = document.getElementById('activarStockMinimo').checked;
-                const stockMinimo = activarStock ? (parseInt(document.getElementById('stockMinimo').value) || 20) : 0;
-                const aplicarDescuento = document.getElementById('aplicarDescuento').checked;
-                const porcentajeDescuento = aplicarDescuento ? (parseFloat(document.getElementById('porcentajeDescuento').value) || 0) : 0;
-                
-                if (!nombre) { showToast('Por favor, ingrese el nombre del proveedor', 'warning'); return; }
-                if (!fileInput.files[0]) { showToast('Por favor, seleccione un archivo Excel', 'warning'); return; }
-                if (proveedores.some(p => p.nombre.toLowerCase() === nombre.toLowerCase())) {
-                    showToast('Ya existe un proveedor con este nombre', 'warning'); return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, { type: 'array' });
-                        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                        const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                        if (json.length < 2) { showToast('El archivo Excel está vacío', 'warning'); return; }
-
-                        let productos = json.slice(1).map(row => ({
-                            codigo: String(row[0] || '').trim(),
-                            descripcion: String(row[1] || '').trim(),
-                            existencia: parseFloat(row[2]) || 0,
-                            precio: parseFloat(row[3]) || 0
-                        })).filter(p => p.codigo && p.precio > 0);
-
-                        if (aplicarDescuento && porcentajeDescuento > 0) {
-                            productos = productos.map(p => ({...p, precioOriginal: p.precio, precio: p.precio * (1 - porcentajeDescuento / 100)}));
-                        }
-                        if (productos.length === 0) { showToast('No se encontraron productos válidos', 'warning'); return; }
-
-                        proveedores.push({ nombre, productos, stockMinimo, descuento: aplicarDescuento ? porcentajeDescuento : 0, activarStock });
-                        actualizarListaProveedores();
-                        actualizarFiltroProveedores();
-                        guardarDatos();
-                        
-                        document.getElementById('nombreProveedor').value = '';
-                        document.getElementById('archivoProveedor').value = '';
-                        document.getElementById('activarStockMinimo').checked = false;
-                        document.getElementById('stockMinimo').value = '20';
-                        document.getElementById('stockMinimo').disabled = true;
-                        document.getElementById('aplicarDescuento').checked = false;
-                        document.getElementById('porcentajeDescuento').value = '0';
-                        document.getElementById('porcentajeDescuento').disabled = true;
-                        
-                        showToast(`Proveedor "${nombre}" cargado exitosamente (${productos.length} productos)`, 'success');
-                    } catch (error) {
-                        showToast('Error al procesar el archivo Excel', 'danger');
-                        console.error(error);
-                    }
-                };
-                reader.readAsArrayBuffer(fileInput.files[0]);
-            });
-
-            function actualizarListaProveedores() {
-                const div = document.getElementById('listaProveedores');
-                if (proveedores.length === 0) {
-                    div.innerHTML = '<p style="color:var(--gray-400);text-align:center;padding:20px;">No hay proveedores cargados</p>';
-                    return;
-                }
-                div.innerHTML = proveedores.map((p, index) => `
-                    <div class="proveedor-item">
-                        <div class="proveedor-info">
-                            <span class="material-icons" style="color:var(--primary);">store</span>
-                            <div>
-                                <div class="proveedor-name">${p.nombre}</div>
-                                <div class="product-count">${p.productos.length} productos | Stock mín: ${p.activarStock ? p.stockMinimo : 'No'} | Desc: ${p.descuento}%</div>
-                            </div>
-                        </div>
-                        <button class="btn btn-secondary btn-sm" onclick="eliminarProveedor(${index})">
-                            <span class="material-icons">delete</span>
-                        </button>
-                    </div>
-                `).join('');
-            }
-
-            window.eliminarProveedor = function(index) {
-                proveedores.splice(index, 1);
-                actualizarListaProveedores();
-                actualizarFiltroProveedores();
-                generarTablaComparativa();
-                guardarDatos();
-            };
-
-            function actualizarFiltroProveedores() {
-                const select = document.getElementById('filtroProveedor');
-                select.innerHTML = '<option value="todos">Todos los proveedores</option>';
-                proveedores.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p.nombre;
-                    opt.textContent = p.nombre;
-                    select.appendChild(opt);
-                });
-                select.onchange = () => generarTablaComparativa();
-            }
-
-            document.getElementById('btnCargarMaestro').addEventListener('click', () => {
-                const file = document.getElementById('archivoMaestro').files[0];
-                if (!file) { showToast('Por favor, seleccione un archivo Excel', 'warning'); return; }
-
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, { type: 'array' });
-                        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                        const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                        if (json.length < 2) { showToast('El archivo Excel está vacío', 'warning'); return; }
-
-                        productosMaestro = json.slice(1).map(row => ({
-                            codigo: String(row[0] || '').trim(),
-                            descripcion: String(row[1] || '').trim(),
-                            piezas: parseFloat(row[2]) || 1
-                        })).filter(p => p.codigo);
-                        if (productosMaestro.length === 0) { showToast('No se encontraron productos válidos', 'warning'); return; }
-
-                        document.getElementById('estadoMaestro').innerHTML = `
-                            <div class="alert alert-info">
-                                <span class="material-icons">check_circle</span>
-                                <div><strong>✅ Lista maestra cargada exitosamente</strong><br>${productosMaestro.length} productos encontrados</div>
-                            </div>
-                        `;
-                        guardarDatos();
-                        generarTablaComparativa();
-                        document.querySelector('.nav-item[data-section="comparativo"]').click();
-                    } catch (error) {
-                        showToast('Error al procesar el archivo Excel', 'danger');
-                        console.error(error);
-                    }
-                };
-                reader.readAsArrayBuffer(file);
-            });
-
-            window.eliminarProductoMaestro = function(codigo) {
-                productosMaestro = productosMaestro.filter(p => p.codigo !== codigo);
-                guardarDatos();
-                generarTablaComparativa();
-                showToast(`Producto ${codigo} eliminado del pedido`, 'warning');
-            };
-
-            function generarTablaComparativa() {
-                const tbody = document.getElementById('cuerpoTabla');
-                const filtroProveedor = document.getElementById('filtroProveedor').value;
-                
-                if (proveedores.length === 0 || productosMaestro.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--gray-400);">Cargue proveedores y lista maestra para ver el comparativo</td></tr>';
-                    actualizarTotalGeneral();
-                    return;
-                }
-
-                tbody.innerHTML = '';
-
-                productosMaestro.forEach((prod) => {
-                    const proveedoresValidos = [];
-                    proveedores.forEach(prov => {
-                        const encontrado = prov.productos.find(p => p.codigo === prod.codigo);
-                        if (encontrado && encontrado.existencia > 0) {
-                            proveedoresValidos.push({
-                                proveedor: prov.nombre,
-                                ...encontrado,
-                                stockMinimo: prov.stockMinimo,
-                                activarStock: prov.activarStock
-                            });
-                        }
-                    });
-
-                    proveedoresValidos.sort((a, b) => a.precio - b.precio);
-                    const proveedorAsignado = proveedoresValidos.length > 0 ? proveedoresValidos[0] : null;
-                    const segundaOpcion = proveedoresValidos.length > 1 ? proveedoresValidos[1] : null;
-
-                    if (filtroProveedor !== 'todos') {
-                        if (!proveedorAsignado || proveedorAsignado.proveedor !== filtroProveedor) return;
-                    }
-
-                    if (!proveedorAsignado && filtroProveedor === 'todos') {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td><strong>${prod.codigo}</strong></td>
-                            <td>${prod.descripcion}</td>
-                            <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1" style="width:70px;"></td>
-                            <td><span class="badge badge-fdc">FDC</span></td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td><span class="text-muted">Fuera de catálogo</span></td>
-                            <td><span class="text-muted">N/A</span></td>
-                            <td>
-                                <div style="display:flex;gap:4px;">
-                                    <button class="btn btn-info btn-xs" onclick="abrirModal('${prod.codigo}', '${prod.descripcion.replace(/'/g, "\\'")}')" title="Ver detalle">
-                                        <span class="material-icons" style="font-size:16px;">visibility</span>
-                                    </button>
-                                    <button class="btn btn-danger btn-xs" onclick="eliminarProductoMaestro('${prod.codigo}')" title="Eliminar">
-                                        <span class="material-icons" style="font-size:16px;">delete</span>
-                                    </button>
-                                </div>
-                            </td>
-                        `;
-                        tbody.appendChild(row);
-                        return;
-                    }
-
-                    if (proveedorAsignado) {
-                        const row = document.createElement('tr');
-                        const subtotal = proveedorAsignado.precio * prod.piezas;
-                        let existenciaHTML = `<span class="badge badge-success">${proveedorAsignado.existencia}</span>`;
-                        let stockWarningHTML = '';
-                        if (proveedorAsignado.activarStock && proveedorAsignado.existencia < proveedorAsignado.stockMinimo) {
-                            stockWarningHTML = `
-                                <span class="material-icons warning-icon" style="font-size:16px;margin-left:4px;" title="Existencia baja">warning</span>
-                                <div class="stock-bajo-alert">Existencia baja</div>
-                            `;
-                        }
-                        let segundaOpcionHTML = segundaOpcion 
-                            ? `<span class="badge badge-info">${segundaOpcion.proveedor} - $${segundaOpcion.precio.toFixed(2)}</span>` 
-                            : '<span class="text-muted">No disponible</span>';
-                        
-                        row.innerHTML = `
-                            <td><strong>${prod.codigo}</strong></td>
-                            <td>${prod.descripcion}</td>
-                            <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1" style="width:70px;"></td>
-                            <td>${existenciaHTML}${stockWarningHTML}</td>
-                            <td>$${proveedorAsignado.precio.toFixed(2)}</td>
-                            <td class="text-highlight">$${subtotal.toFixed(2)}</td>
-                            <td><span style="font-weight:500;">${proveedorAsignado.proveedor}</span></td>
-                            <td>${segundaOpcionHTML}</td>
-                            <td>
-                                <div style="display:flex;gap:4px;">
-                                    <button class="btn btn-info btn-xs" onclick="abrirModal('${prod.codigo}', '${prod.descripcion.replace(/'/g, "\\'")}')" title="Ver detalle">
-                                        <span class="material-icons" style="font-size:16px;">visibility</span>
-                                    </button>
-                                    <button class="btn btn-danger btn-xs" onclick="eliminarProductoMaestro('${prod.codigo}')" title="Eliminar">
-                                        <span class="material-icons" style="font-size:16px;">delete</span>
-                                    </button>
-                                </div>
-                            </td>
-                        `;
-                        tbody.appendChild(row);
-                    }
-                });
-
-                document.querySelectorAll('.piezas-input').forEach(input => {
-                    input.addEventListener('input', function() { actualizarPiezas(this); });
-                });
-                actualizarTotalGeneral();
-            }
-
-            function actualizarPiezas(inputElement) {
-                const row = inputElement.closest('tr');
-                const precioText = row.cells[4].textContent;
-                if (precioText === '-') return;
-                const precio = parseFloat(precioText.replace('$', '')) || 0;
-                const piezas = parseInt(inputElement.value) || 0;
-                const subtotal = precio * piezas;
-                row.cells[5].innerHTML = `<span class="text-highlight">$${subtotal.toFixed(2)}</span>`;
-                const codigo = row.cells[0].textContent.trim();
-                const prodMaestro = productosMaestro.find(p => p.codigo === codigo);
-                if (prodMaestro) {
-                    prodMaestro.piezas = piezas;
-                    guardarDatos();
-                }
-                actualizarTotalGeneral();
-            }
-
-            function actualizarTotalGeneral() {
-                let total = 0;
-                document.querySelectorAll('#cuerpoTabla tr').forEach(row => {
-                    const subtotalCell = row.cells[5];
-                    if (subtotalCell && subtotalCell.textContent !== '-') {
-                        const subtotal = parseFloat(subtotalCell.textContent.replace('$', '')) || 0;
-                        total += subtotal;
-                    }
-                });
-                document.getElementById('totalGeneral').textContent = 
-                    `$${total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-            }
-
-            const searchInput = document.getElementById('searchProducto');
-            const searchResults = document.getElementById('searchResults');
-            searchInput.addEventListener('input', function() {
-                const query = this.value.trim().toLowerCase();
-                if (query.length < 2) { searchResults.classList.remove('show'); return; }
-                const resultados = [];
-                const seen = new Set();
-                proveedores.forEach(prov => {
-                    prov.productos.forEach(prod => {
-                        const key = prod.codigo.toLowerCase();
-                        if (!seen.has(key) && (prod.codigo.toLowerCase().includes(query) || prod.descripcion.toLowerCase().includes(query))) {
-                            seen.add(key);
-                            const enListaMaestra = productosMaestro.some(p => p.codigo === prod.codigo);
-                            resultados.push({...prod, proveedor: prov.nombre, enListaMaestra});
-                        }
-                    });
-                });
-                const resultadosLimitados = resultados.slice(0, 10);
-                if (resultadosLimitados.length === 0) {
-                    searchResults.innerHTML = '<div style="padding:16px;text-align:center;color:var(--gray-400);">No se encontraron productos</div>';
-                } else {
-                    searchResults.innerHTML = resultadosLimitados.map(r => `
-                        <div class="search-result-item">
-                            <div>
-                                <strong>${r.codigo}</strong> - ${r.descripcion}<br>
-                                <small style="color:var(--gray-500);">${r.proveedor} | $${r.precio.toFixed(2)} | Existencia: ${r.existencia}</small>
-                                ${r.enListaMaestra ? '<br><span class="badge badge-success" style="margin-top:4px;">✅ En pedido actual</span>' : ''}
-                            </div>
-                            <div class="result-actions">
-                                <button class="btn btn-info btn-xs" onclick="abrirModal('${r.codigo}', '${r.descripcion.replace(/'/g, "\\'")}')" title="Ver detalle">
-                                    <span class="material-icons" style="font-size:16px;">visibility</span> Detalle
-                                </button>
-                                ${!r.enListaMaestra ? 
-                                    `<button class="btn btn-primary btn-xs" onclick="agregarAlPedido('${r.codigo}', '${r.descripcion.replace(/'/g, "\\'")}', event)">
-                                        <span class="material-icons" style="font-size:16px;">add_shopping_cart</span> Agregar
-                                    </button>` : ''}
-                            </div>
-                        </div>
-                    `).join('');
-                }
-                searchResults.classList.add('show');
-            });
-
-            document.addEventListener('click', function(e) {
-                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                    searchResults.classList.remove('show');
-                }
-            });
-
-            window.agregarAlPedido = function(codigo, descripcion, event) {
-                event.stopPropagation();
-                if (productosMaestro.some(p => p.codigo === codigo)) {
-                    showToast('Este producto ya está en el pedido', 'warning');
-                    return;
-                }
-                productosMaestro.unshift({codigo, descripcion, piezas: 1});
-                showToast(`Producto ${codigo} agregado al pedido`, 'success');
-                guardarDatos();
-                generarTablaComparativa();
-                setTimeout(() => {
-                    const primeraFila = document.querySelector('#cuerpoTabla tr:first-child');
-                    if (primeraFila) {
-                        primeraFila.classList.add('new-row');
-                        setTimeout(() => primeraFila.classList.remove('new-row'), 2000);
-                    }
-                }, 100);
-                searchResults.classList.remove('show');
-                searchInput.value = '';
-            };
-
-            function generarPDFPorProveedor(nombreProveedor) {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                doc.setFillColor(37, 99, 235);
-                doc.rect(0, 0, 210, 40, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(20);
-                doc.text('PEDIDO DE COMPRA', 105, 20, { align: 'center' });
-                doc.setFontSize(12);
-                doc.text(`Proveedor: ${nombreProveedor}`, 105, 30, { align: 'center' });
-                doc.setTextColor(0, 0, 0);
-                doc.setFontSize(10);
-                doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 14, 50);
-
-                const filas = Array.from(document.querySelectorAll('#cuerpoTabla tr'))
-                    .filter(row => {
-                        const proveedorCell = row.cells[6];
-                        return proveedorCell && proveedorCell.textContent.trim() === nombreProveedor;
-                    });
-
-                if (filas.length === 0) {
-                    doc.text('No hay productos para este proveedor', 14, 60);
-                    doc.save(`Pedido_${nombreProveedor.replace(/\s+/g, '_')}.pdf`);
-                    return;
-                }
-
-                const datos = filas.map(row => [
-                    row.cells[0].textContent,
-                    row.cells[1].textContent,
-                    row.querySelector('.piezas-input')?.value || row.cells[2].textContent,
-                    row.cells[4].textContent,
-                    row.cells[5].textContent
-                ]);
-
-                const totalProveedor = filas.reduce((sum, row) => {
-                    const subtotal = parseFloat(row.cells[5].textContent.replace('$', '')) || 0;
-                    return sum + subtotal;
-                }, 0);
-
-                doc.autoTable({
-                    head: [['Código', 'Descripción', 'Piezas', 'Precio Unit.', 'Subtotal']],
-                    body: datos,
-                    startY: 60,
-                    theme: 'grid',
-                    headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
-                    foot: [['', '', '', 'TOTAL:', `$${totalProveedor.toFixed(2)}`]],
-                    footStyles: { fillColor: [243, 244, 246], textColor: 0, fontStyle: 'bold' }
-                });
-
-                doc.save(`Pedido_${nombreProveedor.replace(/\s+/g, '_')}.pdf`);
-            }
-
-            document.getElementById('btnGenerarFiltrado').addEventListener('click', () => {
-                const prov = document.getElementById('filtroProveedor').value;
-                if (prov === 'todos') { showToast('Seleccione un proveedor específico en el filtro', 'warning'); return; }
-                generarPDFPorProveedor(prov);
-            });
-
-            document.getElementById('btnGenerarTodos').addEventListener('click', () => {
-                if (proveedores.length === 0) { showToast('No hay proveedores cargados', 'warning'); return; }
-                proveedores.forEach(p => generarPDFPorProveedor(p.nombre));
-                setTimeout(() => showToast(`Se generaron ${proveedores.length} archivos PDF correctamente`, 'success'), 500);
-            });
-
-            function inicializar() {
-                const datosCargados = cargarDatos();
-                actualizarListaProveedores();
-                actualizarFiltroProveedores();
-                if (datosCargados && proveedores.length > 0 && productosMaestro.length > 0) {
-                    generarTablaComparativa();
-                } else {
-                    document.getElementById('cuerpoTabla').innerHTML = 
-                        '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--gray-400);">Cargue proveedores y lista maestra para ver el comparativo</td></tr>';
-                }
-                document.getElementById('stockMinimo').value = '20';
-            }
-
-            inicializar();
         }
 
-        // ========== ARRANQUE ==========
-        window.addEventListener('load', checkAutoLogin);
-    </script>
+        const total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+        const ahora = new Date();
+        const pedido = {
+            id: `PED-${Date.now()}`,
+            fecha: ahora.toLocaleDateString('es-MX'),
+            hora: ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }),
+            total: total.toFixed(2),
+            productos: cart.map(i => ({ commercial: i.commercial, price: i.price, quantity: i.quantity })),
+            estado: 'Completado',
+            metodoPago: metodoPago,
+            codigoReferencia: codigoRef || 'N/A'
+        };
+        orders.unshift(pedido);
+        cart = [];
+        saveData();
+        closePaymentModal();
+        alert(`✅ Pedido ${pedido.id} registrado.\n🔑 Código: ${pedido.codigoReferencia}\nPago con ${metodoPago}. Stock actualizado.`);
+        renderMedications();
+        showScreen('screen-orders');
+    }
+
+    // ============================================================
+    //  PEDIDOS
+    // ============================================================
+    function renderOrders() {
+        const container = document.getElementById('orders-list');
+        container.innerHTML = '';
+        if (orders.length === 0) {
+            container.innerHTML = '<p style="text-align:center; padding:40px; color:#666;">No tienes pedidos registrados</p>';
+            return;
+        }
+        orders.forEach(pedido => {
+            const div = document.createElement('div');
+            div.className = 'order-card';
+            const listaProductos = (pedido.productos || [])
+                .map(p => `${p.commercial} × ${p.quantity}`)
+                .join(', ');
+            div.innerHTML = `
+                <h4>Pedido: ${pedido.id}</h4>
+                <p>Fecha: ${pedido.fecha}${pedido.hora ? ' · ' + pedido.hora : ''}</p>
+                <p style="font-size:13px; color:var(--medium-gray);">${listaProductos}</p>
+                <p>Total: $${pedido.total} MXN</p>
+                <p>Pago: ${pedido.metodoPago || 'Efectivo'}</p>
+                <p>Código referencia: <strong>${pedido.codigoReferencia || 'N/A'}</strong></p>
+                <p>Estado: <span style="color:var(--accent); font-weight:bold;">${pedido.estado}</span></p>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    // ============================================================
+    //  ESTADÍSTICAS
+    // ============================================================
+    function renderStats() {
+        const hoy = new Date().toLocaleDateString('es-MX');
+        const pedidosHoy = orders.filter(p => p.fecha === hoy);
+        const totalPedidos = pedidosHoy.length;
+        const totalMonto = pedidosHoy.reduce((sum, p) => sum + parseFloat(p.total), 0);
+
+        document.getElementById('stats-today-orders').textContent = totalPedidos;
+        document.getElementById('stats-today-total').textContent = '$' + totalMonto.toFixed(2);
+
+        const listContainer = document.getElementById('stats-today-list');
+        listContainer.innerHTML = '';
+        if (pedidosHoy.length === 0) {
+            listContainer.innerHTML = '<p style="text-align:center; color:var(--medium-gray);">No hay pedidos hoy</p>';
+            return;
+        }
+        pedidosHoy.forEach(p => {
+            const div = document.createElement('div');
+            div.style.cssText = 'padding:8px 0; border-bottom:1px solid var(--border);';
+            div.innerHTML = `
+                <div style="display:flex; justify-content:space-between;">
+                    <span>${p.id}</span>
+                    <span>$${p.total}</span>
+                </div>
+                <div style="font-size:12px; color:var(--medium-gray);">${p.hora} - ${p.metodoPago || 'Efectivo'} - Ref: ${p.codigoReferencia || 'N/A'}</div>
+            `;
+            listContainer.appendChild(div);
+        });
+    }
+
+    // ============================================================
+    //  ADMINISTRACIÓN
+    // ============================================================
+    function renderAdminProducts() {
+        const container = document.getElementById('admin-product-list');
+        container.innerHTML = '';
+        if (medications.length === 0) {
+            container.innerHTML = '<p>No hay productos.</p>';
+            return;
+        }
+        medications.forEach(med => {
+            const div = document.createElement('div');
+            div.className = 'admin-product-item';
+            div.innerHTML = `
+                <div class="info">
+                    <strong>${med.commercial}</strong> - ${med.active} - $${med.price.toFixed(2)} - Stock: ${med.stock}
+                </div>
+                <div class="actions">
+                    <button class="btn btn-warning" onclick="editProduct(${med.id})" style="padding:4px 10px;">Editar</button>
+                    <button class="btn btn-danger" onclick="deleteProduct(${med.id})" style="padding:4px 10px;">Eliminar</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function editProduct(id) {
+        const med = medications.find(m => m.id === id);
+        if (!med) return;
+        document.getElementById('edit-id').value = id;
+        document.getElementById('f-barcode').value = med.barcode || '';
+        document.getElementById('f-price').value = med.price || '';
+        document.getElementById('f-commercial').value = med.commercial || '';
+        document.getElementById('f-active').value = med.active || '';
+        document.getElementById('f-description').value = med.description || '';
+        document.getElementById('f-formula').value = med.formula || '';
+        document.getElementById('f-route').value = med.route || '';
+        document.getElementById('f-presentation').value = med.presentation || '';
+        document.getElementById('f-category').value = med.category || '';
+        document.getElementById('f-indication').value = med.indication || '';
+        document.getElementById('f-image').value = med.image || '';
+        document.getElementById('f-stock').value = med.stock !== undefined ? med.stock : 0;
+        document.getElementById('form-title').textContent = 'Editar producto';
+        document.getElementById('btn-cancel').style.display = 'block';
+        document.getElementById('admin-form').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cancelEdit() {
+        document.getElementById('edit-id').value = '';
+        document.getElementById('form-title').textContent = 'Agregar producto';
+        document.getElementById('btn-cancel').style.display = 'none';
+        document.querySelectorAll('#admin-form input').forEach(inp => inp.value = '');
+        document.getElementById('f-stock').value = 0;
+    }
+
+    function saveProduct() {
+        const id = parseInt(document.getElementById('edit-id').value) || 0;
+        const barcode = document.getElementById('f-barcode').value.trim();
+        const price = parseFloat(document.getElementById('f-price').value);
+        const commercial = document.getElementById('f-commercial').value.trim().toUpperCase();
+        const active = document.getElementById('f-active').value.trim().toUpperCase();
+        const description = document.getElementById('f-description').value.trim().toUpperCase();
+        const formula = document.getElementById('f-formula').value.trim().toUpperCase();
+        const route = document.getElementById('f-route').value.trim().toUpperCase();
+        const presentation = document.getElementById('f-presentation').value.trim().toUpperCase();
+        const category = document.getElementById('f-category').value.trim().toUpperCase();
+        const indication = document.getElementById('f-indication').value.trim().toUpperCase();
+        const image = document.getElementById('f-image').value.trim();
+        const stock = parseInt(document.getElementById('f-stock').value) || 0;
+
+        if (!barcode || !commercial || !active || !price || isNaN(price) || price <= 0) {
+            return alert("⚠️ Completa los campos obligatorios: código, nombre, sustancia y precio válido.");
+        }
+
+        const catMap = {
+            'ANALGÉSICO': 'cat-analgesico',
+            'ANTIINFLAMATORIO': 'cat-antiinflamatorio',
+            'ANTIBIÓTICO': 'cat-antibiotico',
+            'ANTIHISTAMÍNICO': 'cat-antihistaminico',
+            'RESPIRATORIO': 'cat-respiratorio',
+            'GASTROINTESTINAL': 'cat-gastrointestinal',
+            'DERMATOLÓGICO': 'cat-dermatologico',
+            'ANTISÉPTICO': 'cat-antiseptico',
+            'SUEROS': 'cat-sueros',
+            'PROBIÓTICO': 'cat-probiotico',
+            'ANTIGRIPAL': 'cat-antigripal',
+            'ANTITUSIVO': 'cat-antitusivo',
+            'ANTIMICÓTICO': 'cat-antimicotico',
+            'VITAMINAS': 'cat-vitaminas'
+        };
+        const categoryClass = catMap[category] || 'cat-default';
+
+        if (id > 0) {
+            const index = medications.findIndex(m => m.id === id);
+            if (index === -1) return alert("Producto no encontrado");
+            medications[index] = {
+                id,
+                barcode,
+                description,
+                active,
+                commercial,
+                formula,
+                indication,
+                route,
+                presentation,
+                category,
+                categoryClass,
+                price,
+                stock,
+                image
+            };
+        } else {
+            const newId = medications.length > 0 ? Math.max(...medications.map(m => m.id)) + 1 : 1;
+            medications.push({
+                id: newId,
+                barcode,
+                description,
+                active,
+                commercial,
+                formula,
+                indication,
+                route,
+                presentation,
+                category,
+                categoryClass,
+                price,
+                stock,
+                image
+            });
+        }
+
+        saveData();
+        cancelEdit();
+        renderAdminProducts();
+        renderMedications();
+        alert("✅ Producto guardado correctamente");
+    }
+
+    function deleteProduct(id) {
+        if (!confirm("¿Eliminar este producto?")) return;
+        medications = medications.filter(m => m.id !== id);
+        saveData();
+        renderAdminProducts();
+        renderMedications();
+        alert("Producto eliminado");
+    }
+</script>
 </body>
 </html>
+    
