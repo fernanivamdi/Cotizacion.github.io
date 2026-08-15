@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Proveedores – Sistema de Pedidos</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar collapsed" id="sidebar">
+        <div class="sidebar-header">
+            <span class="material-icons logo-icon">inventory_2</span>
+            <span class="logo-text">PEDIDOS</span>
+        </div>
+        <div class="sidebar-toggle" id="sidebarToggle">
+            <span class="material-icons">chevron_right</span> <!-- Inicia cerrado, flecha derecha -->
+        </div>
+        <nav class="sidebar-nav">
+            <a href="proveedores.html" class="nav-item active">
+                <span class="material-icons">business</span>
+                <span class="nav-text">PROVEEDORES</span>
+            </a>
+            <a href="cargar_pedidos.html" class="nav-item">
+                <span class="material-icons">list_alt</span>
+                <span class="nav-text">CARGAR PEDIDO</span>
+            </a>
+            <a href="comparativo.html" class="nav-item">
+                <span class="material-icons">compare_arrows</span>
+                <span class="nav-text">COMPARATIVO</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <span id="userDisplay"></span>
+                <span>|</span>
+                <a href="#" id="logoutLink" style="color: var(--primary); cursor:pointer;">Cerrar sesión</a>
+                <span>|</span>
+                <button id="themeToggle" class="btn btn-sm" style="background:transparent; border:1px solid var(--gray-300); padding:4px 10px; display:flex; align-items:center; gap:4px;">
+                    <span class="material-icons" style="font-size:18px;">dark_mode</span>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content expanded" id="mainContent">
+        <div class="page-container">
+            <div class="page-header">
+                <h1><span class="material-icons">business</span> CARGAR PROVEEDORES</h1>
+                <p id="welcomeMsg" style="margin-top:4px;"></p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="material-icons">add_business</span>
+                    <h2>Agregar Nuevo Proveedor</h2>
+                </div>
+                <div class="alert alert-info">
+                    <span class="material-icons">info</span>
+                    <div>
+                        <strong>Formato requerido del Excel:</strong><br>
+                        Columnas: <b>Código | Descripción | Existencia | Precio con IVA</b>
+                    </div>
+                </div>
+                <div class="provider-settings">
+                    <div class="checkbox-group">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="activarStockMinimo">
+                            <label for="activarStockMinimo">Activar Stock Mínimo Requerido</label>
+                        </div>
+                        <input type="number" id="stockMinimo" class="config-input" value="20" min="0" disabled>
+                        <span style="font-size:0.85rem;color:var(--gray-500);">unidades</span>
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="aplicarDescuento">
+                            <label for="aplicarDescuento">Aplicar Descuento</label>
+                        </div>
+                        <input type="number" id="porcentajeDescuento" class="config-input" value="0" min="0" max="100" step="0.01" disabled>
+                        <span style="font-size:0.85rem;color:var(--gray-500);">%</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="form-group">
+                        <label class="form-label" for="nombreProveedor">Nombre del Proveedor</label>
+                        <input type="text" id="nombreProveedor" class="form-input" placeholder="Ej: Farmacias del Ahorro">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="archivoProveedor">Archivo Excel</label>
+                        <input type="file" id="archivoProveedor" class="form-input" accept=".xlsx,.xls">
+                    </div>
+                </div>
+                <button id="btnAgregarProveedor" class="btn btn-primary btn-lg btn-block">
+                    <span class="material-icons">add</span> Agregar Proveedor
+                </button>
+                <div id="listaProveedores" class="proveedor-list" style="margin-top:24px;"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- TOAST -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            initProveedoresPage();
+            initThemeAndSidebar(); // función global en app.js
+        });
+    </script>
+</body>
+</html>
