@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<!-- Tipo de documento: HTML5 -->
+<html lang="es">
+<!-- Idioma del contenido: Español -->
+
+<head>
+    <!-- ========== METADATOS ========== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FARMACIAS ADN</title>
+
+    <!-- ========== FAVICON ========== -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon.png">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+
+    <!-- ========== RECURSOS EXTERNOS ========== -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- ========== PROTECCIÓN CONTRA INSPECCIÓN (disuasión) ========== -->
+    <script>
+        // Bloquear menú contextual (clic derecho)
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // Bloquear atajos comunes de inspección
+        document.addEventListener('keydown', e => {
+            // F12
+            if (e.key === 'F12') return e.preventDefault();
+            // Ctrl+Shift+I / J / C
+            if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) {
+                return e.preventDefault();
+            }
+            // Ctrl+U (ver código fuente)
+            if (e.ctrlKey && e.key.toUpperCase() === 'U') return e.preventDefault();
+            // Ctrl+S (guardar página)
+            if (e.ctrlKey && e.key.toUpperCase() === 'S') return e.preventDefault();
+        });
+    </script>
+
+    <style>
+        /* =====================================================
+           VARIABLES GLOBALES — ESTILO APPLE (TONOS CLAROS)
+           ===================================================== */
+        :root {
+            --fondo: #F5F5F7;
+            --fondo-oscuro: #000000;
+            --tarjeta: #FFFFFF;
+            --tarjeta-oscuro: #1D1D1F;
+            --texto-principal: #1D1D1F;
+            --texto-claro: #FFFFFF;
+            --texto-secundario: #6E6E73;
+            --texto-sec-oscuro: #86868B;
+            --acento: #0071E3;
+            --acento-hover: #0077ED;
+            --borde: #D2D2D7;
+            --borde-oscuro: #424245;
+
+            --danger: #FF3B30;
+            --glow-acento: rgba(0, 113, 227, 0.18);
+            --glow-peligro: rgba(255, 59, 48, 0.18);
+
+            --relleno-input: #FFFFFF;
+            --cristal: rgba(255, 255, 255, 0.86);
+            --cristal-borde: rgba(255, 255, 255, 0.70);
+            --cristal-sombra: 0 4px 20px rgba(31, 60, 110, 0.14), 0 30px 70px rgba(31, 60, 110, 0.28);
+
+            --fondo-claro: #70ABFF;
+
+            --radio-suave: 12px;
+            --radio-medio: 18px;
+            --radio-tarjeta: 28px;
+            --radio-boton: 980px;
+            --ancho-contenido: 980px;
+
+            --transicion: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            --curva-apple: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* =====================================================
+           BASE GENERAL
+           ===================================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                         "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--fondo);
+            color: var(--texto-principal);
+            line-height: 1.47;
+            font-weight: 400;
+            min-height: 100vh;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        /* =====================================================
+           PANTALLA DE INICIO DE SESIÓN — FONDO #70ABFF
+           ===================================================== */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background-color: #70ABFF;
+        }
+        .login-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .login-overlay::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(120% 90% at 50% 15%, rgba(255, 255, 255, 0.70) 0%, rgba(112, 171, 255, 0.55) 65%, rgba(112, 171, 255, 0.85) 100%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(112, 171, 255, 0.40) 100%);
+            z-index: 1;
+        }
+
+        /* =====================================================
+           TARJETA DE LOGIN — VIDRIO ESMERILADO CLARO
+           ===================================================== */
+        .login-card {
+            --cristal: rgba(255, 255, 255, 0.88);
+            --cristal-borde: rgba(255, 255, 255, 0.75);
+            --cristal-sombra: 0 4px 20px rgba(31, 60, 110, 0.16), 0 30px 70px rgba(31, 60, 110, 0.30);
+
+            position: relative;
+            z-index: 2;
+            width: 420px;
+            max-width: 92vw;
+            background: var(--cristal);
+            -webkit-backdrop-filter: saturate(180%) blur(30px);
+            backdrop-filter: saturate(180%) blur(30px);
+            border: 1px solid var(--cristal-borde);
+            border-radius: var(--radio-tarjeta);
+            padding: 48px 40px 44px;
+            box-shadow: var(--cristal-sombra);
+            animation: loginSlideUp 0.75s var(--curva-apple) forwards;
+            opacity: 0;
+            transform: translateY(26px) scale(0.98);
+        }
+
+        @keyframes loginSlideUp {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* =====================================================
+           LOGO — SOLO TIPOGRAFÍA
+           ===================================================== */
+        .login-logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 26px;
+        }
+        .logo-adn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: fit-content;
+            color: var(--texto-principal);
+            user-select: none;
+            line-height: 1;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                         "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .logo-adn-top {
+            width: 112%;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 26px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            padding: 0 1px 6px;
+            border-bottom: 3.5px solid currentColor;
+        }
+        .logo-adn-bottom {
+            display: flex;
+            justify-content: space-between;
+            font-size: 88px;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            line-height: 0.88;
+            margin-top: 6px;
+            padding: 0 1px;
+            -webkit-text-stroke: 3px currentColor;
+            paint-order: stroke fill;
+            transform: scaleX(1.12);
+            transform-origin: center center;
+        }
+
+        /* =====================================================
+           TÍTULOS Y TEXTOS DEL LOGIN
+           ===================================================== */
+        .login-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: -0.015em;
+            color: var(--texto-principal);
+            margin-bottom: 34px;
+            font-family: inherit;
+        }
+
+        /* =====================================================
+           CAMPOS DE ENTRADA DEL LOGIN
+           ===================================================== */
+        .login-field {
+            margin-bottom: 18px;
+            position: relative;
+        }
+        .login-field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--texto-secundario);
+            margin-bottom: 8px;
+            letter-spacing: 0.01em;
+            text-transform: none;
+        }
+
+        .login-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .login-input-wrapper .material-icons {
+            position: absolute;
+            font-size: 20px;
+            color: var(--texto-secundario);
+            pointer-events: none;
+            transition: color 0.25s var(--transicion);
+            z-index: 1;
+        }
+        .login-input-wrapper .material-icons.person { left: 15px; }
+        .login-input-wrapper .material-icons.lock   { left: 15px; }
+        .login-input-wrapper .material-icons.eye {
+            right: 15px;
+            cursor: pointer;
+            pointer-events: auto;
+            color: var(--texto-secundario);
+            user-select: none;
+            transition: color 0.2s ease, opacity 0.2s ease;
+        }
+        .login-input-wrapper .material-icons.eye:hover { color: var(--texto-principal); }
+
+        .login-field input {
+            width: 100%;
+            padding: 14px 46px 14px 46px;
+            border: 1px solid var(--borde);
+            border-radius: var(--radio-suave);
+            font-size: 17px;
+            font-family: inherit;
+            color: var(--texto-principal);
+            background: var(--relleno-input);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .login-field input::placeholder {
+            color: var(--texto-secundario);
+            opacity: 0.75;
+        }
+        .login-field input:focus {
+            border-color: var(--acento);
+            box-shadow: 0 0 0 3px var(--glow-acento);
+        }
+        .login-field:focus-within .material-icons.person,
+        .login-field:focus-within .material-icons.lock { color: var(--acento); }
+
+        /* =====================================================
+           BOTÓN DE INICIAR SESIÓN
+           ===================================================== */
+        .login-btn {
+            width: 100%;
+            padding: 14px 22px;
+            background: var(--acento);
+            color: #FFFFFF;
+            border: none;
+            border-radius: var(--radio-boton);
+            font-size: 17px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            letter-spacing: 0;
+            text-transform: none;
+            transition: var(--transicion);
+            margin-top: 12px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .login-btn:hover { background: var(--acento-hover); transform: scale(1.01); }
+        .login-btn:active { transform: scale(0.985); opacity: 0.92; }
+        .login-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--glow-acento); }
+        .login-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
+
+        /* =====================================================
+           CONTENEDOR PRINCIPAL (IFRAME + TOP BAR)
+           ===================================================== */
+        .app-container {
+            position: fixed;
+            inset: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s var(--curva-apple) 0.15s, visibility 0.5s var(--curva-apple) 0.15s;
+        }
+        .app-container.visible { opacity: 1; visibility: visible; }
+        .app-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: var(--fondo);
+            display: block;
+            position: relative;
+            z-index: 0;
+        }
+
+        /* =====================================================
+           TOP BAR
+           ===================================================== */
+        .top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .top-bar .top-bar-brand {
+            pointer-events: auto;
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .top-bar .top-bar-brand .material-icons {
+            font-size: 18px;
+            line-height: 1;
+            width: 18px;
+            height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--acento);
+            flex: 0 0 auto;
+        }
+
+        /* =====================================================
+           SEGMENTED CONTROL
+           ===================================================== */
+        .segmented-control {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            padding: 2px;
+            background: rgba(255, 255, 255, 0.82);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 980px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(31, 60, 110, 0.08);
+            height: 36px;
+        }
+
+        .segmented-thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            bottom: 2px;
+            width: calc(50% - 2px);
+            background: var(--acento);
+            border-radius: 980px;
+            box-shadow: 0 1px 3px rgba(0, 113, 227, 0.35);
+            transition: transform 0.42s var(--curva-apple);
+            z-index: 1;
+            pointer-events: none;
+        }
+        #modeSwitch[data-mode="pedido"] .segmented-thumb { transform: translateX(100%); }
+
+        .mode-option {
+            position: relative;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 32px;
+            padding: 0 16px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            text-decoration: none;
+            white-space: nowrap;
+            color: #6E6E73;
+            background: transparent;
+            border: none;
+            border-radius: 980px;
+            transition: color 0.3s var(--curva-apple);
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .mode-option:hover { color: var(--texto-principal); }
+        .mode-option.active { color: #FFFFFF; }
+        .mode-option.active:hover { color: #FFFFFF; }
+        .mode-option:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--glow-acento); }
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+        @media (max-width: 480px) {
+            .login-card { padding: 40px 26px 36px; border-radius: 24px; }
+            .logo-adn { transform: scale(0.86); transform-origin: center center; margin: -6px 0; }
+            .login-title { font-size: 24px; margin-bottom: 28px; }
+            .top-bar { height: 52px; padding: 0 14px; }
+            .top-bar .top-bar-brand { gap: 6px; }
+            .mode-option { padding: 0 11px; font-size: 11.5px; letter-spacing: 0.02em; }
+        }
+
+        /* =====================================================
+           ACCESIBILIDAD — MOVIMIENTO REDUCIDO
+           ===================================================== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+            }
+            .login-card { opacity: 1; transform: none; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =====================================================
+         PANTALLA DE INICIO DE SESIÓN
+         ===================================================== -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+
+            <div class="login-logo">
+                <div class="logo-adn" role="img" aria-label="Farmacias ADN">
+                    <div class="logo-adn-top">
+                        <span>F</span><span>A</span><span>R</span><span>M</span><span>A</span><span>C</span><span>I</span><span>A</span><span>S</span>
+                    </div>
+                    <div class="logo-adn-bottom">
+                        <span>A</span><span>D</span><span>N</span>
+                    </div>
+                </div>
+            </div>
+
+            <h1 class="login-title">INICIAR SESION</h1>
+
+            <div class="login-field">
+                <label for="usuario">Usuario</label>
+                <div class="login-input-wrapper">
+                    <input type="text" id="usuario" placeholder="Escribe tu usuario" autocomplete="username">
+                    <span class="material-icons person">person</span>
+                </div>
+            </div>
+
+            <div class="login-field">
+                <label for="password">Contraseña</label>
+                <div class="login-input-wrapper">
+                    <input type="password" id="password" placeholder="Escribe tu contraseña" autocomplete="current-password">
+                    <span class="material-icons lock">lock</span>
+                    <span class="material-icons eye" id="togglePassword">visibility</span>
+                </div>
+            </div>
+
+            <button class="login-btn" id="loginBtn" onclick="iniciarSesion()">
+                Iniciar Sesión
+            </button>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL: IFRAME + TOP BAR
+         ===================================================== -->
+    <div class="app-container" id="appContainer">
+
+        <div class="top-bar">
+            <div class="top-bar-brand" id="modeSwitch" data-mode="surtido" role="tablist" aria-label="Cambiar entre Surtido y Pedido">
+                <span class="material-icons" aria-hidden="true">receipt_long</span>
+                <div class="segmented-control">
+                    <span class="segmented-thumb" aria-hidden="true"></span>
+                    <a href="binario.html" class="mode-option active" id="optSurtido" role="tab" aria-selected="true" data-src="binario.html">SURTIDO</a>
+                    <a href="cotizacion.html" class="mode-option" id="optPedido" role="tab" aria-selected="false" data-src="cotizacion.html">PEDIDO</a>
+                </div>
+            </div>
+        </div>
+
+        <iframe id="marco" name="marco" src="binario.html" title="Contenido principal"></iframe>
+    </div>
+
+    <!-- =====================================================
+         CÓDIGO JAVASCRIPT
+         ===================================================== -->
+    <script>
+        /* =============================================
+           CREDENCIALES DE USUARIO
+           ============================================= */
+        const CREDENCIALES = [
+            { user: 'ivxn',   pass: '2705'  },
+            { user: 'jose',   pass: 'a2011' },
+            { user: 'JOSE',   pass: 'A2011' },
+            { user: 'carlos', pass: 'c1'    },
+            { user: 'carlos', pass: 'C1'    }
+        ];
+
+        const inputUsuario  = document.getElementById('usuario');
+        const inputPassword = document.getElementById('password');
+
+        const ESTILO_ERROR = {
+            borderColor: 'var(--danger)',
+            boxShadow: '0 0 0 4px rgba(255, 59, 48, 0.15)'
+        };
+
+        function marcarError(el) {
+            el.style.borderColor = ESTILO_ERROR.borderColor;
+            el.style.boxShadow   = ESTILO_ERROR.boxShadow;
+        }
+        function limpiarError(el) {
+            el.style.borderColor = '';
+            el.style.boxShadow   = '';
+        }
+        function limpiarErroresDiferidos() {
+            setTimeout(() => {
+                limpiarError(inputUsuario);
+                limpiarError(inputPassword);
+            }, 2000);
+        }
+
+        /* =============================================
+           FUNCIÓN DE INICIO DE SESIÓN
+           ============================================= */
+        function iniciarSesion() {
+            const usuario  = inputUsuario.value.trim();
+            const password = inputPassword.value.trim();
+
+            let hayError = false;
+
+            if (!usuario)  { marcarError(inputUsuario);  hayError = true; } else limpiarError(inputUsuario);
+            if (!password) { marcarError(inputPassword); hayError = true; } else limpiarError(inputPassword);
+
+            if (hayError) { limpiarErroresDiferidos(); return; }
+
+            const usuarioNormalizado = usuario.toLowerCase();
+            const esValido = CREDENCIALES.some(cred =>
+                cred.user === usuarioNormalizado && cred.pass === password
+            );
+
+            if (!esValido) {
+                alert('Usuario o contraseña incorrectos. Intenta de nuevo.');
+                marcarError(inputUsuario);
+                marcarError(inputPassword);
+                limpiarErroresDiferidos();
+                return;
+            }
+
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('appContainer').classList.add('visible');
+            document.getElementById('marco').src = 'binario.html';
+        }
+
+        /* =============================================
+           MOSTRAR/OCULTAR CONTRASEÑA
+           ============================================= */
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const tipo = inputPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+            inputPassword.setAttribute('type', tipo);
+            this.textContent = tipo === 'password' ? 'visibility' : 'visibility_off';
+        });
+
+        /* =============================================
+           LOGIN CON TECLA ENTER
+           ============================================= */
+        inputPassword.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') iniciarSesion();
+        });
+        inputUsuario.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') inputPassword.focus();
+        });
+
+        /* =============================================
+           INTERRUPTOR SURTIDO / PEDIDO
+           ============================================= */
+        const modeSwitch = document.getElementById('modeSwitch');
+        const marco      = document.getElementById('marco');
+        const optSurtido = document.getElementById('optSurtido');
+        const optPedido  = document.getElementById('optPedido');
+
+        let modoActual = 'surtido';
+
+        function cambiarModo(modo) {
+            if (modo === modoActual) return;
+            modoActual = modo;
+
+            const esPedido = modo === 'pedido';
+
+            modeSwitch.dataset.mode = modo;
+            optSurtido.classList.toggle('active', !esPedido);
+            optPedido.classList.toggle('active', esPedido);
+            optSurtido.setAttribute('aria-selected', String(!esPedido));
+            optPedido.setAttribute('aria-selected', String(esPedido));
+
+            marco.src = esPedido ? 'cotizacion.html' : 'binario.html';
+        }
+
+        optSurtido.addEventListener('click', function (e) {
+            e.preventDefault();
+            cambiarModo('surtido');
+        });
+        optPedido.addEventListener('click', function (e) {
+            e.preventDefault();
+            cambiarModo('pedido');
+        });
+    </script>
+</body>
+</html>
