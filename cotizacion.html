@@ -1653,6 +1653,28 @@
                 return anotadas;
             }
 
+            /* =============================================================
+               HELPERS DE DESCRIPCIÓN
+               Garantizan que la descripción de un producto NUNCA quede vacía:
+               si el proveedor actual no la trae, se busca entre los demás
+               proveedores que compartan el mismo código. Último recurso:
+               "SIN DESCRIPCIÓN".
+               ============================================================= */
+            function buscarDescripcionEnProveedores(codigo) {
+                const entradas = indiceProductos.get(String(codigo)) || [];
+                for (const e of entradas) {
+                    const d = e.prod && e.prod.descripcion;
+                    if (d && String(d).trim()) return String(d).trim();
+                }
+                return '';
+            }
+            function obtenerDescripcionProducto(codigo, descripcionActual) {
+                const propia = descripcionActual && String(descripcionActual).trim();
+                if (propia) return propia;
+                const encontrada = buscarDescripcionEnProveedores(codigo);
+                return encontrada || 'SIN DESCRIPCIÓN';
+            }
+
             function ordenarPorPrecioLuegoPrioridad(arr) {
                 return [...arr].sort(compararPrecioLuegoOrden);
             }
@@ -1862,7 +1884,7 @@
                 const modal = document.getElementById('modalDetalle');
                 const content = document.getElementById('modalContent');
                 const title = document.getElementById('modalTitle');
-                title.textContent = descripcion;
+                title.textContent = obtenerDescripcionProducto(codigo, descripcion);
                 const ordenados = obtenerAnotadas(codigo);
                 if (ordenados.length === 0) {
                     content.innerHTML = `<div class="alert alert-warning"><span class="material-icons">warning</span><div><strong>FDC - Fuera de Catálogo</strong><br>Este producto no está disponible en ningún proveedor.</div></div>`;
@@ -2146,6 +2168,54 @@
                         }));
                     }
 
+                    // ==========================================================
+                    // GARANTIZAR DESCRIPCIÓN NO VACÍA
+                    // ==========================================================
+
+                    // 1) Propagar descripciones dentro del MISMO archivo (códigos duplicados)
+                    const descLocal = new Map();
+                    productosFinales.forEach(p => {
+                        if (p.descripcion && String(p.descripcion).trim()) {
+                            const k = String(p.codigo);
+                            if (!descLocal.has(k)) descLocal.set(k, String(p.descripcion).trim());
+                        }
+                    });
+                    productosFinales.forEach(p => {
+                        if (!p.descripcion || !String(p.descripcion).trim()) {
+                            const d = descLocal.get(String(p.codigo));
+                            if (d) p.descripcion = d;
+                        }
+                    });
+
+                    // 2) Rellenar vacías del NUEVO proveedor con las de OTROS proveedores ya cargados
+                    let rellenadasNuevas = 0;
+                    productosFinales.forEach(p => {
+                        if (!p.descripcion || !String(p.descripcion).trim()) {
+                            const d = buscarDescripcionEnProveedores(p.codigo);
+                            if (d) { p.descripcion = d; rellenadasNuevas++; }
+                        }
+                    });
+
+                    // 3) Back-fill: usar las descripciones del NUEVO proveedor para completar las de proveedores existentes
+                    const descPorCodigo = new Map();
+                    productosFinales.forEach(p => {
+                        if (p.descripcion && String(p.descripcion).trim()) {
+                            const k = String(p.codigo);
+                            if (!descPorCodigo.has(k)) descPorCodigo.set(k, String(p.descripcion).trim());
+                        }
+                    });
+                    let rellenadasExistentes = 0;
+                    if (descPorCodigo.size > 0) {
+                        proveedores.forEach(prov => {
+                            prov.productos.forEach(existing => {
+                                if (!existing.descripcion || !String(existing.descripcion).trim()) {
+                                    const d = descPorCodigo.get(String(existing.codigo));
+                                    if (d) { existing.descripcion = d; rellenadasExistentes++; }
+                                }
+                            });
+                        });
+                    }
+
                     proveedores.push({
                         nombre,
                         productos: productosFinales,
@@ -2182,7 +2252,10 @@
                     const detalle = mejor.nombresCols
                         ? ` (Código: "${mejor.nombresCols.codigo}", Precio: "${mejor.nombresCols.precio}")`
                         : ` (columnas por ${mejor.modo})`;
-                    showToast(`Proveedor "${nombre}" cargado: ${productosFinales.length} productos desde "${sheetName}"${detalle}`, 'success');
+                    const partes = [`${productosFinales.length} productos desde "${sheetName}"${detalle}`];
+                    if (rellenadasNuevas) partes.push(`${rellenadasNuevas} descripciones completadas de otros proveedores`);
+                    if (rellenadasExistentes) partes.push(`${rellenadasExistentes} descripciones previas completadas`);
+                    showToast(`Proveedor "${nombre}" cargado: ${partes.join(' · ')}`, 'success');
                 } catch (err) {
                     console.error('Error inesperado al cargar proveedor:', err);
                     showToast('Error inesperado al procesar el archivo: ' + (err && err.message ? err.message : err), 'danger');
@@ -2305,7 +2378,8 @@
                 historialDeshacer.length = 0;
                 const filtrados = pedidos.filter(p => tipo === 'matriz' ? p.pedidoMatriz > 0 : p.pedidoSucursal > 0);
                 const productos = filtrados.map(p => ({
-                    codigo: p.codigo, descripcion: p.articulo || 'Sin descripción',
+                    codigo: p.codigo,
+                    descripcion: obtenerDescripcionProducto(p.codigo, p.articulo || ''),
                     piezas: tipo === 'matriz' ? p.pedidoMatriz : p.pedidoSucursal,
                     linea: p.linea || '', marca: p.marca || '', fabricante: p.fabricante || '',
                     pedidoMatriz: p.pedidoMatriz, pedidoSucursal: p.pedidoSucursal,
@@ -2326,7 +2400,9 @@
             window.agregarAlPedido = function (codigo, descripcion, cantidad, tipo) {
                 const cfg = CONFIG_TIPO[tipo];
                 const nuevo = {
-                    codigo, descripcion, piezas: cantidad,
+                    codigo,
+                    descripcion: obtenerDescripcionProducto(codigo, descripcion),
+                    piezas: cantidad,
                     linea: 'ENCARGO', marca: '', fabricante: '', esManual: true,
                     existenciaAlmacen: 0, existenciaMatriz: 0, existenciaSucursal: 0
                 };
@@ -2389,7 +2465,8 @@
             }
 
             function crearFilaTabla(prod, tipo, resolved) {
-                const descFull = prod.descripcion || '';
+                // >>> DESCRIPCIÓN GARANTIZADA (nunca vacía) <<<
+                const descFull = obtenerDescripcionProducto(prod.codigo, prod.descripcion);
                 const descEscaped = escapeHtml(descFull);
                 const descTitleAttr = escapeAttr(descFull);
                 const marcaAbrev = abreviarMarca(prod.marca);
@@ -2810,7 +2887,9 @@
                     indiceProductos.forEach((entradas, codigo) => {
                         const primero = entradas[0];
                         const prod = primero.prod;
-                        if (prod.codigo.toLowerCase().includes(query) || prod.descripcion.toLowerCase().includes(query)) {
+                        // >>> buscar también contra la descripción resuelta <<<
+                        const descResuelta = obtenerDescripcionProducto(codigo, prod.descripcion);
+                        if (prod.codigo.toLowerCase().includes(query) || descResuelta.toLowerCase().includes(query)) {
                             const resolved = resolverProveedor(prod);
                             let mejorProveedor = 'FALTANTE';
                             let mejorPrecio = 0;
@@ -2826,6 +2905,7 @@
                             }
                             encontrados.push({
                                 ...prod,
+                                descripcion: descResuelta,
                                 proveedor: mejorProveedor,
                                 precio: mejorPrecio,
                                 existencia: mejorExistencia,
@@ -2993,7 +3073,14 @@
                         const precio = resolved.provObj.precio;
                         const subtotal = precio * prod.piezas;
                         totalNumerico += subtotal;
-                        return [prod.codigo, prod.descripcion, prod.piezas, formatCurrency(precio), formatCurrency(subtotal)];
+                        // >>> descripción garantizada en PDF <<<
+                        return [
+                            prod.codigo,
+                            obtenerDescripcionProducto(prod.codigo, prod.descripcion),
+                            prod.piezas,
+                            formatCurrency(precio),
+                            formatCurrency(subtotal)
+                        ];
                     });
 
                     const contenidoTotal = `TOTAL:  ${formatCurrency(totalNumerico)}`;
@@ -3079,7 +3166,13 @@
                             const precio = resolved.provObj.precio;
                             const subtotal = precio * prod.piezas;
                             totalMatriz += subtotal;
-                            return [prod.codigo, prod.descripcion, prod.piezas, formatCurrency(precio), formatCurrency(subtotal)];
+                            return [
+                                prod.codigo,
+                                obtenerDescripcionProducto(prod.codigo, prod.descripcion),
+                                prod.piezas,
+                                formatCurrency(precio),
+                                formatCurrency(subtotal)
+                            ];
                         });
 
                         doc.autoTable({
@@ -3115,7 +3208,13 @@
                             const precio = resolved.provObj.precio;
                             const subtotal = precio * prod.piezas;
                             totalSucursal += subtotal;
-                            return [prod.codigo, prod.descripcion, prod.piezas, formatCurrency(precio), formatCurrency(subtotal)];
+                            return [
+                                prod.codigo,
+                                obtenerDescripcionProducto(prod.codigo, prod.descripcion),
+                                prod.piezas,
+                                formatCurrency(precio),
+                                formatCurrency(subtotal)
+                            ];
                         });
 
                         doc.autoTable({
@@ -3183,6 +3282,26 @@
                 const tieneDatos = await cargarDatos();
                 if (tieneDatos) {
                     reconstruirIndice();
+
+                    // ==========================================================
+                    // SANEAMIENTO: completar descripciones vacías cruzando
+                    // proveedores (datos viejos en Supabase).
+                    // ==========================================================
+                    let saneadas = 0;
+                    proveedores.forEach(prov => {
+                        prov.productos.forEach(p => {
+                            if (!p.descripcion || !String(p.descripcion).trim()) {
+                                const d = buscarDescripcionEnProveedores(p.codigo);
+                                if (d) { p.descripcion = d; saneadas++; }
+                            }
+                        });
+                    });
+                    if (saneadas > 0) {
+                        console.info(`Saneamiento: ${saneadas} descripciones completadas desde otros proveedores`);
+                        marcarModificado();
+                        guardarDatos();
+                    }
+
                     actualizarListaProveedores();
                     actualizarFiltrosProveedores();
                 } else {
