@@ -110,7 +110,6 @@
             justify-content: center;
             padding: 24px;
             background-color: #70ABFF;
-            transition: opacity 0.5s var(--curva-apple), visibility 0.5s var(--curva-apple);
         }
         .login-overlay.hidden {
             opacity: 0;
@@ -198,18 +197,6 @@
             paint-order: stroke fill;
             transform: scaleX(1.12);
             transform-origin: center center;
-        }
-
-        /* Variante reducida del logo (menú) */
-        .logo-adn.logo-adn-sm .logo-adn-top {
-            font-size: 13px;
-            border-bottom-width: 2px;
-            padding-bottom: 3px;
-        }
-        .logo-adn.logo-adn-sm .logo-adn-bottom {
-            font-size: 44px;
-            margin-top: 3px;
-            -webkit-text-stroke: 1.6px currentColor;
         }
 
         /* =====================================================
@@ -320,139 +307,6 @@
         .login-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
 
         /* =====================================================
-           MENÚ PRINCIPAL (DESPUÉS DEL LOGIN)
-           ===================================================== */
-        .menu-screen {
-            position: fixed;
-            inset: 0;
-            z-index: 900;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-            overflow-y: auto;
-            background-color: var(--fondo);
-            transition: opacity 0.45s var(--curva-apple), visibility 0.45s var(--curva-apple);
-        }
-        .menu-screen.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-        .menu-screen::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(110% 75% at 50% 0%,
-                        rgba(112, 171, 255, 0.22) 0%,
-                        rgba(245, 245, 247, 0) 62%);
-            pointer-events: none;
-        }
-
-        .menu-inner {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 700px;
-        }
-        .menu-screen:not(.hidden) .menu-inner {
-            animation: menuIn 0.6s var(--curva-apple) both;
-        }
-        @keyframes menuIn {
-            from { opacity: 0; transform: translateY(20px) scale(0.985); }
-            to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .menu-logo {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 22px;
-        }
-
-        .menu-title {
-            text-align: center;
-            font-size: 34px;
-            font-weight: 700;
-            letter-spacing: -0.022em;
-            line-height: 1.1;
-            color: var(--texto-principal);
-        }
-        .menu-subtitle {
-            text-align: center;
-            font-size: 16px;
-            font-weight: 400;
-            letter-spacing: -0.01em;
-            color: var(--texto-secundario);
-            margin-top: 10px;
-        }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 16px;
-            margin-top: 38px;
-        }
-
-        .menu-card {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-            padding: 26px 24px 24px;
-            text-align: left;
-            font-family: inherit;
-            background: var(--tarjeta);
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            border-radius: 22px;
-            box-shadow: 0 1px 2px rgba(31, 60, 110, 0.05), 0 8px 24px rgba(31, 60, 110, 0.07);
-            cursor: pointer;
-            -webkit-appearance: none;
-            appearance: none;
-            transition: transform 0.35s var(--curva-apple),
-                        box-shadow 0.35s var(--curva-apple),
-                        border-color 0.25s ease;
-        }
-        .menu-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(0, 113, 227, 0.35);
-            box-shadow: 0 2px 6px rgba(31, 60, 110, 0.07), 0 18px 44px rgba(31, 60, 110, 0.14);
-        }
-        .menu-card:active {
-            transform: translateY(-1px) scale(0.99);
-        }
-        .menu-card:focus-visible {
-            outline: none;
-            box-shadow: 0 0 0 4px var(--glow-acento);
-            border-color: var(--acento);
-        }
-
-        .menu-icon {
-            width: 46px;
-            height: 46px;
-            margin-bottom: 14px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 14px;
-            background: rgba(0, 113, 227, 0.10);
-            color: var(--acento);
-        }
-        .menu-icon .material-icons { font-size: 24px; }
-
-        .menu-name {
-            font-size: 19px;
-            font-weight: 600;
-            letter-spacing: -0.012em;
-            color: var(--texto-principal);
-        }
-        .menu-desc {
-            font-size: 13.5px;
-            line-height: 1.35;
-            color: var(--texto-secundario);
-        }
-
-        /* =====================================================
            CONTENEDOR PRINCIPAL (IFRAME + TOP BAR)
            ===================================================== */
         .app-container {
@@ -460,7 +314,7 @@
             inset: 0;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.5s var(--curva-apple) 0.1s, visibility 0.5s var(--curva-apple) 0.1s;
+            transition: opacity 0.5s var(--curva-apple) 0.15s, visibility 0.5s var(--curva-apple) 0.15s;
         }
         .app-container.visible { opacity: 1; visibility: visible; }
         .app-container iframe {
@@ -509,13 +363,12 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: transparent;
+            color: var(--acento);
             flex: 0 0 auto;
         }
 
         /* =====================================================
-           SEGMENTED CONTROL — MISMA POSICIÓN Y ESTILO
-           (ahora con dos opciones: Volver al menú / Salir)
+           SEGMENTED CONTROL
            ===================================================== */
         .segmented-control {
             position: relative;
@@ -544,8 +397,7 @@
             z-index: 1;
             pointer-events: none;
         }
-        #segmentedControl[data-active="0"] .segmented-thumb { transform: translateX(0); }
-        #segmentedControl[data-active="1"] .segmented-thumb { transform: translateX(100%); }
+        #modeSwitch[data-mode="pedido"] .segmented-thumb { transform: translateX(100%); }
 
         .mode-option {
             position: relative;
@@ -553,13 +405,12 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            flex: 1;
             height: 32px;
-            padding: 0 14px;
+            padding: 0 16px;
             font-family: inherit;
-            font-size: 12.5px;
+            font-size: 13px;
             font-weight: 600;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.04em;
             text-transform: uppercase;
             text-decoration: none;
             white-space: nowrap;
@@ -571,7 +422,6 @@
             cursor: pointer;
             -webkit-appearance: none;
             appearance: none;
-            -webkit-tap-highlight-color: transparent;
         }
         .mode-option:hover { color: var(--texto-principal); }
         .mode-option.active { color: #FFFFFF; }
@@ -581,25 +431,13 @@
         /* =====================================================
            RESPONSIVE
            ===================================================== */
-        @media (max-width: 620px) {
-            .menu-grid { grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 30px; }
-            .menu-title { font-size: 28px; }
-            .menu-subtitle { font-size: 15px; }
-            .menu-card { padding: 22px 20px 20px; border-radius: 20px; }
-            .menu-name { font-size: 18px; }
-        }
-
         @media (max-width: 480px) {
             .login-card { padding: 40px 26px 36px; border-radius: 24px; }
             .logo-adn { transform: scale(0.86); transform-origin: center center; margin: -6px 0; }
             .login-title { font-size: 24px; margin-bottom: 28px; }
-
             .top-bar { height: 52px; padding: 0 14px; }
             .top-bar .top-bar-brand { gap: 6px; }
-            .top-bar .top-bar-brand > .material-icons { display: none; }
-
-            .segmented-control { height: 34px; }
-            .mode-option { height: 30px; font-size: 10.5px; letter-spacing: 0.01em; padding: 0 8px; }
+            .mode-option { padding: 0 11px; font-size: 11.5px; letter-spacing: 0.02em; }
         }
 
         /* =====================================================
@@ -661,71 +499,22 @@
     </div>
 
     <!-- =====================================================
-         MENÚ PRINCIPAL — SE MUESTRA AL INICIAR SESIÓN
-         ===================================================== -->
-    <div class="menu-screen hidden" id="menuScreen">
-        <div class="menu-inner">
-
-            <div class="menu-logo">
-                <div class="logo-adn logo-adn-sm" role="img" aria-label="Farmacias ADN">
-                    <div class="logo-adn-top">
-                        <span>F</span><span>A</span><span>R</span><span>M</span><span>A</span><span>C</span><span>I</span><span>A</span><span>S</span>
-                    </div>
-                    <div class="logo-adn-bottom">
-                        <span>A</span><span>D</span><span>N</span>
-                    </div>
-                </div>
-            </div>
-
-            <h2 class="menu-title">Selecciona una opción</h2>
-            <p class="menu-subtitle">Elige el módulo con el que deseas trabajar</p>
-
-            <div class="menu-grid">
-
-                <button type="button" class="menu-card" data-key="precios" data-src="precios.html">
-                    <span class="menu-icon"><span class="material-icons" aria-hidden="true">sell</span></span>
-                    <span class="menu-name">Precios</span>
-                    <span class="menu-desc">Consulta y actualiza el catálogo de precios</span>
-                </button>
-
-                <button type="button" class="menu-card" data-key="articulos" data-src="articulos.html">
-                    <span class="menu-icon"><span class="material-icons" aria-hidden="true">inventory_2</span></span>
-                    <span class="menu-name">Artículos</span>
-                    <span class="menu-desc">Administra el inventario de artículos</span>
-                </button>
-
-                <button type="button" class="menu-card" data-key="pedidos" data-src="cotizacion.html">
-                    <span class="menu-icon"><span class="material-icons" aria-hidden="true">receipt_long</span></span>
-                    <span class="menu-name">Pedidos</span>
-                    <span class="menu-desc">Genera y revisa cotizaciones de pedidos</span>
-                </button>
-
-                <button type="button" class="menu-card" data-key="surtidos" data-src="binario.html">
-                    <span class="menu-icon"><span class="material-icons" aria-hidden="true">medication</span></span>
-                    <span class="menu-name">Surtidos</span>
-                    <span class="menu-desc">Registra el surtido de medicamentos</span>
-                </button>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- =====================================================
          CONTENIDO PRINCIPAL: IFRAME + TOP BAR
          ===================================================== -->
     <div class="app-container" id="appContainer">
 
         <div class="top-bar">
-            <div class="top-bar-brand" id="navSwitch" role="tablist" aria-label="Navegación">
-                    <div class="segmented-control" id="segmentedControl" data-active="0">
+            <div class="top-bar-brand" id="modeSwitch" data-mode="surtido" role="tablist" aria-label="Cambiar entre Surtido y Pedido">
+                <span class="material-icons" aria-hidden="true">receipt_long</span>
+                <div class="segmented-control">
                     <span class="segmented-thumb" aria-hidden="true"></span>
-                    <button type="button" class="mode-option active" id="btnVolverMenu">Menú</button>
-                    <button type="button" class="mode-option" id="btnSalir">Salir</button>
+                    <a href="binario.html" class="mode-option active" id="optSurtido" role="tab" aria-selected="true" data-src="binario.html">SURTIDO</a>
+                    <a href="cotizacion.html" class="mode-option" id="optPedido" role="tab" aria-selected="false" data-src="cotizacion.html">PEDIDO</a>
                 </div>
             </div>
         </div>
 
-        <iframe id="marco" name="marco" src="about:blank" title="Contenido principal"></iframe>
+        <iframe id="marco" name="marco" src="binario.html" title="Contenido principal"></iframe>
     </div>
 
     <!-- =====================================================
@@ -737,35 +526,14 @@
            ============================================= */
         const CREDENCIALES = [
             { user: 'ivxn',   pass: '2705'  },
-            { user: 'c',   pass: '1'  },
             { user: 'jose',   pass: 'a2011' },
             { user: 'JOSE',   pass: 'A2011' },
             { user: 'carlos', pass: 'c1'    },
             { user: 'carlos', pass: 'C1'    }
         ];
 
-        /* =============================================
-           MÓDULOS DISPONIBLES
-           ============================================= */
-        const MODULOS = {
-            precios:   'precios.html',
-            articulos: 'articulos.html',
-            pedidos:   'cotizacion.html',
-            surtidos:  'binario.html'
-        };
-
         const inputUsuario  = document.getElementById('usuario');
         const inputPassword = document.getElementById('password');
-
-        const loginOverlay     = document.getElementById('loginOverlay');
-        const menuScreen       = document.getElementById('menuScreen');
-        const appContainer     = document.getElementById('appContainer');
-        const segmentedControl = document.getElementById('segmentedControl');
-        const marco            = document.getElementById('marco');
-
-        const tarjetas = Array.from(document.querySelectorAll('.menu-card'));
-
-        let moduloActual = null;
 
         const ESTILO_ERROR = {
             borderColor: 'var(--danger)',
@@ -814,14 +582,9 @@
                 return;
             }
 
-            // Sesión válida → mostrar el MENÚ (aún no se carga ningún módulo)
-            loginOverlay.classList.add('hidden');
-            menuScreen.classList.remove('hidden');
-            // Resetear estado por si se viene de una sesión anterior
-            appContainer.classList.remove('visible');
-            marco.src = 'about:blank';
-            moduloActual = null;
-            segmentedControl.dataset.active = '0';
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('appContainer').classList.add('visible');
+            document.getElementById('marco').src = 'binario.html';
         }
 
         /* =============================================
@@ -844,53 +607,37 @@
         });
 
         /* =============================================
-           NAVEGACIÓN ENTRE MÓDULOS Y MENÚ
+           INTERRUPTOR SURTIDO / PEDIDO
            ============================================= */
+        const modeSwitch = document.getElementById('modeSwitch');
+        const marco      = document.getElementById('marco');
+        const optSurtido = document.getElementById('optSurtido');
+        const optPedido  = document.getElementById('optPedido');
 
-        // Abre un módulo: oculta el menú, muestra el visor y carga el iframe
-        function abrirModulo(key) {
-            const src = MODULOS[key];
-            if (!src) return;
-            if (key === moduloActual) return;
+        let modoActual = 'surtido';
 
-            moduloActual = key;
+        function cambiarModo(modo) {
+            if (modo === modoActual) return;
+            modoActual = modo;
 
-            menuScreen.classList.add('hidden');
-            appContainer.classList.add('visible');
+            const esPedido = modo === 'pedido';
 
-            marco.src = src;
-            // Mantener el thumb en la primera opción (Volver al menú)
-            segmentedControl.dataset.active = '0';
+            modeSwitch.dataset.mode = modo;
+            optSurtido.classList.toggle('active', !esPedido);
+            optPedido.classList.toggle('active', esPedido);
+            optSurtido.setAttribute('aria-selected', String(!esPedido));
+            optPedido.setAttribute('aria-selected', String(esPedido));
+
+            marco.src = esPedido ? 'cotizacion.html' : 'binario.html';
         }
 
-        // Clic en las tarjetas del menú
-        tarjetas.forEach(tarjeta => {
-            tarjeta.addEventListener('click', () => abrirModulo(tarjeta.dataset.key));
+        optSurtido.addEventListener('click', function (e) {
+            e.preventDefault();
+            cambiarModo('surtido');
         });
-
-        // Botón "Volver al menú" (dentro del interruptor tipo pastilla)
-        document.getElementById('btnVolverMenu').addEventListener('click', function () {
-            appContainer.classList.remove('visible');
-            menuScreen.classList.remove('hidden');
-            marco.src = 'about:blank';
-            moduloActual = null;
-            segmentedControl.dataset.active = '0';
-        });
-
-        // Botón "Salir" — cierra sesión y vuelve al login
-        document.getElementById('btnSalir').addEventListener('click', function () {
-            appContainer.classList.remove('visible');
-            menuScreen.classList.add('hidden');
-            loginOverlay.classList.remove('hidden');
-
-            // Limpiar campos y estado
-            inputUsuario.value = '';
-            inputPassword.value = '';
-            marco.src = 'about:blank';
-            moduloActual = null;
-            segmentedControl.dataset.active = '0';
-
-            inputUsuario.focus();
+        optPedido.addEventListener('click', function (e) {
+            e.preventDefault();
+            cambiarModo('pedido');
         });
     </script>
 </body>
