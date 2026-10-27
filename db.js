@@ -87,6 +87,28 @@
     guardar: rows => upsert('stock_linea', 'linea', rows)
   };
 
+  /* ---------- COSTOS (columnas F, G, H del Excel "existencia matriz") ---------- */
+  const costos = {
+    // Devuelve { codigo: { costo, precio, impuesto } }
+    async cargar() {
+      const m = {};
+      (await getAll('costos_matriz?select=*&order=codigo')).forEach(r => { m[r.codigo] = { costo: num(r.costo), precio: num(r.precio), impuesto: num(r.impuesto) }; });
+      return m;
+    },
+    // Una sola consulta para un artículo; null si no existe
+    async de(codigo) {
+      const r = await req('GET', 'costos_matriz?select=*&codigo=eq.' + encodeURIComponent(codigo));
+      return r && r[0] ? { costo: num(r[0].costo), precio: num(r[0].precio), impuesto: num(r[0].impuesto) } : null;
+    },
+    // mapa { codigo: {costo, precio, impuesto} } -> upsert
+    guardar(mapa) {
+      const rows = Object.entries(mapa).map(([codigo, v]) => ({
+        codigo: String(codigo), costo: num(v.costo), precio: num(v.precio), impuesto: num(v.impuesto), updated_at: new Date().toISOString()
+      }));
+      return chunked(rows, 1000, c => upsert('costos_matriz', 'codigo', c));
+    }
+  };
+
   /* ---------- CONFIGURACIÓN ---------- */
   const config = {
     async get(clave) {
@@ -178,5 +200,5 @@
     limpiar() { return Promise.all([this.guardar('matriz', []), this.guardar('sucursal', [])]); }
   };
 
-  window.DB = { articulos, stockLinea, config, proveedores, pedidos, req };
+  window.DB = { articulos, stockLinea, costos, config, proveedores, pedidos, req };
 })();
