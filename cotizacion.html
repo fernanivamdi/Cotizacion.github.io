@@ -23,7 +23,7 @@
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="nube.js"></script>
+    <script src="db.js"></script>
     <script src="vendor/xlsx.full.min.js"></script>
     <script src="vendor/jspdf.umd.min.js"></script>
     <script src="vendor/jspdf.plugin.autotable.min.js"></script>
@@ -520,6 +520,31 @@
         .toast-action:active { transform: scale(0.97); }
         @keyframes slideIn  { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+
+        /* ===== Info del archivo del proveedor ===== */
+        .proveedor-item { cursor: pointer; }
+        .proveedor-item .archivo-hint {
+            display: flex; align-items: center; gap: 5px; margin-top: 4px;
+            font-size: 12px; color: var(--texto-terciario);
+            max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .proveedor-item .archivo-hint .material-icons { font-size: 14px; color: var(--acento); opacity: .85; }
+        .archivo-detalle { display: flex; flex-direction: column; margin-top: 4px; }
+        .archivo-row {
+            display: flex; align-items: center; justify-content: space-between; gap: 16px;
+            padding: 12px 0; border-bottom: 1px solid var(--borde-suave); font-size: 14px;
+        }
+        .archivo-row:last-child { border-bottom: none; }
+        .archivo-row .archivo-label {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: var(--texto-secundario); font-weight: 500; flex: 0 0 auto;
+        }
+        .archivo-row .archivo-label .material-icons { font-size: 18px; color: var(--texto-terciario); }
+        .archivo-row .archivo-valor {
+            text-align: right; color: var(--texto-principal); font-weight: 600;
+            word-break: break-word; font-variant-numeric: tabular-nums;
+        }
+
         @media (max-width: 1280px) {
             .table-header { padding: 18px 20px; gap: 10px; }
             .table-header h2 { font-size: 18px; }
@@ -585,8 +610,7 @@
 
     <div class="top-bar">
         <span class="top-bar-brand">
-            <span class="material-icons">receipt_long</span>
-            FARMACIAS ADN PEDIDOS +
+            FARMACIAS ADN · +
         </span>
         <div class="divider"></div>
         <div class="nav-views" role="tablist">
@@ -822,6 +846,18 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="modalArchivo">
+        <div class="modal" role="dialog" aria-modal="true">
+            <div class="modal-header">
+                <h2><span class="material-icons" style="color:var(--acento);">description</span> <span id="modalArchivoTitle">Archivo del proveedor</span></h2>
+                <button class="modal-close" onclick="cerrarModalArchivo()" aria-label="Cerrar">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div id="modalArchivoContent"></div>
+        </div>
+    </div>
+
     <div class="popover-proveedores" id="popoverProveedores" role="tooltip"></div>
     <div class="toast-container" id="toastContainer"></div>
 
@@ -848,6 +884,12 @@
         }
         function formatCurrency(amount) {
             return '$' + amount.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        function formatearBytes(n) {
+            const v = Number(n) || 0;
+            if (v < 1024) return v + ' B';
+            if (v < 1024 * 1024) return (v / 1024).toFixed(1) + ' KB';
+            return (v / (1024 * 1024)).toFixed(2) + ' MB';
         }
 
         /* ========== NORMALIZACIÓN Y VALIDACIÓN ========== */
@@ -1381,16 +1423,15 @@
                 return mayorSucursal - (item.existenciaSucursal || 0);
             }
         }
-        function obtenerPedidosPositivos() {
-            const datosGuardados = localStorage.getItem('inv_datosCombinados');
-            const stockEditadoGuardado = localStorage.getItem('inv_stockEditado');
-            const stockLineaGuardado = localStorage.getItem('inv_stockLinea');
-            const noDispGuardado = localStorage.getItem('inv_noDisponible');
-            if (!datosGuardados) { console.warn('No hay datos cargados en la aplicación BINARIO.'); return []; }
-            const datosCombinados = JSON.parse(datosGuardados);
-            const stockEditadoMap = stockEditadoGuardado ? JSON.parse(stockEditadoGuardado) : {};
-            const stockLinea = stockLineaGuardado ? JSON.parse(stockLineaGuardado) : {};
-            const noDispMap = noDispGuardado ? JSON.parse(noDispGuardado) : {};
+        async function obtenerPedidosPositivos() {
+            let datosCombinados, stockLinea;
+            try { ({ items: datosCombinados, stockLinea } = await DB.articulos.paraPedidos()); }
+            catch (e) { console.warn('No se pudo leer el inventario de la base de datos:', e); return []; }
+            const stockEditadoMap = {}, noDispMap = {};
+            datosCombinados.forEach(it => {
+                stockEditadoMap[it.codigo] = it.stockEditado;
+                noDispMap[it.codigo] = { noDisponibleMatriz: it.noDisponibleMatriz, noDisponibleSucursal: it.noDisponibleSucursal };
+            });
             datosCombinados.forEach(item => {
                 const codigoNorm = normalizarCodigo(item.codigo);
                 item.codigoNormalizado = codigoNorm;
@@ -1433,20 +1474,9 @@
                 request.onerror = (event) => reject(event.target.error);
             });
         }
-        async function guardarDatosDB(proveedores, productosMaestro) {
-            try {
-                const db = await openDB();
-                const tx = db.transaction('appData', 'readwrite');
-                const store = tx.objectStore('appData');
-                store.put({ id: 'proveedores', data: proveedores });
-                store.put({ id: 'productosMaestro', data: productosMaestro });
-                return new Promise((resolve, reject) => {
-                    tx.oncomplete = () => { db.close(); resolve(); };
-                    tx.onerror = (e) => { db.close(); reject(e.target.error); };
-                });
-            } catch (e) { console.warn('Error al guardar en IndexedDB:', e); }
-        }
-        async function cargarDatosDB() {
+        // ---- Proveedores en Supabase (el IndexedDB solo se lee para migrar datos viejos) ----
+        async function guardarDatosDB(proveedores) { await DB.proveedores.guardar(proveedores); }
+        async function cargarDatosIDBLegacy() {
             try {
                 const db = await openDB();
                 const tx = db.transaction('appData', 'readonly');
@@ -1464,6 +1494,14 @@
                 console.warn('Error al cargar de IndexedDB:', e);
                 return { proveedores: [], productosMaestro: [] };
             }
+        }
+        async function cargarDatosDB() {
+            let proveedores = await DB.proveedores.cargar();
+            if (!proveedores.length) {
+                const viejo = (await cargarDatosIDBLegacy()).proveedores;
+                if (viejo.length) { proveedores = viejo; await DB.proveedores.guardar(proveedores); }
+            }
+            return { proveedores, productosMaestro: [] };
         }
 
         // ========== APP PRINCIPAL ==========
@@ -1522,54 +1560,32 @@
                 });
             }
 
-            const STORAGE_KEYS_PEDIDOS = {
-                productosMatriz:   'cotizacion_pedidos_productosMatriz',
-                productosSucursal: 'cotizacion_pedidos_productosSucursal',
-                manualesMatriz:    'cotizacion_pedidos_manualesMatriz',
-                manualesSucursal:  'cotizacion_pedidos_manualesSucursal'
-            };
+            let pedidosCargados = false;   // evita borrar la nube con listas vacías antes de terminar de cargar
             function guardarPedidosLS() {
-                try {
-                    localStorage.setItem(STORAGE_KEYS_PEDIDOS.productosMatriz,   JSON.stringify(productosMatriz));
-                    localStorage.setItem(STORAGE_KEYS_PEDIDOS.productosSucursal, JSON.stringify(productosSucursal));
-                    localStorage.setItem(STORAGE_KEYS_PEDIDOS.manualesMatriz,    JSON.stringify(productosManualesMatriz));
-                    localStorage.setItem(STORAGE_KEYS_PEDIDOS.manualesSucursal,  JSON.stringify(productosManualesSucursal));
-                } catch (e) { console.warn('No se pudieron guardar los pedidos en localStorage:', e); }
+                if (!pedidosCargados) return;
+                DB.pedidos.guardar('matriz', productosMatriz).catch(e => console.warn('No se pudieron guardar los pedidos (matriz):', e));
+                DB.pedidos.guardar('sucursal', productosSucursal).catch(e => console.warn('No se pudieron guardar los pedidos (sucursal):', e));
             }
             const guardarPedidosLSDebounced = debounce(guardarPedidosLS, 400);
 
-            function cargarPedidosLS() {
+            async function cargarPedidosLS() {
                 try {
-                    const pm = JSON.parse(localStorage.getItem(STORAGE_KEYS_PEDIDOS.productosMatriz)   || 'null');
-                    const ps = JSON.parse(localStorage.getItem(STORAGE_KEYS_PEDIDOS.productosSucursal) || 'null');
-                    const mm = JSON.parse(localStorage.getItem(STORAGE_KEYS_PEDIDOS.manualesMatriz)    || 'null');
-                    const ms = JSON.parse(localStorage.getItem(STORAGE_KEYS_PEDIDOS.manualesSucursal)  || 'null');
-
-                    if (Array.isArray(pm)) productosMatriz   = pm;
-                    if (Array.isArray(ps)) productosSucursal = ps;
-
-                    const rehidratarManual = (arr, base) => (arr || []).map(m => {
-                        const encontrado = base.find(p => String(p.codigo) === String(m.codigo));
-                        if (encontrado) {
-                            encontrado.linea = 'ENCARGO';
-                            encontrado.esManual = true;
-                            return encontrado;
-                        }
-                        return { ...m, linea: 'ENCARGO', esManual: true };
-                    });
-
-                    if (Array.isArray(mm)) productosManualesMatriz   = rehidratarManual(mm, productosMatriz);
-                    if (Array.isArray(ms)) productosManualesSucursal = rehidratarManual(ms, productosSucursal);
-
-                    productosMatriz = [
-                        ...productosManualesMatriz,
-                        ...productosMatriz.filter(p => !productosManualesMatriz.some(m => mismoCodigo(m.codigo, p.codigo)))
-                    ];
-                    productosSucursal = [
-                        ...productosManualesSucursal,
-                        ...productosSucursal.filter(p => !productosManualesSucursal.some(m => mismoCodigo(m.codigo, p.codigo)))
-                    ];
-                } catch (e) { console.warn('No se pudieron cargar los pedidos de localStorage:', e); }
+                    let [pm, ps] = await Promise.all([DB.pedidos.cargar('matriz'), DB.pedidos.cargar('sucursal')]);
+                    let migrar = false;
+                    if (!pm.length && !ps.length) {   // migrar pedidos viejos de localStorage (una sola vez)
+                        try {
+                            const a = JSON.parse(localStorage.getItem('cotizacion_pedidos_productosMatriz') || 'null');
+                            const s = JSON.parse(localStorage.getItem('cotizacion_pedidos_productosSucursal') || 'null');
+                            if ((Array.isArray(a) && a.length) || (Array.isArray(s) && s.length)) { pm = a || []; ps = s || []; migrar = true; }
+                        } catch (_) {}
+                    }
+                    productosMatriz = pm;
+                    productosSucursal = ps;
+                    productosManualesMatriz = pm.filter(p => p.esManual);
+                    productosManualesSucursal = ps.filter(p => p.esManual);
+                    pedidosCargados = true;
+                    if (migrar) guardarPedidosLS();
+                } catch (e) { console.warn('No se pudieron cargar los pedidos:', e); }
             }
 
             function limpiarPedidos() {
@@ -1580,9 +1596,7 @@
 
                 historialDeshacer.length = 0;
 
-                Object.values(STORAGE_KEYS_PEDIDOS).forEach(k => {
-                    try { localStorage.removeItem(k); } catch (_) {}
-                });
+                DB.pedidos.limpiar().catch(e => console.warn('No se pudieron limpiar los pedidos:', e));
 
                 productosMatriz = [];
                 productosSucursal = [];
@@ -1726,18 +1740,12 @@
 
             async function guardarDatos() {
                 if (!datosModificados) return;
-                try { await guardarDatosDB(proveedores, []); datosModificados = false; if (window.Nube) Nube.cambio('idb_proveedores'); }
+                try { await guardarDatosDB(proveedores, []); datosModificados = false; }
                 catch (e) { console.warn('Error al guardar:', e); }
             }
             function marcarModificado() { datosModificados = true; }
             async function cargarDatos() {
                 try {
-                    if (window.Nube) {
-                        await Nube.sincronizarIDB(
-                            async () => { const d = await cargarDatosDB(); return d.proveedores.length ? JSON.stringify(d.proveedores) : null; },
-                            async (txt) => { await guardarDatosDB(txt ? JSON.parse(txt) : [], []); }
-                        );
-                    }
                     const data = await cargarDatosDB();
                     proveedores = data.proveedores;
                     return proveedores.length > 0;
@@ -1915,6 +1923,71 @@
             window.cerrarModal = function () { document.getElementById('modalDetalle').classList.remove('show'); };
             document.getElementById('modalDetalle').addEventListener('click', function (e) { if (e.target === this) cerrarModal(); });
 
+            // ===== MODAL: INFO DEL ARCHIVO DEL PROVEEDOR =====
+            window.abrirModalArchivo = function (index) {
+                const p = proveedores[index];
+                if (!p) return;
+                const modal = document.getElementById('modalArchivo');
+                const content = document.getElementById('modalArchivoContent');
+                const title = document.getElementById('modalArchivoTitle');
+                title.textContent = p.nombre;
+
+                const a = p.archivo || null;
+                const filas = [];
+                filas.push(['store', 'Proveedor', escapeHtml(p.nombre)]);
+
+                if (a) {
+                    filas.push(['insert_drive_file', 'Archivo', escapeHtml(a.nombre)]);
+                    if (a.hoja)   filas.push(['tab', 'Hoja leída', escapeHtml(a.hoja)]);
+                    if (a.tamano) filas.push(['sd_storage', 'Tamaño', formatearBytes(a.tamano)]);
+                    if (a.modo)   filas.push(['rule', 'Detección de columnas', escapeHtml(a.modo)]);
+                    if (a.columnas) {
+                        const cols = [];
+                        if (a.columnas.codigo)      cols.push('Código: "' + a.columnas.codigo + '"');
+                        if (a.columnas.descripcion) cols.push('Desc: "' + a.columnas.descripcion + '"');
+                        if (a.columnas.existencia)  cols.push('Exist.: "' + a.columnas.existencia + '"');
+                        if (a.columnas.precio)      cols.push('Precio: "' + a.columnas.precio + '"');
+                        if (cols.length) filas.push(['view_column', 'Columnas detectadas', escapeHtml(cols.join(' · '))]);
+                    }
+                    if (a.fecha) filas.push(['schedule', 'Cargado el', escapeHtml(new Date(a.fecha).toLocaleString('es-MX'))]);
+                }
+
+                filas.push(['inventory_2', 'Productos en catálogo', p.productos.length.toLocaleString('es-MX')]);
+                filas.push(['verified_user', 'Stock mínimo', p.activarStock ? (p.stockMinimo + ' unidades') : 'Desactivado']);
+                filas.push(['percent', 'Descuento aplicado', (p.descuento || 0) + ' %']);
+
+                const detalleHTML = filas.map(([icon, label, valor]) =>
+                    `<div class="archivo-row">
+                        <span class="archivo-label"><span class="material-icons">${icon}</span>${label}</span>
+                        <span class="archivo-valor">${valor}</span>
+                     </div>`).join('');
+
+                const aviso = a
+                    ? `<div class="alert alert-info" style="margin-top:20px;margin-bottom:0;">
+                           <span class="material-icons">info</span>
+                           <div></div>
+                       </div>`
+                    : `<div class="alert alert-warning" style="margin-top:20px;margin-bottom:0;">
+                           <span class="material-icons">warning</span>
+                           <div>Este proveedor no tiene registrado el archivo de origen (fue cargado en una versión anterior o desde otro dispositivo). Vuelve a cargarlo para registrar el nombre del archivo.</div>
+                       </div>`;
+
+                content.innerHTML = `<div class="product-detail">
+                        <div class="product-sub">Archivo de origen</div>
+                        <div class="archivo-detalle">${detalleHTML}</div>
+                        ${aviso}
+                    </div>`;
+                modal.classList.add('show');
+            };
+
+            window.cerrarModalArchivo = function () {
+                const m = document.getElementById('modalArchivo');
+                if (m) m.classList.remove('show');
+            };
+            document.getElementById('modalArchivo').addEventListener('click', function (e) {
+                if (e.target === this) cerrarModalArchivo();
+            });
+
             function mostrarPopoverProveedores(anchorEl, codigo, proveedorActual) {
                 const pop = document.getElementById('popoverProveedores');
                 const ordenadas = obtenerAnotadas(codigo);
@@ -1957,7 +2030,12 @@
                 cerrarPopoverProveedores();
             }, true);
             window.addEventListener('resize', () => { cerrarPopoverProveedores(); });
-            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cerrarModal(); });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    cerrarModal();
+                    if (window.cerrarModalArchivo) cerrarModalArchivo();
+                }
+            });
 
             const navItems = document.querySelectorAll('.nav-btn');
             const sections = document.querySelectorAll('.section');
@@ -2069,8 +2147,19 @@
                     }
 
                     proveedores.push({
-                        nombre, productos: productosFinales, stockMinimo,
-                        descuento: aplicarDescuento ? porcentajeDescuento : 0, activarStock
+                        nombre,
+                        productos: productosFinales,
+                        stockMinimo,
+                        descuento: aplicarDescuento ? porcentajeDescuento : 0,
+                        activarStock,
+                        archivo: {
+                            nombre: archivoData.nombre,
+                            tamano: archivoData.bytes.length,
+                            hoja: sheetName,
+                            modo: mejor.modo,
+                            columnas: mejor.nombresCols || null,
+                            fecha: new Date().toISOString()
+                        }
                     });
 
                     marcarModificado();
@@ -2110,13 +2199,16 @@
                     return;
                 }
                 div.innerHTML = proveedores.map((p, index) => `
-                    <div class="proveedor-item" data-index="${index}">
+                    <div class="proveedor-item" data-index="${index}" title="Clic para ver el archivo de origen">
                         <div class="proveedor-info">
                             <span class="position-badge" title="Prioridad ${index + 1}">${index + 1}</span>
                             <span class="material-icons" style="color:var(--acento);">store</span>
-                            <div>
+                            <div style="min-width:0;">
                                 <div class="proveedor-name">${escapeHtml(p.nombre)}</div>
                                 <div class="product-count">${p.productos.length} productos | Stock mín: ${p.activarStock ? p.stockMinimo : 'No'} | Desc: ${p.descuento}%</div>
+                                ${p.archivo
+                                    ? `<div class="archivo-hint"><span class="material-icons">description</span>${escapeHtml(p.archivo.nombre)}${p.archivo.hoja ? ' · ' + escapeHtml(p.archivo.hoja) : ''}</div>`
+                                    : `<div class="archivo-hint"><span class="material-icons">help_outline</span>Sin información de archivo</div>`}
                             </div>
                         </div>
                         <button class="btn btn-danger btn-sm btn-eliminar-proveedor" data-index="${index}" aria-label="Eliminar proveedor ${escapeAttr(p.nombre)}">
@@ -2124,8 +2216,16 @@
                         </button>
                     </div>
                 `).join('');
+
+                div.querySelectorAll('.proveedor-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        window.abrirModalArchivo(parseInt(item.dataset.index, 10));
+                    });
+                });
+
                 div.querySelectorAll('.btn-eliminar-proveedor').forEach(btn => {
-                    btn.addEventListener('click', () => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
                         const idx = parseInt(btn.dataset.index);
                         proveedores.splice(idx, 1);
                         marcarModificado();
@@ -2198,9 +2298,8 @@
             }
 
             async function cargarPedido(tipo) {
-                if (window.Nube) await Nube.refrescar('inv_');
                 const cfg = CONFIG_TIPO[tipo];
-                const pedidos = obtenerPedidosPositivos();
+                const pedidos = await obtenerPedidosPositivos();
                 if (pedidos.length === 0) { showToast('No se encontraron pedidos positivos.', 'warning'); return; }
                 todosLosPedidos = pedidos;
                 historialDeshacer.length = 0;
@@ -2277,7 +2376,6 @@
                 }
                 guardarPedidosLS();
 
-                // 👇 Toast con acción "Deshacer"
                 showToast(`Producto ${codigo} eliminado`, 'warning', 2500, {
                     label: 'Deshacer',
                     callback: () => restaurarEntrada(entrada)
@@ -2494,10 +2592,6 @@
                     pendientes.push({ prod, resolved });
                 });
 
-                /* ===== ENCARGOS SIEMPRE ARRIBA CUANDO EL FILTRO ES "TODOS" =====
-                   - Con filtro "todos": encargos primero, luego el resto (respetando orden original).
-                   - Con filtro por proveedor específico: los encargos siguen apareciendo SOLO
-                     cuando su proveedor asignado coincide con el filtro (ya lo controla resolverProveedor). */
                 if (filtroProv === 'todos') {
                     const esEncargo = (p) => p && (p.esManual === true || String(p.linea || '').toUpperCase() === 'ENCARGO');
                     const encargos = [];
@@ -2646,8 +2740,6 @@
                         return;
                     }
 
-                    /* ===== NUEVO: si hay filtro por proveedor específico y el producto ya no pertenece a ese
-                       proveedor, quitarlo de la vista actual (como ya se hace con FALTANTES). ===== */
                     if (filtroDespues !== 'todos' && filtroDespues !== 'FALTANTES') {
                         const resolvedActual = resolverProveedor(prod);
                         if (resolvedActual.esFDC || resolvedActual.esFaltante ||
@@ -3067,7 +3159,6 @@
                 if (e.shiftKey) return;
                 if (e.key !== 'z' && e.key !== 'Z') return;
 
-                // No interferir con el undo nativo de inputs/textareas
                 const t = e.target;
                 if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
 
@@ -3089,7 +3180,6 @@
             });
 
             async function init() {
-                if (window.Nube) await Nube.listo;
                 const tieneDatos = await cargarDatos();
                 if (tieneDatos) {
                     reconstruirIndice();
@@ -3098,7 +3188,7 @@
                 } else {
                     renderizarChipsProveedores([], manejarReordenProveedor);
                 }
-                cargarPedidosLS();
+                await cargarPedidosLS();
             }
             init();
         }
