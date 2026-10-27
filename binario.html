@@ -366,8 +366,7 @@
 
 <div class="top-bar">
     <span class="top-bar-brand">
-        <span class="material-icons">receipt_long</span>
-        FARMACIAS ADN PEDIDOS +
+        FARMACIAS ADN · +
     </span>
 
     <div class="divider"></div>
@@ -614,7 +613,7 @@
     </div>
 </div>
 
-<script src="nube.js"></script>
+<script src="db.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -658,89 +657,101 @@ function esPedidoSucursalOK(item) {
 }
 
 // ============================================================
-//  LOCAL STORAGE
+//  BASE DE DATOS (Supabase) — reemplaza localStorage
 // ============================================================
-const LS_KEYS = { DATOS: 'inv_datosCombinados', STOCK_EDITADO: 'inv_stockEditado', STOCK_LINEA: 'inv_stockLinea', VISTA: 'inv_vistaActual', NO_DISPONIBLE: 'inv_noDisponible' };
+const LS_KEYS = { DATOS: 'inv_datosCombinados', STOCK_EDITADO: 'inv_stockEditado', STOCK_LINEA: 'inv_stockLinea', VISTA: 'inv_vistaActual', NO_DISPONIBLE: 'inv_noDisponible' }; // solo para migrar datos viejos
+let _snapArt = new Map(), _snapLin = new Map(), _guardando = null, _timerGuardar = null;
 
+// Mismo nombre de siempre: ahora guarda (con debounce) solo lo que cambió en la nube
 function guardarEnLocalStorage() {
+    clearTimeout(_timerGuardar);
+    _timerGuardar = setTimeout(() => { _guardando = (_guardando || Promise.resolve()).then(sincronizarNube); }, 500);
+}
+async function sincronizarNube() {
     try {
-        const stockEditadoMap = {};
+        const cambios = [], codigos = new Set();
         datosCombinados.forEach(item => {
-            if (item.stockEditado && (item.stockEditado.almacen || item.stockEditado.matriz || item.stockEditado.sucursal)) stockEditadoMap[item.codigo] = item.stockEditado;
-        });
-        localStorage.setItem(LS_KEYS.STOCK_EDITADO, JSON.stringify(stockEditadoMap));
-        localStorage.setItem(LS_KEYS.STOCK_LINEA, JSON.stringify(stockLinea));
-        localStorage.setItem(LS_KEYS.VISTA, vistaActual);
-
-        const datosLigeros = datosCombinados.map(item => {
-            const { _cache, ...rest } = item;
             const v = calcularValores(item);
-            rest.pedidoMatrizOk = v.pedidoMatrizOk;
-            rest.pedidoSucursalOk = v.pedidoSucursalOk;
-            return rest;
+            const row = DB.articulos.rowDeItem({ ...item, pedidoMatrizOk: v.pedidoMatrizOk, pedidoSucursalOk: v.pedidoSucursalOk });
+            codigos.add(row.codigo);
+            const s = JSON.stringify(row);
+            if (_snapArt.get(row.codigo) !== s) cambios.push([row, s]);
         });
-        localStorage.setItem(LS_KEYS.DATOS, JSON.stringify(datosLigeros));
+        if (cambios.length) { await DB.articulos.guardar(cambios.map(c => c[0])); cambios.forEach(([r, s]) => _snapArt.set(r.codigo, s)); }
+        const quitar = [..._snapArt.keys()].filter(c => !codigos.has(c));
+        if (quitar.length) { await DB.articulos.borrar(quitar); quitar.forEach(c => _snapArt.delete(c)); }
 
-        const noDispMap = {};
-        datosCombinados.forEach(item => {
-            if (item.noDisponibleMatriz || item.noDisponibleSucursal) {
-                noDispMap[item.codigo] = { noDisponibleMatriz: item.noDisponibleMatriz || false, noDisponibleSucursal: item.noDisponibleSucursal || false };
-            }
+        const lin = [];
+        Object.entries(stockLinea).forEach(([l, v]) => {
+            const row = { linea: l, almacen: +v.almacen || 0, matriz: +v.matriz || 0, sucursal: +v.sucursal || 0 };
+            const s = JSON.stringify(row);
+            if (_snapLin.get(l) !== s) lin.push([row, s]);
         });
-        localStorage.setItem(LS_KEYS.NO_DISPONIBLE, JSON.stringify(noDispMap));
-    } catch (e) { console.warn('LocalStorage error:', e.message); }
+        if (lin.length) { await DB.stockLinea.guardar(lin.map(c => c[0])); lin.forEach(([r, s]) => _snapLin.set(r.linea, s)); }
+        await DB.config.set('vista_actual', vistaActual);
+    } catch (e) { console.warn('Error al guardar en la nube:', e); mostrarToast('No se pudo guardar en la nube', false); }
 }
 
-function cargarDeLocalStorage() {
+function restaurarEstado(items, sl, vista) {
+    datos = { existencia: { matriz: {}, almacen: {}, sucursal: {} }, existenciaRaw: { matriz: {}, almacen: {}, sucursal: {} }, ventas: { matriz: {}, sucursal: {} }, ubicacion: {} };
+    datosCombinados = items;
+    datosCombinados.forEach(item => {
+        if (item.noDisponibleMatriz === undefined) item.noDisponibleMatriz = false;
+        if (item.noDisponibleSucursal === undefined) item.noDisponibleSucursal = false;
+        if (item.fabricanteSucursal === undefined) item.fabricanteSucursal = '';
+        item._cache = null;
+        codigoIndex.set(item.codigo, item);
+        if (item.linea && item.linea !== 'Sin línea') lineasUnicas.add(item.linea);
+
+        datos.existenciaRaw.almacen[item.codigo] = item.existenciaAlmacen || 0;
+        datos.existenciaRaw.matriz[item.codigo] = item.existenciaMatriz || 0;
+        datos.existenciaRaw.sucursal[item.codigo] = item.existenciaSucursal || 0;
+
+        const baseMatriz = { articulo: item.articulo || 'Sin descripción', linea: item.linea || 'Sin línea', fabricante: item.fabricante || '', marca: item.marca || '' };
+        const baseSucursal = { articulo: item.articulo || 'Sin descripción', linea: item.linea || 'Sin línea', fabricante: item.fabricanteSucursal || '', marca: item.marca || '' };
+        datos.existencia.almacen[item.codigo] = { ...baseMatriz, existencia: item.almacen || 0 };
+        datos.existencia.matriz[item.codigo] = { ...baseMatriz, existencia: item.matriz || 0 };
+        datos.existencia.sucursal[item.codigo] = { ...baseSucursal, existencia: item.sucursal || 0 };
+        if (item.ubicacion) datos.ubicacion[item.codigo] = item.ubicacion;
+    });
+    if (sl) stockLinea = sl;
+    if (vista && ['articulo', 'linea', 'comparativa'].includes(vista)) vistaActual = vista;
+}
+
+// Datos que haya dejado la versión anterior en este navegador (para migrarlos una sola vez)
+function leerLegacyLS() {
     try {
-        const datosGuardados = localStorage.getItem(LS_KEYS.DATOS);
-        if (datosGuardados) {
-            datos = { existencia: { matriz: {}, almacen: {}, sucursal: {} }, existenciaRaw: { matriz: {}, almacen: {}, sucursal: {} }, ventas: { matriz: {}, sucursal: {} }, ubicacion: {} };
-            datosCombinados = JSON.parse(datosGuardados);
-            datosCombinados.forEach(item => {
-                if (item.noDisponibleMatriz === undefined) item.noDisponibleMatriz = false;
-                if (item.noDisponibleSucursal === undefined) item.noDisponibleSucursal = false;
-                if (item.fabricanteSucursal === undefined) item.fabricanteSucursal = '';
-                item._cache = null;
-                codigoIndex.set(item.codigo, item);
-                if (item.linea && item.linea !== 'Sin línea') lineasUnicas.add(item.linea);
+        const raw = localStorage.getItem(LS_KEYS.DATOS);
+        if (!raw) return null;
+        const items = JSON.parse(raw);
+        const se = JSON.parse(localStorage.getItem(LS_KEYS.STOCK_EDITADO) || '{}');
+        const nd = JSON.parse(localStorage.getItem(LS_KEYS.NO_DISPONIBLE) || '{}');
+        items.forEach(it => {
+            if (se[it.codigo]) it.stockEditado = se[it.codigo];
+            const f = nd[it.codigo];
+            if (f) { it.noDisponibleMatriz = !!f.noDisponibleMatriz; it.noDisponibleSucursal = !!f.noDisponibleSucursal; }
+        });
+        return { items, sl: JSON.parse(localStorage.getItem(LS_KEYS.STOCK_LINEA) || '{}'), vista: localStorage.getItem(LS_KEYS.VISTA) };
+    } catch (e) { return null; }
+}
 
-                datos.existenciaRaw.almacen[item.codigo] = item.existenciaAlmacen || 0;
-                datos.existenciaRaw.matriz[item.codigo] = item.existenciaMatriz || 0;
-                datos.existenciaRaw.sucursal[item.codigo] = item.existenciaSucursal || 0;
-
-                const baseMatriz = { articulo: item.articulo || 'Sin descripción', linea: item.linea || 'Sin línea', fabricante: item.fabricante || '', marca: item.marca || '' };
-                const baseSucursal = { articulo: item.articulo || 'Sin descripción', linea: item.linea || 'Sin línea', fabricante: item.fabricanteSucursal || '', marca: item.marca || '' };
-                datos.existencia.almacen[item.codigo] = { ...baseMatriz, existencia: item.almacen || 0 };
-                datos.existencia.matriz[item.codigo] = { ...baseMatriz, existencia: item.matriz || 0 };
-                datos.existencia.sucursal[item.codigo] = { ...baseSucursal, existencia: item.sucursal || 0 };
-                if (item.ubicacion) datos.ubicacion[item.codigo] = item.ubicacion;
-            });
+async function cargarDeNube() {
+    try {
+        let [items, sl, vista] = await Promise.all([DB.articulos.cargar(), DB.stockLinea.cargar(), DB.config.get('vista_actual')]);
+        let migrar = false;
+        if (!items.length) {
+            const l = leerLegacyLS();
+            if (l && l.items.length) { items = l.items; sl = l.sl; vista = vista || l.vista; migrar = true; }
         }
-        const stockEditadoGuardado = localStorage.getItem(LS_KEYS.STOCK_EDITADO);
-        if (stockEditadoGuardado) {
-            const map = JSON.parse(stockEditadoGuardado);
-            Object.entries(map).forEach(([codigo, se]) => {
-                const item = codigoIndex.get(codigo);
-                if (item) { item.stockEditado = se; item._cache = null; }
-            });
-        }
-        const stockLineaGuardado = localStorage.getItem(LS_KEYS.STOCK_LINEA);
-        if (stockLineaGuardado) stockLinea = JSON.parse(stockLineaGuardado);
-
-        const vistaGuardada = localStorage.getItem(LS_KEYS.VISTA);
-        if (vistaGuardada && ['articulo','linea','comparativa'].includes(vistaGuardada)) vistaActual = vistaGuardada;
-
-        const noDispGuardado = localStorage.getItem(LS_KEYS.NO_DISPONIBLE);
-        if (noDispGuardado) {
-            const map = JSON.parse(noDispGuardado);
-            Object.entries(map).forEach(([codigo, flags]) => {
-                const item = codigoIndex.get(codigo);
-                if (item) { item.noDisponibleMatriz = flags.noDisponibleMatriz || false; item.noDisponibleSucursal = flags.noDisponibleSucursal || false; item._cache = null; }
-            });
+        if (!items.length) return false;
+        restaurarEstado(items, sl, vista);
+        if (migrar) { mostrarToast('Migrando datos locales a la base de datos…'); guardarEnLocalStorage(); }
+        else {
+            items.forEach(it => { const r = DB.articulos.rowDeItem(it); _snapArt.set(r.codigo, JSON.stringify(r)); });
+            Object.entries(stockLinea).forEach(([l, v]) => _snapLin.set(l, JSON.stringify({ linea: l, almacen: +v.almacen || 0, matriz: +v.matriz || 0, sucursal: +v.sucursal || 0 })));
         }
         return datosCombinados.length > 0;
-    } catch (e) { return false; }
+    } catch (e) { console.warn('Error al cargar de la nube:', e); mostrarToast('No se pudo conectar con la base de datos', false); return false; }
 }
 
 // ============================================================
@@ -1584,13 +1595,12 @@ function inicializarDragDrop() {
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
-    if (window.Nube) await Nube.listo;
     const vsContainer = document.getElementById('comparativaScrollContainer');
     if (vsContainer) vsContainer.addEventListener('scroll', onVSscroll, { passive: true });
 
     inicializarDragDrop();
 
-    if (cargarDeLocalStorage()) {
+    if (await cargarDeNube()) {
         actualizarEstadoArchivos();
         if (datosCombinados.length > 0) {
             Object.keys(archivosCargados).forEach(k => { if (!archivosCargados[k]) archivosCargados[k] = { nombre: '(previo)', datos: [], placeholder: true }; });
