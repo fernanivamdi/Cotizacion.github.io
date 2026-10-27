@@ -366,7 +366,7 @@
 
 <div class="top-bar">
     <span class="top-bar-brand">
-        FARMACIAS ADN PEDIDOS +
+        FARMACIASADN
     </span>
 
     <div class="divider"></div>
@@ -693,7 +693,7 @@ async function sincronizarNube() {
 }
 
 function restaurarEstado(items, sl, vista) {
-    datos = { existencia: { matriz: {}, almacen: {}, sucursal: {} }, existenciaRaw: { matriz: {}, almacen: {}, sucursal: {} }, ventas: { matriz: {}, sucursal: {} }, ubicacion: {} };
+    datos = { existencia: { matriz: {}, almacen: {}, sucursal: {} }, existenciaRaw: { matriz: {}, almacen: {}, sucursal: {} }, ventas: { matriz: {}, sucursal: {} }, ubicacion: {}, costos: {} };
     datosCombinados = items;
     datosCombinados.forEach(item => {
         if (item.noDisponibleMatriz === undefined) item.noDisponibleMatriz = false;
@@ -760,7 +760,7 @@ async function cargarDeNube() {
 function escapeHtml(str) { if (!str) return ''; return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
 function esFilaEncabezado(codigo) { const c = String(codigo).trim(); if (/\d/.test(c)) return false; return /^(c[óo]d|artic|descri|exist|venta|producto|linea|l[íi]nea|marca|fabric)/i.test(c); }
 
-let datos = { existencia: { matriz: {}, almacen: {}, sucursal: {} }, existenciaRaw: { matriz: {}, almacen: {}, sucursal: {} }, ventas: { matriz: {}, sucursal: {} }, ubicacion: {} };
+let datos = { existencia: { matriz: {}, almacen: {}, sucursal: {} }, existenciaRaw: { matriz: {}, almacen: {}, sucursal: {} }, ventas: { matriz: {}, sucursal: {} }, ubicacion: {}, costos: {} };
 let datosCombinados = [];
 let codigoIndex = new Map();
 let lineasUnicas = new Set();
@@ -882,12 +882,19 @@ function confirmarCarga() {
         cerrarModalCarga();
         mostrarToast('¡' + datosCombinados.length.toLocaleString() + ' artículos procesados!');
         guardarEnLocalStorage();
+        guardarCostosMatriz();
         actualizarVista();
     } catch (err) { mostrarToast('Error al procesar', false); }
 }
 
+async function guardarCostosMatriz() {
+    try {
+        if (datos.costos && Object.keys(datos.costos).length) await DB.costos.guardar(datos.costos);
+    } catch (e) { console.error(e); mostrarToast('No se pudieron guardar los costos', false); }
+}
+
 function procesarDatosCargados() {
-    datos = { existencia:{ matriz:{}, almacen:{}, sucursal:{} }, existenciaRaw:{ matriz:{}, almacen:{}, sucursal:{} }, ventas:{ matriz:{}, sucursal:{} }, ubicacion:{} };
+    datos = { existencia:{ matriz:{}, almacen:{}, sucursal:{} }, existenciaRaw:{ matriz:{}, almacen:{}, sucursal:{} }, ventas:{ matriz:{}, sucursal:{} }, ubicacion:{}, costos:{} };
     lineasUnicas = new Set();
 
     const tiposEx = { 'matriz-existencia':'matriz', 'almacen-existencia':'almacen', 'sucursal-existencia':'sucursal' };
@@ -910,6 +917,10 @@ function procesarDatosCargados() {
             if (articulo !== 'Sin descripción' && articulo.length > datos.existencia[tipo][codigo].articulo.length) datos.existencia[tipo][codigo].articulo = articulo;
             if (linea !== 'Sin línea') { datos.existencia[tipo][codigo].linea = linea; lineasUnicas.add(linea); }
             if (fabricante) datos.existencia[tipo][codigo].fabricante = fabricante;
+            if (tipo === 'matriz') {   // columnas F, G, H = índices 5, 6, 7
+                const n = v => { const x = parseFloat(v); return isNaN(x) ? 0 : x; };
+                datos.costos[codigo] = { costo: n(row[5]), precio: n(row[6]), impuesto: n(row[7]) };
+            }
             if (tipo === 'matriz' && marca) datos.existencia[tipo][codigo].marca = marca;
         }
     }
@@ -1010,6 +1021,7 @@ function actualizarDatos() {
         procesarDatosCargados();
         actualizarVista();
         guardarEnLocalStorage();
+        guardarCostosMatriz();
         mostrarToast('Datos actualizados');
     } catch (err) { mostrarToast('Error al actualizar', false); }
 }
