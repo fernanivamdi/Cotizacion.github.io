@@ -92,18 +92,18 @@
     // Devuelve { codigo: { costo, precio, impuesto } }
     async cargar() {
       const m = {};
-      (await getAll('costos_matriz?select=*&order=codigo')).forEach(r => { m[r.codigo] = { costo: num(r.costo), precio: num(r.precio), impuesto: num(r.impuesto) }; });
+      (await getAll('costos_matriz?select=*&order=codigo')).forEach(r => { m[r.codigo] = { costo: num(r.costo), precio: num(r.precio), impuesto: num(r.impuesto), impuestoTipo: r.impuesto_tipo || '' }; });
       return m;
     },
     // Una sola consulta para un artículo; null si no existe
     async de(codigo) {
       const r = await req('GET', 'costos_matriz?select=*&codigo=eq.' + encodeURIComponent(codigo));
-      return r && r[0] ? { costo: num(r[0].costo), precio: num(r[0].precio), impuesto: num(r[0].impuesto) } : null;
+      return r && r[0] ? { costo: num(r[0].costo), precio: num(r[0].precio), impuesto: num(r[0].impuesto), impuestoTipo: r[0].impuesto_tipo || '' } : null;
     },
     // mapa { codigo: {costo, precio, impuesto} } -> upsert
     guardar(mapa) {
       const rows = Object.entries(mapa).map(([codigo, v]) => ({
-        codigo: String(codigo), costo: num(v.costo), precio: num(v.precio), impuesto: num(v.impuesto), updated_at: new Date().toISOString()
+        codigo: String(codigo), costo: num(v.costo), precio: num(v.precio), impuesto: num(v.impuesto), impuesto_tipo: v.impuestoTipo || '', updated_at: new Date().toISOString()
       }));
       return chunked(rows, 1000, c => upsert('costos_matriz', 'codigo', c));
     }

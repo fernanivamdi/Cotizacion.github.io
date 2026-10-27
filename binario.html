@@ -919,7 +919,9 @@ function procesarDatosCargados() {
             if (fabricante) datos.existencia[tipo][codigo].fabricante = fabricante;
             if (tipo === 'matriz') {   // columnas F, G, H = índices 5, 6, 7
                 const n = v => { const x = parseFloat(v); return isNaN(x) ? 0 : x; };
-                datos.costos[codigo] = { costo: n(row[5]), precio: n(row[6]), impuesto: n(row[7]) };
+                const tipoImp = row[7] === undefined || row[7] === null ? '' : String(row[7]).trim().toUpperCase();
+                const tasaImp = tipoImp === 'IVA' ? 16 : 0;   // IVA = 16 %, SYS (u otro) = 0 %
+                datos.costos[codigo] = { costo: n(row[5]), precio: n(row[6]), impuesto: tasaImp, impuestoTipo: tipoImp };
             }
             if (tipo === 'matriz' && marca) datos.existencia[tipo][codigo].marca = marca;
         }
